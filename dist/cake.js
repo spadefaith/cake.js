@@ -1798,7 +1798,7 @@
                   return cloned[key];
                 },
                 set(newValue) {
-                  if (whitelist.includes(key)) {
+                  if (whitelist.includes(key) || _this._cloneAsync[key]) {
                   } else {
                     let prevValue = this[key];
                     for (let n = 0; n < notify.length; n++) {
