@@ -1847,7 +1847,6 @@
         };
         Scope.prototype.set = function(key, value, cloned) {
           console.log(96, key, value);
-          console.trace();
           if (this.whitelist.includes(key)) {
             return;
           }
@@ -1857,6 +1856,7 @@
           let prevValue = cloned[key];
           cloned[key] = value;
           Object.assign(this._clone, cloned);
+          console.log(103, this._clone);
           return Promise.all(notify.map((cb) => {
             return cb(key, value, prevValue);
           }));
