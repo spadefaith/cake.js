@@ -3403,6 +3403,8 @@
           const getValue = (item) => {
             return this.data[item] || this.$scope[item] || null;
           };
+          console.log(356, "render");
+          console.log(356, this.isReady);
           return new Promise((res, rej) => {
             if (!this.isReady) {
               this.createElement().then(() => {
