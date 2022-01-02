@@ -4069,6 +4069,7 @@
                     payload = { status: 0, message: "element cant be cloned" };
                   }
                   ;
+                  console.log({ component: component3.name, event: name2, payload });
                   Cake2.MainMessageChannel.send({ component: component3.name, event: name2, payload });
                   const notify = Cake2.Observer.notify(component3.name, name2, {}).then(() => {
                     return Cake2.Observer.results[component3.name][name2];
