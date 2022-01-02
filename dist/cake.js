@@ -4192,7 +4192,9 @@
     Scope: scope(),
     Component: component2,
     Hasher: hash,
-    Persistent: persist(storage()),
+    Persistent: persist({
+      StorageKit: storage()
+    }),
     StorageKit: storage(),
     Observer: observer(),
     Formy: form
