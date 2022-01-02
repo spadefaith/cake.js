@@ -3201,6 +3201,7 @@
         };
         Component.prototype.Node = function(el2) {
           const piece2 = new Piece(el2);
+          console.log(79, piece2);
           return piece2;
         };
         Component.prototype._bindHandlers = function() {
@@ -4095,7 +4096,6 @@
                     payload = { status: 0, attributes: { element, root, container } };
                   }
                   ;
-                  console.log({ component: component3.name, event: name2, payload });
                   Cake2.MainMessageChannel.send({ component: component3.name, event: name2, payload });
                   const notify = Cake2.Observer.notify(component3.name, name2, {}).then(() => {
                     return Cake2.Observer.results[component3.name][name2];
