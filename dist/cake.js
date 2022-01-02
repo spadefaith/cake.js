@@ -1839,17 +1839,14 @@
           return true;
         };
         Scope.prototype.set = function(key, value, cloned) {
-          console.log(96, key, value);
           if (this.whitelist.includes(key)) {
             return;
           }
           ;
-          console.log(102, this._clone);
           let notify = this.notify || [];
           let prevValue = cloned[key];
           cloned[key] = value;
           Object.assign(this.temp, cloned);
-          console.log(109, notify);
           return Promise.all(notify.map((cb) => {
             return cb(key, value, prevValue);
           }));
@@ -2588,6 +2585,7 @@
         Attrib.prototype.notifier = function(prop, newValue, prevValue) {
           let val = JSON.parse(JSON.stringify(newValue));
           return new Promise((res) => {
+            console.log(539, newValue);
             this._notifyFor(prop, val, prevValue);
             res();
           }).then(() => {
@@ -4072,7 +4070,6 @@
           }).then(({ handlers, root }) => {
             Cake2.Observer.registerHandlers(handlers, component3.name);
             this._defineProperty(component3, "root", function() {
-              console.log(281, component3);
               if (component3._root) {
                 return component3._root;
               } else {
