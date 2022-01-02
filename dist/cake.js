@@ -3798,6 +3798,7 @@
         const StorageKit = dependency.StorageKit;
         const Observer2 = dependency.Observer;
         const Formy = dependency.Formy;
+        console.log(Component);
         function Cake2(name) {
           this.name = name;
           this.components = {};
@@ -3887,6 +3888,7 @@
         };
         Cake2.create = function(name, template, options) {
           let group = new Component(name, template, options);
+          console.log(group);
           group.create(name, template, options);
         };
         Cake2.plugin = function() {
