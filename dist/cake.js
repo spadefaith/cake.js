@@ -4050,6 +4050,7 @@
           let component3 = new Component(name, template, options);
           component3.compile.then(() => {
             let { subscribe: subscribe2, root, html, handlers, role } = component3;
+            console.log(root);
             role == "form" && function() {
               Formy.bind(component3)();
             }();
