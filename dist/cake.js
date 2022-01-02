@@ -4045,7 +4045,7 @@
           });
           Object.defineProperty(scope2, "set", {
             configurable: true,
-            get() {
+            set() {
               return set;
             }
           });
