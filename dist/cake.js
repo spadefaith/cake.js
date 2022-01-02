@@ -3424,11 +3424,13 @@
             return this.data[item] || this.$scope[item] || null;
           };
           return new Promise((res, rej) => {
+            console.log(341, root, !!root);
+            console.log(342, this.name, this.isReady);
+            !!root && (this.root = root);
             if (!this.isReady) {
               this.createElement().then(() => {
-                console.log(341, root, !!root)(hashed === true) && this.$hash.add(this.name);
+                hashed === true && this.$hash.add(this.name);
                 !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
-                !!root && (this.root = root);
                 multiple && this._smoothReset();
               }).then(() => {
                 this.isReady = true;
