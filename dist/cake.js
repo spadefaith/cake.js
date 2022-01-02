@@ -1812,6 +1812,7 @@
                     }
                     ;
                     cloned[key] = newValue;
+                    Object.assign(this._clone, cloned);
                   }
                 }
               });
@@ -1856,6 +1857,7 @@
           let notify = this.notify || [];
           let prevValue = cloned[key];
           cloned[key] = value;
+          Object.assign(this._clone, cloned);
           return Promise.all(notify.map((cb) => {
             return cb(key, value, prevValue);
           }));
