@@ -2310,7 +2310,7 @@
             return;
           let vItems = [];
           for (let c = 0; c < configs.length; c++) {
-            let { bind, sel, iter, ins, component: component4 } = configs[c];
+            let { bind, sel, iter, ins, component: component4, cleaned } = configs[c];
             html = html || document;
             if (component4) {
               html = Cake.Components[component4].html;
@@ -2367,6 +2367,10 @@
                 }
                 ;
               });
+              if (cleaned) {
+                target.remove();
+              }
+              ;
             })();
           }
           ;
@@ -2854,7 +2858,6 @@
               el3.classList.add("cake-template");
               el3.dataset.for = id2;
               el3.dataset.forTemplate = id2;
-              console.log(753, isCleaned, el3.dataset.forCleaned);
               o2[id2] = { bind: c, sel: id2, iter: a, ins: b, cleaned: isCleaned };
               ++this.uiid;
               if (f != 0) {
