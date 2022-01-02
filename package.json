@@ -1,0 +1,26 @@
+{
+  "name": "cake.js",
+  "version": "1.0.0",
+  "description": "vanilla simple component library",
+  "main": "bundle.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spadefaith/cake.js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/spadefaith/cake.js/issues"
+  },
+  "homepage": "https://github.com/spadefaith/cake.js#readme",
+  "browser": {
+    "path": "path-browserify"
+  },
+  "dependencies": {
+    "esbuild": "^0.14.10"
+  }
+}

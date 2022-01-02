@@ -1,2 +1,2 @@
 # cake.js
- component base library
+ vanilla simple component library
