@@ -3367,6 +3367,9 @@
               case true:
                 {
                   let element = query.getContent(true);
+                  if (!element) {
+                    throw new Error(`it might be theres no template in component - ${this.name}`);
+                  }
                   element.cake_component = this.name;
                   this.html = this.Node(element);
                   this._parseHTML(this.isStatic).then(() => {
@@ -3383,6 +3386,9 @@
               default:
                 {
                   let element = query;
+                  if (!element) {
+                    throw new Error(`it might be theres no template in component - ${this.name}`);
+                  }
                   element.cake_component = this.name;
                   this.html = this.Node(element);
                   this.isStatic = true;
