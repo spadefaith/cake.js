@@ -4062,6 +4062,10 @@
                 if (typeof fn == "function") {
                   let getAttributes2 = function(element) {
                     let o3 = {};
+                    if (!element) {
+                      return o3;
+                    }
+                    ;
                     let attributes2 = element.attributes;
                     if (attributes2) {
                       for (let i = 0; i < attributes2.length; i++) {
