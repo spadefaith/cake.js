@@ -1861,6 +1861,7 @@
     "src/scripts/persist.js"(exports, module) {
       module.exports = function(dependency) {
         const StorageKit = dependency.StorageKit;
+        console.log(StorageKit);
         return class {
           constructor() {
             this.storage = new StorageKit({
