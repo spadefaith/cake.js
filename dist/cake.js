@@ -4048,21 +4048,23 @@
         Cake2.prototype.create = function(name, template, options) {
           console.time(name);
           let component3 = new Component(name, template, options);
+          let { subscribe: subscribe2, root, html, handlers, role } = component3;
           component3.compile.then(() => {
-            let { subscribe: subscribe2, root, html, handlers, role } = component3;
             role == "form" && function() {
               Formy.bind(component3)();
             }();
             return Cake2.Observer.registerSubscribe(subscribe2).then(() => {
               return { root, handlers };
             });
-          }).then(({ handlers, root }) => {
-            Cake2.Observer.registerHandlers(handlers, component3.name);
+          }).then(({ handlers: handlers2, root: root2 }) => {
+            Cake2.Observer.registerHandlers(handlers2, component3.name);
             this._defineProperty(component3, "root", function() {
               if (component3._root) {
                 return component3._root;
+              } else if (component3.root) {
+                return component3.root;
               } else {
-                let selector2 = root || "#app";
+                let selector2 = root2 || "#app";
                 let query = document.querySelector(selector2);
                 if (query) {
                   return query;
@@ -4114,9 +4116,9 @@
                   ;
                   if (variable && (variable.element || variable.root || variable.container)) {
                     const element = getAttributes2(variable.element);
-                    const root = getAttributes2(variable.root);
+                    const root2 = getAttributes2(variable.root);
                     const container = getAttributes2(variable.container);
-                    payload = { status: 0, attributes: { element, root, container } };
+                    payload = { status: 0, attributes: { element, root: root2, container } };
                   }
                   ;
                   Cake2.MainMessageChannel.send({ component: component3.name, event: name2, payload });
@@ -4130,10 +4132,10 @@
                 console.error(`the param in fire is not an instance of function`);
               }
               ;
-              function addStaticMethod(fn2, handlers) {
-                for (let h in handlers) {
-                  if (handlers.hasOwnProperty(h)) {
-                    let handler = handlers[h];
+              function addStaticMethod(fn2, handlers2) {
+                for (let h in handlers2) {
+                  if (handlers2.hasOwnProperty(h)) {
+                    let handler = handlers2[h];
                     let event = handler.original;
                     Object.defineProperty(fn2, event, {
                       get() {
