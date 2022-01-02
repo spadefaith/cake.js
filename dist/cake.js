@@ -2848,13 +2848,13 @@
               let id2 = `ckf${this.uiid}`;
               let el3 = els[f];
               let fr2 = el3.dataset.for;
-              let isCleaned = el3.dataset.cleaned === true;
+              let isCleaned = el3.dataset.forCleaned === true;
               let [a, b, c] = fr2.split(" ");
               el3.style.display = "none";
               el3.classList.add("cake-template");
               el3.dataset.for = id2;
               el3.dataset.forTemplate = id2;
-              console.log(753, isCleaned, el3.dataset.cleaned);
+              console.log(753, isCleaned, el3.dataset.forCleaned);
               o2[id2] = { bind: c, sel: id2, iter: a, ins: b, cleaned: isCleaned };
               ++this.uiid;
               if (f != 0) {
