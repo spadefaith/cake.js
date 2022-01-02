@@ -4061,8 +4061,6 @@
             this._defineProperty(component3, "root", function() {
               if (component3._root) {
                 return component3._root;
-              } else if (component3.root) {
-                return component3.root;
               } else {
                 let selector2 = root || "#app";
                 let query = document.querySelector(selector2);
@@ -4071,7 +4069,7 @@
                 }
               }
               ;
-              throw new Error(`the selector '${selector}' as container of component '${component3.name}' is not found!`);
+              throw new Error(`the selector '${root}' as container of component '${component3.name}' is not found!`);
             }, function(value) {
               Object.assign(component3, { _root: value });
             });
