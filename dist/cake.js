@@ -4017,6 +4017,7 @@
         Cake2.prototype._defineProperty(Component.prototype, "$scope", function() {
           Cake2.Scope.install();
           let scope2 = Cake2.$scope;
+          let set = Cake2.Scope.set.bind(Cake2.Scope);
           Object.defineProperty(scope2, "extend", {
             configurable: true,
             get() {
@@ -4034,7 +4035,7 @@
           Object.defineProperty(scope2, "set", {
             configurable: true,
             get() {
-              return Cake2.Scope.set;
+              return set;
             }
           });
           return scope2;
