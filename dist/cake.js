@@ -3201,7 +3201,7 @@
         };
         Component.prototype.Node = function(el2) {
           const piece2 = new Piece(el2);
-          console.log(79, piece2);
+          ;
           return piece2;
         };
         Component.prototype._bindHandlers = function() {
@@ -3369,6 +3369,7 @@
                 let element = query.getContent(true);
                 element.cake_component = this.name;
                 this.html = this.Node(element);
+                console.log(274, this.html);
                 this._parseHTML(this.isStatic).then(() => {
                   this._watchBindedItems();
                 });
@@ -3383,6 +3384,7 @@
                 let element = query;
                 element.cake_component = this.name;
                 this.html = this.Node(element);
+                console.log(290, this.html);
                 this.isStatic = true;
                 this._parseHTML(this.isStatic).then(() => {
                 });
