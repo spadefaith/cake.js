@@ -1845,7 +1845,7 @@
           });
           return true;
         };
-        Scope.prototype.set = function(key, value) {
+        Scope.prototype.set = function(key, value, cloned) {
           console.log(96, key, value);
           console.trace();
           if (this.whitelist.includes(key)) {
@@ -1853,7 +1853,6 @@
           }
           ;
           console.log(102, this._clone);
-          let cloned = this._clone;
           let notify = this.notify || [];
           let prevValue = cloned[key];
           cloned[key] = value;
@@ -4046,8 +4045,9 @@
           Object.defineProperty(scope2, "set", {
             configurable: true,
             get() {
-              return function(key, value) {
-                return set(key, value);
+              const cloned = Cake2.Scope._clone;
+              return function(key, value, cloned2) {
+                return set(key, value, cloned2);
               };
             }
           });
