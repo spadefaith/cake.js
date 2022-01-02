@@ -2848,7 +2848,7 @@
               let id2 = `ckf${this.uiid}`;
               let el3 = els[f];
               let fr2 = el3.dataset.for;
-              let isCleaned = el3.dataset.forCleaned === true;
+              let isCleaned = el3.dataset.forCleaned == "true";
               let [a, b, c] = fr2.split(" ");
               el3.style.display = "none";
               el3.classList.add("cake-template");
