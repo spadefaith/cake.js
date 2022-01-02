@@ -3200,7 +3200,8 @@
           });
         };
         Component.prototype.Node = function(el2) {
-          return new Piece(el2);
+          const piece2 = new Piece(el2);
+          return piece2;
         };
         Component.prototype._bindHandlers = function() {
           for (let key in this.handlers) {
