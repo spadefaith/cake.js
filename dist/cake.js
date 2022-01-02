@@ -4045,8 +4045,8 @@
           Object.defineProperty(scope2, "set", {
             configurable: true,
             get() {
-              const cloned = Cake2.Scope._clone;
               return function(key, value) {
+                const cloned = Cake2.Scope._clone;
                 return set(key, value, cloned);
               };
             }
