@@ -4060,13 +4060,33 @@
                 };
                 fn = o2[name2].bind(component3);
                 if (typeof fn == "function") {
+                  let getAttributes2 = function(element) {
+                    let o3 = {};
+                    let attributes2 = element.attributes;
+                    if (attributes2) {
+                      for (let i = 0; i < attributes2.length; i++) {
+                        let attribute = attributes2[i];
+                        let name3 = attribute.name;
+                        let value = attribute.value;
+                        o3[name3] = value;
+                      }
+                      ;
+                    }
+                    ;
+                    return o3;
+                  };
+                  var getAttributes = getAttributes2;
                   fn.name = name2;
                   fn.original = name2;
                   fn.binded = component3.name;
                   Cake2.Observer.registerHandlers({ [name2]: fn }, component3.name);
                   let payload = variable;
-                  if (variable && (variable.element || variable.root)) {
-                    payload = { status: 0, message: "element cant be cloned" };
+                  ;
+                  if (variable && (variable.element || variable.root || variable.container)) {
+                    const element = getAttributes2(variable.element);
+                    const root = getAttributes2(variable.root);
+                    const container = getAttributes2(variable.container);
+                    payload = { status: 0, attributes: { element, root, container } };
                   }
                   ;
                   console.log({ component: component3.name, event: name2, payload });
