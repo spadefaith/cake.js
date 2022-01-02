@@ -1,1 +1,3905 @@
-(()=>{var P=(T,m)=>()=>(m||T((m={exports:{}}).exports,m),m.exports);var N=P(()=>{(function(T){T.env={destructure:!0};let m=T.env;try{let{a}={a:!0}}catch{m.destructure=!1}Promise.prototype.ObjectType="Promise"})(window)});var M=P(()=>{Object.keys||(Object.keys=function(T){var m=[];for(var a in T)T.hasOwnProperty(a)&&m.push(a);return m})});var H=P(()=>{(function(T){let m={typeof:function(e){switch(!0){case typeof e=="string":return"string";case typeof e=="number":return"number";case e instanceof Array:return"array";case e instanceof Function:return"function";case e instanceof HTMLCollection:return"htmlcollection";case e instanceof NodeList:return"htmlnodelist";case e instanceof Element:return"domlement";case e instanceof Object:return"object"}},isArray:function(e){return this.typeof(e)=="array"},isObject:function(e){return this.typeof(e)=="object"},isNumber:function(e){return this.typeof(e)=="number"},isString:function(e){return this.typeof(e)=="string"},isHTMLCollection:function(e){return this.typeof(e)=="htmlcollection"},isNodeList:function(e){return this.typeof(e)=="htmlnodelist"},isElement:function(e){return this.typeof(e)=="domlement"},isFunction:function(e){return this.typeof(e)=="function"}},a={each:function(e,t,n){if(n=="object"){let i=0;for(let u in e)e.hasOwnProperty(u)&&(t({key:u,value:e[u]},i),i=i+1)}else for(let i=0;i<e.length;i++)t(e[i],i)},map:function(e,t){let n=m.isArray(e)||e.length?"array":"object",i=e.length&&n=="array"?[]:{};return this.each(e,function(u,r){let s=t(u,r);n=="object"?i[s.key]=s.value:i.push(s)},n),i},reduce:function(e,t,n){let i=m.typeof(e);return this.each(e,function(u,r){t=n(u,t,r)},i),t},filter:function(e,t){let n=m.isArray(e)||e.length?"array":"object",i=e.length&&n=="array"?[]:{};return this.each(e,function(u,r){t(u,r)&&(n=="object"?i[u.key]=u.value:i.push(u.value))},n),i}},c={perf:function(e){console.time("test"),e(),console.timeEnd("test")}};try{T.UTILS={...a,...m,...c}}catch{T.UTILS={};let t=a.each;t(a,function(n,i){T.UTILS[n]=i}),t(m,function(n,i){T.UTILS[n]=i}),t(c,function(n,i){T.UTILS[n]=i})}})(window)});var R=P(()=>{(function(T){HTMLCollection.prototype.toArray=function(){let m=[];for(let a=0;a<this.length;a++)m[a]=this[a];return m},NodeList.prototype.toArray=function(){let m=[],a=-1,c=this.length;for(;++a<c;)m[a]=this[a];return m},Object.cache=Object.create(null),String.prototype.toHyphen=function(){let m=Object.cache,a=null,c=this;if(m.toHyphen||(m.toHyphen={}),m[c]&&(a=m[c]),a!=null)return a;let e=c.split(""),t="",n=-1;for(;++n<e.length;){let i=e[n];switch(n){case 0:t+=i.toLowerCase();break;default:i.charCodeAt()<91&&(t+="-"),t+=i.toLowerCase()}}return m[c]=t,a=t,a},String.prototype.toCamelCase=function(){let m=this.toLowerCase(),a=Object.cache,c=null;switch(!0){case!a.toCamel:a.toCamel={};case!0:a=a.toCamel;case a[m]:c=a[m];break;default:{let e=m.split("-");if(e.length==1)return m;let t="",n=-1,i=e.length;for(;++n<i;){let u=e[n];switch(n){case 0:t+=u;default:{let r=u.substring(0,1).toUpperCase(),s=u.substring(1);t+=r+s}break}}a[m]=t,c=t}break}return c},HTMLElement.prototype.querySelectorIncluded=function(m,a,c){let e=this.querySelector(m);return e||(()=>{switch(!0){case(!a&&!c):{let t=this.closest(m);t==this&&(e=t)}break;case(!!a&&!!c):e=this.getAttribute(a)==c?this:null;break;case(!!a&&!c):e=this.getAttribute(a)?this:null;break}return e})()},HTMLElement.prototype.querySelectorAllIncluded=function(m,a,c){let e=this.querySelectorAll(m).toArray();switch(!0){case(!a&&!c):{let t=this.closest(m);t==this&&e.push(t)}break;case(a&&c):this.getAttribute(a)==c&&e.push(this);break;case(a&&!c):this.getAttribute(a)&&e.push(this);break}return e},HTMLDocument.prototype.querySelectorIncluded=function(m){return this.querySelector(m)},HTMLDocument.prototype.querySelectorAllIncluded=function(m){return this.querySelectorAll(m)},Array.prototype.toggler=function(m,a){for(let c=0;c<this.length;c++){let e=this[c];(e.dataset.name==m||e.classList.contains(a))&&e.classList.toggle(a)}},HTMLElement.prototype.Ref=function(){let m="_cakes_storage";!this[m]&&(this._cakes_storage={});let a=this[m];return{set(c,e){a[c]=e},get(c){return a[c]},getAll(c){return a},remove(c){delete a[c]}}}})(window)});var U=P(()=>{(function(){customElements.define("sub-template",class extends HTMLElement{constructor(){super()}connectedCallback(){this.replace(this)}replace(T){let m=T.dataset.template,a=document.getElementsByName(m);if(a.length>1){console.error(`template with name ${m} has more than one reference.`);return}if(!a)throw T.remove(),new Error(`${m} is not found!`);if(a[0]){let c=a[0];if(c.constructor.name=="HTMLTemplateElement"){if(c=c.content.cloneNode(!0).firstElementChild,!c)return;let e=T.attributes;for(let t=0;t<e.length;t++){let n=e[t];n.name!="data-template"&&c.setAttribute(n.name,n.value)}T.replaceWith(c)}else throw new Error(`${m} is not referred to a Template Element!`)}}}),HTMLTemplateElement.prototype.replaceSubTemplate=function(T){let m=T.getElementsByTagName("sub-template");if(m){m=m.toArray();for(let a=0;a<m.length;a++){let c=m[a];customElements.get("sub-template").prototype.replace(c)}}},HTMLTemplateElement.prototype.collectContent=function(){let T=this,m=null,a=T.cloneNode(!0),c=document.createDocumentFragment(),e=a.content.querySelector("style");e&&c.appendChild(e);let t=[];for(let n=0;n<a.content.children.length;n++){let i=a.content.children[0];this.replaceSubTemplate(i),t.push(i)}return m={style:c.children[0],others:t},m},HTMLTemplateElement.prototype.parseStyle=function(T){if(!T)return!1;var m=T.textContent;if(m=m.replace(/\s/g,""),!m.length)return;let a=!1,c=!1,e=!1,t=m.split(""),n="";m="";var i=!1;for(let u=0;u<t.length;u++){let r=t[u];r=="{"&&(a=!0,c=!0),r=="}"&&(a=!1,c=!1),!a&&r!="	"&&r!="}"&&r!=" "&&r!=";"&&(n+=r),c&&r!="	"&&r!="{"&r!=" "&&(m+=r),r=="}"&&(i||(i={}),i[n]=m,n="",m="")}return i},HTMLTemplateElement.prototype.parseHTML=function(T){if(T){var m=document.createElement("HTML");for(let a=0;a<T.length;a++){let c=T[a];m.append(c)}}return m||!1},HTMLTemplateElement.prototype.getContent=function(T){let{style:m,others:a}=this.collectContent(),c=this.parseStyle(m),e=this.parseHTML(a);for(let t in c)if(c.hasOwnProperty(t)){let n=e.querySelectorAll(t),i=c[t];for(let u=0;u<n.length;u++)n[u].setAttribute("style",i)}return e=T?e.children.toArray():e.innerHTML,e.length==1?e[0]:e}})()});var B=P(()=>{(function(T){function m(h){return h.constructor.name.toLowerCase()}function a(h,p){for(let g in h)h.hasOwnProperty(g)&&p(h[g],g)}function c(h,p,g){h=Object.assign(h,{[g]:p})}function e(h){return h===null}function t(h){return h===void 0}function n(h){return m(h)=="array"}function i(h){return m(h)=="object"}var u=function(h,p){for(var g=null,b=0;b<h.length;b++){var v=h[b];if(m(p)=="object"){var w=p,_=Object.keys(p)[0],O=w[_];if(m(v)=="object"){var S=v[_]==O;if(S){g=b;break}}}else if(m(p)!="array"){var S=p==v;if(S){g=b;break}}}return g},r=function(h,p){var g=null,b=m(p);if(b=="object"){var v=Object.keys(p)[0];h[g]!=null&&h[g]==p[v]&&(g=v)}else b=="string"&&(g=p);return g},s=function(h,p){var g=null;return m(h)=="array"?g=u(h,p):m(h)=="object"&&(g=r(h,p)),g},f={create:function(h,p){if(n(h)){let g=new Set(h);m(p)=="array"?p.forEach(b=>{g.add(b)}):g.add(p),h=Array.from(g)}else i(h)&&(i(p)?a(p,function(g,b){h[b]=g}):h[p]=p);return h},createOrUpdate:function(h,p){var g=s(h,p);return m(h)=="array"?e(g)?h.includes(p):h[g]=p:m(h)=="object"&&(e(g)?i(p)?a(p,function(b,v){c(h,b,v)}):h[p]=p:h[g]=p),h},remove:function(h,p){if(m(p)=="string"){var g=s(h,p);if(m(h)=="object")delete h[g];else if(m(h)=="array"){for(var b=[],v=0;v<h.length;v++)if(v!=g)b.push(h[v]);else continue;h=b}return h}else{if(m(p)=="object")return Object.filter(h,function(w,_){var O=p[_]!=null&&p[_]==w;return!O});if(m(p)=="array")return Object.filter(h,function(w,_){var O=p.contains(_);return!O})}if(e(g))return!1},get:function(h,p){var g=m(p);if(g=="string"){var b=s(h,p);if(b==0||b)return h[b]}else{if(g=="object")return Object.filter(h,function(v,w){var _=!t(p[w])&&p[w]==v;return _});if(g=="array")return Object.filter(h,function(v,w){var _=p.contains(w);return _})}return null},getNot:function(h,p){var g=m(p);return g=="string"?Object.filter(h,function(b,v){var w=v!=p;return w}):g=="object"?Object.filter(h,function(b,v){return Object.some(p,function(w,_){var O=_==v&&w==b;return!O})}):g=="array"?Object.filter(h,function(b,v){var w=!p.contains(v);return w}):null},getAll:function(h){return h}},y=class{constructor(h,p,g){this.type=h,this.name=p,this.child=g,this.cache={},m(this.child)=="string"&&(this.child=g=="array"?[]:g=="object"?{}:!1)}init(h){return this[this.type]?(this[this.type](h),!0):!1}open(){if(this.type=="session"){var h=JSON.parse(sessionStorage[this.name]);return h[this.name]}else if(this.type=="local"){var h=JSON.parse(localStorage[this.name]);return h[this.name]}else return this.cache[this.name]}close(h){return this.child=h,this.create(),this.init(!0)}create(){this.cache[this.name]=this.child}array(){this.create()}object(){this.create()}session(h){this.create();try{sessionStorage[this.name]?h&&sessionStorage.setItem(this.name,JSON.stringify(this.cache)):sessionStorage.setItem(this.name,JSON.stringify(this.cache))}catch{this.create()}}local(){this.create();try{localStorage.setItem(this.name,JSON.stringify(this.cache))}catch{this.create()}}},d=class{constructor(h){if(this.name=h.name,this.storageType=h.storage,this.child=h.child||"object",m(this.child)=="string"&&(this.child=this.child=="array"?[]:this.child=="object"?{}:null),!["array","object"].includes(m(this.child)))throw new Error("the child must be an object or array type.");this.storage=new y(this.storageType,this.name,this.child),this.storage.init()}has(h){var p=this.storage.open(),g=s(p,h);return e(g)?!1:g}get(h){var p=this.storage.open();return Promise.resolve(f.get(p,h))}getNot(h){var p=this.storage.open();return f.getNot(p,h)}getAll(){var h=this.storage.open();return Promise.resolve(h)}update(h,p){var g=this.storage.open(),b=s(g,h);return b==0||b?(g=f.createOrUpdate(g,data),this.storage.close(g)):!1}createOrUpdate(h){if(arguments.length>1){let g=arguments[0],b=arguments[1];h={[g]:b}}var p=this.storage.open();return p=f.createOrUpdate(p,h),this.storage.close(p)}create(h){var p=this.storage.open();return p=f.create(p,h),this.storage.close(p)}remove(h){var p=this.storage.open();return p=f.remove(p,h),this.storage.close(p)}};T.StorageKit=d})(window)});var F=P(()=>{(function(T){function m(a){this.el=m.toArray(a)}m.toArray=function(a){let c=[];switch(!0){case a instanceof Array:c=a;break;case(a.length&&a.tagName&&a.tagName!="FORM"&&!(a instanceof Array)):for(let e=0;e<a.length;e++)c.push(a[e]);break;case!(a instanceof Array):c=[a];break}return c},m.prototype.getElements=function(){return this.el},m.prototype.getElement=function(){return this.el[0]},m.prototype.remove=function(a){let c=-1,e=this.el.length,t=document.createDocumentFragment();for(;++c<e;){let n=this.el[c];n&&t.appendChild(n)}fr=null},m.prototype.replaceDataSrc=function(){let c=this.el[0].querySelectorAll("[data-src]");for(let e=0;e<c.length;e++)el=c[e],el.setAttribute("src",el.dataset.src),el.removeAttribute("data-src")},m.cloneNode=function(a){a=a instanceof Array?a:this.toArray(a);let c=[];for(let e=0;e<a.length;e++)c.push(a[e].cloneNode(!0));return new m(c)},m.prototype.dataset=function(a,c){let e=this.el.length,t=-1;for(;++t<e&&!(this.el[t].dataset[a]&&c(this.el[t])=="break"););return!0},m.prototype.getContainers=function(){return this.getElementsByDataset("container").container},m.prototype.cloneNode=function(a){return a=this.el,m.cloneNode(a)},m.prototype.getAllElements=function(){let a=this.el.length,c=[];switch(!0){case a==1:c=this.el[0].getElementsByTagName("*").toArray();break;case a>1:{let e=-1;for(;++e<a;){let n=this.el[e].getElementsByTagName("*");if(n)for(let i=0;i<n.length;i++)c.push(n[i])}}break}return c},m.prototype.appendTo=function(a,c){if(!a&&!a.attributes)throw new TypeError(`the ${a} is not an instance of Element`);c&&(a.innerHTML="");for(let e=0;e<this.el.length;e++){let t=this.el[e];a.appendChild(t)}},m.prototype.getElementsByTagName=function(a){let c=this.el.length,e=[];switch(!0){case c==1:e=this.el[0].getElementsByTagName(id).toArray();break;case c>1:{let t=-1;for(;++t<c;){let i=this.el[t].getElementsByTagName(selector);if(i)for(let u=0;u<i.length;u++)e.push(i[u])}}break}return e},m.prototype.getElementById=function(a){let c=this.el.length,e=[];switch(!0){case c==1:e=this.el[0].getElementById(id);break;case c>1:{let t=-1;for(;++t<c;){let i=this.el[t].querySelector(selector);i&&e.push(i)}}break}return e},m.prototype.querySelectorAll=function(a){let c=this.el.length,e=[];switch(!0){case c==1:e=this.el[0].querySelectorAll(a);break;case c>1:{let t=[],n=-1;for(;++n<c;){let u=this.el[n].querySelectorAll(a);u&&(e=e.concat(u.toArra()))}}break;default:e=[]}return e},m.prototype.querySelector=function(a){let c=this.el.length,e=[];switch(!0){case c==1:e=this.el[0].querySelector(a);break;case c>1:{let t=-1;for(;++t<c;){let i=this.el[t].querySelector(a);i&&e.push(i)}}break}return e},m.prototype.querySelectorIncluded=function(a,c,e){let t=this.el.length,n=[];switch(!0){case t==1:n=this.el[0].querySelectorIncluded(a,c,e);break;case t>1:{let i=-1;for(;++i<t;){let r=this.el[i].querySelectorIncluded(a,c,e);r&&n.push(r)}}break}return n},m.prototype.querySelectorAllIncluded=function(a,c,e){let t=this.el.length,n=[];switch(!0){case t==1:n=this.el[0].querySelectorAllIncluded(a,c,e);break;case t>1:{let i=-1;for(;++i<t;){let r=this.el[i].querySelectorAllIncluded(a,c,e);r&&(n=n.concat(r.toArra()))}}break}return n},m.prototype.contains=function(a){let c=this.el.length,e=!1;switch(c==1){case!0:e=this.el[0].contains(a);break;case!1:{let t=-1;for(;++t<c;)if(this.el[t].contains(a)){e=!0;break}}break}return e},m.prototype.getElementsByDataset=function(){let a,c,e,t,n,i;for(a=arguments,o={},length=a.length,e=-1,t=-1;++e<this.el.length;)for(n=this.el[e];++t<length;)c=a[t],n.getAttribute(`data-${c}`)?o[c]=[n]:o[c]=[],i=n.querySelectorAll(`[data-${c}]`),i.length&&(o[c]=o[c].concat([...i]));return o},T.Piece=m})(window)});var x=P(()=>{(function(T){function m(a,c,e){this.subscribe=a,this.handlers=c,this.logger=e||!1,this.stat={handlers:{},subscribe:{}},this.results={},this.wm=new WeakMap}m.prototype.notify=function(a,c,e,t,n,i){function u(){return{_component:a,_event:c,_e:e}}function r(p){return p}let{_component:s,_event:f,_e:y}=u(),d=this.handlers[s]&&this.handlers[s][f];if(d==null&&n){let p={[f]:function(){return y}};p[f].binded=s,p[f].listenTo=i,d=p[f]}if(s=d.binded,d=d,!d){console.error(`no setup handler for the event ${f} in ${s} component`);return}let h=new Promise((p,g)=>{let b=d(y);p(b)});return this.stat.handlers[d.original]+=1,h.then(p=>{let g=[];if(this.results[s]||(this.results[s]={}),this.subscribe[s]&&this.subscribe[s][f]){let b=this.subscribe[s][f];t=t?(()=>{b=b.filter(v=>{let w=v.binded;return t.includes(w)})})():!0;for(let v=0;v<b.length;v++){let w=b[v];this.stat.subscribe[w.original]+=1,g.push(new Promise((_,O)=>{try{let S=(()=>w(p))();S&&S.ObjectType=="Promise"?S.then(k=>{this.results[s]||(this.results[s]={}),this.results[s][f]=S,_()}).catch(k=>{O(k)}):(this.results[s][f]=S,_())}catch(S){console.log(S),O(S)}}))}}else this.logger&&console.info(`no subscriber for (${f}) event of (${s}) component`),this.results[s][f]=p;return Promise.all(g).then(()=>{p=null})})},m.prototype.registerSubscribe=function(a){return new Promise((c,e)=>{for(component in a)if(a.hasOwnProperty(component))if(!this.subscribe[component])this.subscribe[component]={};else continue;c()}).then(()=>{let c={};for(component in a)if(a.hasOwnProperty(component)){let e=a[component];for(let t in e)if(e.hasOwnProperty(t)){let n=e[t];for(let i=0;i<n.length;i++){let u=n[i];c[component]||(c[component]={}),c[component][u.original]||(c[component][u.original]=[]),c[component][u.original].push(u),this.stat.subscribe[u.original]=0}}}return c}).then(c=>{for(let e in c)if(c.hasOwnProperty(e)){this.subscribe[e]||(this.subscribe[e]={});for(let t in c[e])if(c[e].hasOwnProperty(t))for(let n of c[e][t])this.subscribe[e][n.original]||(this.subscribe[e][n.original]=[]),this.subscribe[e][n.original].push(n)}c={}})},m.prototype.registerHandlers=function(a,c){this.handlers[c]||(this.handlers[c]={});for(let e in a)if(a.hasOwnProperty(e)){let t=a[e];this.handlers[c][e]=t,this.stat.handlers[t.original]=0}},T.Observer=m})(window)});var D=P(()=>{(function(T){function m(a,c,e){this.data=a,this.template=c,this.isConvert=e}m.prototype._getTag=function(a){return a.match(new RegExp("(?<=<)|([^/s]+)(?=>)","g"))[2]},m.prototype._bindReplace=function(a,c){for(let e in a)if(a.hasOwnProperty(e)){let t=new RegExp(`{{${e}}}`,"g");t&&(c=c.replace(t,`${a[e]}`))}return c},m.prototype._toElement=function(a,c){let e=document.createElement("template");return e.innerHTML=a,e.content.children[0]},m.prototype.createElement=function(){let a=this.template,c=this.data,e=this.isConvert;if(c){if(c instanceof Array){let t=typeof a=="string",n=t?this._getTag(a):a.tagName;a=t?a:a.outerHTML;let i=[];for(let u=0;u<c.length;u++){let r=c[u],s=this._bindReplace(r,a),f=this._toElement(s,n);e&&(f=f.outerHTML),i.push(f)}return i}else if(c instanceof Object){let t=typeof a=="string",n=t?this._getTag(a):a.tagName;a=t?a:a.outerHTML;let i=this._bindReplace(c,a),u=this._toElement(i,n);return e&&(u=u.outerHTML),u}}else{let n=typeof a=="string"?this._getTag(a):a.tagName;return this._toElement(a,n)}},T.Templating=m})(window)});var W=P(()=>{});var J=P(()=>{(function(T){function m(a,c){this.pKey=c.pKey||"$scope",this.temp={},this.trap=c.trap,this.notify=[],this.parent=a,this._clone={},this.whitelist=["extend","set","get"],this.install()}m.prototype.registerNotifier=function(a){this.notify.push(a)},m.prototype.notifier=function(a){Cake.$scope[a.bind]=a.value},m.prototype.method=function(){let a=this.temp,c=this.trap,e=this.notify,t=this.parent,n=this.whitelist;return{update(i,u){if(!!i.length)for(let r=0;r<i.length;r++){let s=i[r];u(s)}},defineProperty(i,u){Object.defineProperty(a,i,{configurable:!0,get(){let r=c.bind(t)(i)||!1;return r||u[i]},set(r){if(!n.includes(i)){let s=this[i];for(let f=0;f<e.length;f++)e[f](i,r,s);u[i]=r}}})}}},m.prototype.install=function(){let{update:a,defineProperty:c}=this.method(),e=this.temp,t=this._clone;Object.defineProperty(this.parent,this.pKey,{configurable:!0,get(){t=Object.assign(t,e);let n=Object.keys(e);return a(n,function(i){c(i,t)}),e}})},m.prototype.watch=function(a){if(!a)return;let{update:c,defineProperty:e}=this.method(),t=this._clone;return c(a,function(n){e(n,t)}),!0},m.prototype.set=function(a,c){if(this.whitelist.includes(a))return;let e=this._clone,t=this.notify||[],n=e[a];return e[a]=c,Promise.all(t.map(i=>i(a,c,n)))},T.Scope=m})(window)});var K=P(()=>{});var G=P(()=>{});var Y=P((Be,X)=>{X.exports=function(){let T=this;this.$form={},this.$form.options=(m,a)=>{let{options:c,params:e}=m;return c||(c=[]),Promise.all(c.map(n=>{let{control:i,field:u,tbl:r,src:s,schema:f}=n;return T.fire(s,{tbl:r,field:u,params:e}).then(y=>{y=y||[],n.query=y,y=y.map(h=>f(h));let d=f({});for(let h in d)d.hasOwnProperty(h)&&(d[h]="");return y.unshift(d),n.options=y,n})})).then(n=>a?n.reduce((i,u)=>{let{type:r,control:s}=u;return r||(r="select"),i[r]||(i[r]={}),i[r][s]||(i[r][s]=u),i},{}):n.reduce((i,u)=>(i[u.control]=u.options,i),{})).catch(n=>{console.error(n)})},this.$form.plot=m=>{let{data:a,container:c}=m;if(!a&&!c)return;let e=(t,n,i)=>{if(!t){console.info("root is not provided!");return}let u=t.querySelectorAll(`${n}`),r=u.length;if(!r){i(null,a);return}for(let s=0;s<r;s++){let f=u[s],y=f.name,d=a[y],h=i(f,d,s);if(h=="break")break;h!="continue"}};return e(c,"INPUT.input",function(t,n){n!=null&&(t.type=="date"&&(n=new Date(n)=="Invalid Date"?"":new Date(n).toJSON().split("T")[0]),t.value=n)}),setTimeout(()=>{e(c,"SELECT.input:not(.cake-template)",function(t,n){e(t,"OPTION:not(.cake-template)",function(i,u,r){if(i){if(i.value==n)return t.selectedIndex=r,"break"}else console.log(i,u,"provide schema")})})},500),Promise.resolve()}}});var Q=P((Fe,z)=>{z.exports=function(T){let{StorageKit:m,Templating:a}=T;function c(){this.uiid=0,this.notify=[],this.st={},this.cacheStatic=[],this.store=m({child:"object",storage:"session",name:"_cake_component_cf"})}return c.prototype._getConfig=function(e,t,n,i,u){if(n==null)return[];if(n==i&&e!="bind")return[];let r=`${e}-${t}-${u}`,s=Object.cache._getConfig;if(s||(s=Object.cache._getConfig={}),!s[r]){var f=u?this.st[u]&&this.st[u][e]||[]:(()=>{let y=[];for(let d in this.st)if(this.st.hasOwnProperty(d)){let h=this.st[d];if(h[e])for(let p=0;p<h[e].length;p++){let g=h[e][p];g.bind==t&&y.push({...g,component:d})}}return y})();s[r]=f}return s[r]},c.prototype._notifyToggle=function(e,t,n,i,u){u=u||document;let r=this._getConfig("toggle",e,t,n);if(!!r){u=u||document;for(let s=0;s<r.length;s++){let f=r[s];if(!f)continue;let{sel:y,bind:d,value:h,ops:p}=f,g=u.querySelector(`[data-toggle=${y}]`);h==n&&g&&g.classList.remove("is-active"),h==t&&g&&(g.classList.contains("is-active")&&g.classList.remove("is-active"),g&&g.classList.add("is-active"))}}},c.prototype._notifySwitch=function(e,t,n,i,u){u=u||document;let r=this._getConfig("switch",e,t,n,i);if(!r.length)return;let s={};for(let f=0;f<r.length;f++){let y=r[f],{bind:d,sel:h,map:p,cases:g}=y,b=u.querySelectorAll(`[data-switch-slot=${h}]`);for(let v=0;v<t.length;v++){let w=t[v],_=b[v],O=w[p];if(O!=null){let S=null;for(let k=0;k<g.length;k++)if(g[k].bind.includes(O)){S=g[k];break}if(S){let{_id:k,bind:C}=S,A=document.querySelector(`[data-case=${h}-${k}]`);if(A&&A.toString().includes("Element")){A=A.cloneNode(!0);let L=A.querySelectorAll("[data-for-auto=true]");for(let E=0;E<L.length;E++){let q=L[E];q.dataset.for=`${q.dataset.for}-active`}A.removeAttribute("data-case");let $=new a(w,A,!1).createElement();if(A.dataset.if){let E=A.dataset.if,q=$.dataset.ifBind,I=y.component,{bind:j}=this.getWatchItemsBySel(I,"if",E);E&&(s[j]||(s[j]={}),s[j][q]=w)}$.classList.remove("cake-template"),_.replaceWith($)}}}}}for(let f in s)s.hasOwnProperty(f)&&this._notifyIf(f,s[f])},c.prototype._notifyBind=function(e,t,n,i,u){u=u||document;let r=this._getConfig("bind",e,t,n,i);if(!!r.length)for(let s=0;s<r.length;s++){let f=r[s],{attr:y,bind:d,sel:h}=f,p=y.toHyphen();if(e==d){let g=u.querySelectorAll(`[data-bind=${h}]`);for(let b=0;b<g.length;b++){let v=g[b];y=="className"?n?t?v.classList.replace(n,t):v.classList.remove(n):v.classList.add(t):(v.setAttribute(p,t),v[y]=t)}}}},c.prototype._notifyFor=function(e,t,n,i,u){let r=this._getConfig("for",e,t,n,i);if(!r.length)return;let s=[];for(let f=0;f<r.length;f++){let{bind:y,sel:d,iter:h,ins:p,component:g}=r[f];u=u||document,g&&(u=Cake.Components[g].html);let b=u.querySelectorIncluded(`[data-for-template=${d}]`),v=b.cloneNode(!0);(()=>{let w=v&&v.querySelectorAll("[data-switch]");if(w&&w.length){let _=w.length,O=-1;for(;++O<_;){let S=w[O],k=S.parentElement,C=document.createElement("div");C.dataset.switchSlot=S.dataset.switch,k.replaceChild(C,S)}w=null}})(),(()=>{let w=v,_=-1;l=t.length,t=t.map(O=>{for(let S in O)O.hasOwnProperty(S)&&(O[`${h}.${S}`]=O[S]);return O}),t.forEach(O=>{let S=new a(O,w,!1).createElement();S.style.removeProperty("display"),S.classList.remove("cake-template"),S.removeAttribute("data-for-template"),b.insertAdjacentElement("beforebegin",S);let k=S.querySelectorAll("[data-src]");if(k)for(let C=0;C<k.length;C++){let A=k[C];A.src=A.dataset.src,A.removeAttribute("data-src")}})})()}this._notifyForAuto({configs:r,newValue:t})},c.prototype._notifyForAuto=function(e){let{vItems:t,configs:n,newValue:i}=e;for(let u=0;u<n.length;u++){let r=n[u],s=r.children;if(!s)continue;let f=[];for(let y=0;y<s.length;y++){let d=s[y];if(!this.st[r.component])continue;let h=this.st[r.component].for.find(p=>p.sel==d);h&&f.push(new Promise(p=>{let{bind:g,sel:b,iter:v,ins:w}=h;setTimeout(()=>{let _=document.querySelectorAll(`[data-for=${b}-active]`);for(let O=0;O<_.length;O++){let S=_[O],k=S.dataset.forBindKey,C=S.dataset.forBindVal,A=i.find(E=>E[k]==C),L=g.split(".")[g.split(".").length-1],$=A[L].length&&A[L].map(E=>E instanceof Object?E:{[v]:E});if($)for(let E=0;E<$.length;E++){let q=$[E],I=S.cloneNode(!0),j=new a(q,I,!1).createElement();j.style.removeProperty("display"),j.classList.remove("cake-template"),j.removeAttribute("data-for-template"),S.insertAdjacentElement("beforebegin",j)}S.parentElement.tagName=="SELECT"&&(S.parentElement.selectedIndex=0)}})}))}}},c.prototype._notifyForUpdate=function(e,t,n,i,u){u=u||document;let r=this._getConfig("forUpdate",e,t,n,i);if(!!r.length)for(let s=0;s<r.length;s++){let{bind:f,sel:y,iter:d,ins:h}=r[s];for(let p in t)if(t.hasOwnProperty(p)){let g=document.querySelectorAll(`[data-for-bind-val=${p}]`);for(let b=0;b<g.length;b++){let v=g[b],w=v.dataset.forBindVal;if(!v.dataset.forTemplate)v.remove();else{let _=v.cloneNode(!0);_.style.removeProperty("display"),_.classList.remove("cake-template");let O=t[w],S=-1;for(l=O.length;++S<l;){let k=O[S],C=new a(k,_,!1).createElement();C.classList.remove("cake-template"),C.removeAttribute("data-for-template"),v.insertAdjacentElement("beforebegin",C),v.parentElement.tagName=="SELECT"&&(v.parentElement.selectedIndex=0)}}}}}},c.prototype._notifyClass=function(e,t,n,i,u){u=u||document;let r=this._getConfig("class",e,t,n,i);if(!r.length)return;let s=function(d,h,p){switch(!0){case h==">":return d>p;case h=="<":return d<p;case h=="===":return d===p;case h=="!==":return d!==p;case h=="==":return d==p;case h=="!=":return d!=p}return!1},f=function(d){return d.split(" ").join("")},y={};for(let d=0;d<r.length;d++){let h=r[d],{hasNegate:p,bind:g,testVal:b,className:v,ops:w,sel:_}=h;if(g=f(g),v=f(v),e==g){y[_]||(y[_]=u.querySelectorAll(`[data-class=${_}]:not(.cake-template)`));let O=y[_];for(let S=0;S<O.length;S++){let k=O[S],C=!1;w?(C=s(t,w,b),p&&(C=!C)):p&&(C=!t),C?k.classList.contains(v)||k.classList.add(v):k.classList.contains(v)&&k.classList.remove(v)}}}},c.prototype._notifyIf=function(e,t,n,i,u){u=u||document;let r=this._getConfig("if",e,t,n,i);if(!r.length)return;let s={};for(let f=0;f<r.length;f++){let y=r[f],{attr:d,bind:h,sel:p,testval:g,_true:b,_false:v}=y,w=d.toHyphen();if(e==h){s[p]||(s[p]=u.querySelectorAll(`[data-if=${p}]:not(.cake-template)`));let _=s[p];for(let O=0;O<_.length;O++){let S=_[O],k=S.dataset.ifBind,C=k?t[k]:t,A=C instanceof Object?C[h]:C,L=g==null?!!A:g==A;A==null?S.removeAttribute(w,A):L?b=="null"||(S.setAttribute(w,A),S[d]=A):v=="null"||(S.setAttribute(w,A),S[d]=A)}}}},c.prototype.notifier=function(e,t,n){let i=JSON.parse(JSON.stringify(t));return new Promise(u=>{this._notifyFor(e,i,n),u()}).then(()=>this._notifyForUpdate(e,i,n)).then(()=>this._notifySwitch(e,i,n)).then(()=>this._notifyToggle(e,i,n)).then(()=>this._notifyBind(e,i,n)).then(()=>this._notifyIf(e,i,n)).then(()=>this._notifyClass(e,i,n))},c.prototype.registerNotifier=function(e){this.notify.push(e)},c.prototype.getEventTarget=function(e){let t=`${e}`,n=Object.cache.getEventTarget;if(n||(n=Object.cache.getEventTarget={}),!n[t]){let i=this.st[e];n[t]=i&&(i?.evt??[])||[]}return n[t]},c.prototype.getWatchItems=function(e){let t=`${e}`,n=Object.cache.getWatchItems;if(n||(n=Object.cache.getWatchItems={}),!n[t]){let i=this.st[e]||{},u=new Set;for(let r in i)if(i.hasOwnProperty(r)){let s=i[r];for(let f=0;f<s.length;f++){let y=s[f],{bind:d}=y;if(d)u.add(d);else continue}}n[t]=[...u]}return n[t]},c.prototype.getWatchItemsByType=function(e,t){let n=`${e}-${t}`,i=Object.cache.getWatchItemsByType;if(i||(i=Object.cache.getWatchItemsByType={}),!i[n]){let r=(this.st[e]||{})[t]||[],s=new Set;for(let f=0;f<r.length;f++){let y=r[f],{bind:d}=y;switch(!!d){case!0:s.add(d);break;default:switch(!0){case(t=="animate"||t=="toggle"):(s.constructor.name="Set")&&(s=[]),s.push(y)}}}i[n]=[...s]}return i[n]},c.prototype.getWatchItemsBySel=function(e,t,n){let i=`${e}-${t}-${n}`,u=Object.cache.watchItemsBySel;if(u||(u=Object.cache.watchItemsBySel={}),!u[i]){let s=this.st[e][t].find(f=>f.sel==n);u[i]=s||!1}return u[i]},c.prototype._register=function(e,t,n,i){switch(!0){case!e[t]:e[t]={};case!e[t][n]:e[t][n]=[];default:e[t][n].push(i);break}},c.prototype._static=function(e){return function(t,n){let i=[];for(let u=0;u<t.length;u++){let r=t[u];switch(n){case!1:i.push(r);break;case!0:{let s=r.closest("[data-component]");switch(s=s&&s.dataset.component,s==e){case!0:i.push(r);break}}break;default:continue}}return i}},c.prototype._compileEvents=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let r=0;r<u.length;r++){let s=`cke${this.uiid}`,f=u[r],y=f.dataset.event.split(" ").join("").split(",");for(let d=0;d<y.length;d++){let[h,p]=y[d].split(":");p=p||h,this._register(this.st,t,"evt",{event:h,sel:s,cb:p}),f.dataset.event=s,this.uiid++}}i()})},c.prototype._compileToggle=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}if(!this._static(t)(e,n).length){i();return}let r={};for(let s=0;s<e.length;s++){let f=`ckt${this.uiid}`,y=e[s],d=y.dataset.toggle;r[d]&&(f=r[d]),this._register(this.st,t,"toggle",{sel:f,name:"ns-"+d}),y.dataset.toggle=f,this.uiid++,r[d]=f}r={},i()})},c.prototype._compileFor=function(e,t,n,i){return new Promise(u=>{let r=i;if(!e.length){u();return}let s=this._static(t)(e,n);if(!s.length){u();return}let f={};for(let y=0;y<s.length;y++){let d=`ckf${this.uiid}`,h=s[y],p=h.dataset.for,[g,b,v]=p.split(" ");if(h.style.display="none",h.classList.add("cake-template"),h.dataset.for=d,h.dataset.forTemplate=d,f[d]={bind:v,sel:d,iter:g,ins:b},++this.uiid,y!=0){let w=h.parentElement&&h.parentElement.closest("[data-for]");if(!w)continue;let _=!!w.dataset.for;if(r.contains(w)&&_){let O=w.dataset.for,S=f[O];S&&!S.children?S.children=[d]:S&&S.children.push(d)}}}for(let y in f)f.hasOwnProperty(y)&&this._register(this.st,t,"for",f[y]);u()})},c.prototype._compileForUpdate=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let r=0;r<u.length;r++){let s=`ckfu${this.uiid}`,f=u[r],y=f.dataset.forUpdate;f.style.display="none",f.classList.add("cake-template"),f.dataset.forUpdate=s,f.dataset.for||(f.dataset.forTemplate=s);let[d,h,p]=y.split(" ");this._register(this.st,t,"forUpdate",{bind:p,sel:s,iter:d,ins:h}),this.uiid++}i()})},c.prototype._compileSwitch=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let f=0;f<u.length;f++){let y=`cks${this.uiid}`,d=u[f],h=d.dataset.switch,p="def";if(h.includes(".")){var[r,...s]=d.dataset.switch.split(".");h=r,p=s[0]}d.dataset.switch=y;let g=d.querySelectorAll("[data-case]"),b=[];for(let v=0;v<g.length;v++){let w=g[v],_=w.closest(`[data-switch=${y}]`);if(w.classList.add("cake-template"),_){let O=w.dataset.case,S=`cksc${this.uiid}`;w.dataset.case=`${y}-${S}`,b.push({_id:S,bind:O}),this.uiid++}}this._register(this.st,t,"switch",{bind:h,sel:y,map:p,cases:b}),this.uiid++}i()})},c.prototype._compileBind=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let f=0;f<u.length;f++){let y=`ckm${this.uiid}`,d=u[f],p=d.dataset.bind.split(",");for(let g=0;g<p.length;g++){let b=p[g].split(" ").join("");if(b.includes(":"))var[r,s]=b.split(":");else var s=b,r="value";this._register(this.st,t,"bind",{attr:r,bind:s,sel:y})}this.uiid++,d.dataset.bind=y}i()})},c.prototype._compileAnimate=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let r=0;r<u.length;r++){let s=`cka${this.uiid}`,f=u[r],y=f.dataset.animate;y=y.split(" ").join("");let d={},h=y.split(",");for(let p=0;p<h.length;p++){let g=h[p],[b,v]=g.split(":");if(b=="ns"){d.ns=v;break}else d[b]={keyframes:v.split("-")}}d.selector={attr:"data-animate",val:s},this._register(this.st,t,"animate",d),this.uiid++,f.dataset.animate=s}i()})},c.prototype._compileIf=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let r=0;r<u.length;r++){let s=`ci${this.uiid}`,f=u[r],d=f.dataset.if.split(",");for(let h=0;h<d.length;h++){let p=d[h].split(" ").join(""),[g,b]=p.split("=");b=b.split(new RegExp("[()]")).join("");let[v,w]=b.split("?"),[_,O]=v.split(new RegExp("<|>|===|==|!==|!=")),[S,k]=w.split(":");this._register(this.st,t,"if",{attr:g,bind:_,testval:O||null,_true:S,_false:k,sel:s})}this.uiid++,f.dataset.if=s}i()})},c.prototype._compileClass=function(e,t,n){return new Promise(i=>{if(!e.length){i();return}let u=this._static(t)(e,n);if(!u.length){i();return}for(let r=0;r<u.length;r++){let s=`cc${this.uiid}`,f=u[r],y=f.dataset.class,[d,h]=y.split("&&");d=d.trim();let[p,g,b]=d.split(" "),v=p.substring(0,1);v&&(p=p.slice(1)),this._register(this.st,t,"class",{hasNegate:v,bind:p,testVal:b,className:h,ops:g,sel:s}),this.uiid++,f.dataset.class=s}i()})},c.prototype.inject=function(e,t,n=!1){return new Promise(i=>{let u=e.getElementsByDataset("bind","for","for-update","switch","toggle","event","animate","if","class");i(u)}).then(i=>{let u=[],r={bind:this._compileBind,for:this._compileFor,"for-update":this._compileForUpdate,switch:this._compileSwitch,toggle:this._compileToggle,event:this._compileEvents,animate:this._compileAnimate,if:this._compileIf,class:this._compileClass};for(let s in i)i.hasOwnProperty(s)&&i[s].length&&u.push(r[s].apply(this,[i[s],t,n,e]));return console.timeEnd(t),u.length?Promise.all(u):Promise.resolve()}).then(()=>this.store.createOrUpdate(t,this.st[t]))},c}});var V=P((xe,Z)=>{Z.exports=function(T){let{Mo:m,Templating:a,Piece:c}=T;function e(t,n,i){this.name=t,this.template=n,this.handlers=i.handlers,this.subscribe=i.subscribe,this.data={},this.root=i.root,this.items=!1,this.type=i.type||"view",this.toggle=i.toggle,this.targets={},this.animateOptions=i.animate,this.role=i.role,this.isReady=!1,this.await={},this.utils={createFn(u,r){return{[u]:function(){return r}}[u]}},i.data&&i.data.bind(this.data)(this),(t=="app"||i.role=="app")&&(this.staticComponent=i.static||[]),i.trigger&&i.trigger.bind(this)(),i.utils&&i.utils.bind(this.utils)(this),this.container={},this.compile=new Promise(u=>{this._bindHandlers(),u()}).then(()=>{this._bindSubscribe()}).then(()=>{switch(this.type=="view"&&!!this.template){case!0:this.createElementAsync();break;default:this.isStatic=!1;break}})}return e.prototype.isStatic=!1,e.prototype.hasEvent=!1,e.prototype.isConnected=!1,e.prototype.destroyed=!1,e.prototype.isCreated=!1,e.prototype.Subscribe=function(t){this.$observer.registerSubscribe({[t.listenTo]:{[t.original]:[t]}})},e.prototype.Node=function(t){return new c(t)},e.prototype._bindHandlers=function(){for(let t in this.handlers)if(this.handlers.hasOwnProperty(t)){let n=this.handlers[t],i=n.name;n=n.bind(this),n.original=i,n.binded=this.name,this.handlers[i]=n,this.initAwaitHandlers(t)}this.await.destroy||(this.await.destroy=Promise.resolve()),this.await.animateRemove||(this.await.animateRemove=Promise.resolve())},e.prototype.initAwaitHandlers=function(t){this.await[t]=Promise.resolve()},e.prototype._bindSubscribe=function(){let t={};for(let n in this.subscribe)if(this.subscribe.hasOwnProperty(n))if(subscribe=this.subscribe[n],!!subscribe.components&&!!subscribe.handler){let u=n,{components:r,handler:s}=subscribe;s=s.bind(this),s.binded=this.name,s.original=u;for(let f=0;f<r.length;f++){let y=r[f];t[y]||(t[y]={}),t[y][u]||(t[y][u]=[]),s.listenTo=y,t[y][u].push(s)}}else{t[n]||(t[n]={});let u=subscribe;for(let r in u)if(u.hasOwnProperty(r)){let s=u[r],f=s.name;s=s.bind(this),s.original=f,s.binded=this.name,s.listenTo=n,t[n][f]||(t[n][f]=[]),t[n][f].push(s)}}this.subscribe=t},e.prototype.notifyStaticComponent=function(t,n,i){Cake.Observer.notify(t,n,i,this.staticComponent[t],!0,this.name)},e.prototype.doFor=function(t,n){let i=()=>this.html;n!=null&&this.$attrib._notifyFor(t,n,null,this.name,i())},e.prototype.doToggle=function(t,n){this.$attrib._notifyToggle(t,n,null,this.name,this.html)},e.prototype.doSwitch=function(t,n){this.$attrib._notifySwitch(t,n,null,this.name,this.html)},e.prototype.doIf=function(t,n){this.$attrib._notifyIf(t,n,null,this.name,this.html)},e.prototype.$animate=function(t){let n=this.$attrib.getWatchItemsByType(this.name,"animate"),i=this.animateOptions,u=[];return(()=>{if(!(!n.length&&!(n instanceof Array)||!i))for(let r=0;r<n.length;r++){let s=n[r],{ns:f,selector:y}=s;if(s.ns){if(i[f]){let d=i[f];Object.assign(s,i[f]),delete i[f]}}else u.push(n)}})(),n.length?((()=>{let r={},s={};for(let f in i)i.hasOwnProperty(f)&&(s.val=f,r.selector=s,Object.assign(r,i[f]),n.push(r),r={},s={})})(),new m(n,this.html).animate(t)):!1},e.prototype.$templating=function(t,n,i){let u=n||this.template;return new a(t,u,i).createElement()},e.prototype.createElement=function(){if(!(this.template.substring(0,1)=="#"))return;let n=this.template.substr(1),i=document.getElementById(n);switch(this.isTemplate=i&&i.toString().includes("Template")){case!0:{let r=i.getContent(!0);r.cake_component=this.name,this.html=this.Node(r),this._parseHTML(this.isStatic).then(()=>{this._watchBindedItems()})}break;case null:break;default:{let r=i;r.cake_component=this.name,this.html=this.Node(r),this.isStatic=!0,this._parseHTML(this.isStatic).then(()=>{})}}},e.prototype.createElementAsync=function(){new Promise(t=>{this.createElement(),t()}).then(()=>{this.isReady=!0})},e.prototype._isParsed=!1,e.prototype._parseHTML=function(t=!1){return this.$attrib.inject(this.html,this.name,t).then(()=>{this.original=this.html.cloneNode(),this._isParsed=!0})},e.prototype.render=function(t){let n=null,i=p=>this.data[p]||this.$scope[p]||null;!this.isReady&&this.createElement();let{root:u,multiple:r,cleaned:s,emit:f,static:y,hashed:d,data:h}=t||{};return d===!0&&this.$hash.add(this.name),!this.template&&this.fire.isConnected&&this.fire.isConnected({emit:f},!0),!!u&&(this.root=u),r&&this._smoothReset(),new Promise((p,g)=>{this.await.destroy.then(()=>this.await.animateRemove).then(()=>{new Promise((b,v)=>{b()}).then(()=>{let b=this.$attrib.getWatchItemsByType(this.name,"for");for(let v=0;v<b.length;v++){let w=i(b[v]);this.doFor(b[v],w)}return this.html}).then(b=>(n={element:b,emit:f},this.fire.beforeConnected&&this.fire.beforeConnected(n,!0),b)).then(b=>{if(!this.isStatic)return(h?(()=>new Promise(w=>{let _=b.getElement();_=this.$templating(h,_),this.html=b=this.Node(_),this.html.replaceDataSrc(),h=null,w()}))():Promise.resolve()).then(()=>{b.appendTo(this.root,s),this.isConnected=!0})}).then(()=>this.findTarget()).then(()=>this.findContainer()).then(()=>{let b=this.$attrib.getWatchItemsByType(this.name,"switch");for(let v=0;v<b.length;v++)this.doSwitch(b[v],i(b[v]))}).then(()=>this.addEvent(y,r)).then(()=>this.fire.isConnected&&this.fire.isConnected(n,!0)).then(()=>this.$animate("render")).then(()=>{p()})})})},e.prototype.renderAsync=function(t){this.render(t).then(()=>{this.$persist.append(this.name)})},e.prototype._smoothReset=function(){this.isConnected=!1,this.html=this.original.cloneNode()},e.prototype._hardReset=function(t){this.isConnected=!1,this.$persist.remove(t),this.html=this.original.cloneNode()},e.prototype.reset=function(){let t=this.$animate("remove");t instanceof Promise?this.await.animateRemove=new Promise(n=>{t.then(()=>this.html.remove()).then(()=>this._hardReset(this.name)).then(()=>{n()})}):(this.html.remove(this.name),this._hardReset(this.name))},e.prototype.addEvent=function(t,n){if(!!n&&!!t)return!1;let r=this.name;function s(f,y,d){return function(h){d&&h.preventDefault(),Cake.Observer.notify(y,f,h)}}if(!!this.targets){for(let f in this.targets)if(this.targets.hasOwnProperty(f)){let y=this.targets[f];for(let d of y){let{sel:h,el:p,cb:g}=d;g=g||f,p.Ref().get("__cake__events")||p.Ref().set("__cake__events",{});let b=p.Ref().get("__cake__events");if(!b[g]){let v=f.substring(0,1)!="~";p.addEventListener(f,s(g,r,v),!0),b[g]=!0,p.Ref().set("__cake__events",b)}}}}},e.prototype.findTarget=function(){let t=this.$attrib.getEventTarget(this.name),n=JSON.parse(JSON.stringify(t));for(let i of n)i.el=document.querySelector(`[data-event=${i.sel}]`),this.targets[i.event]||(this.targets[i.event]=[]),this.targets[i.event].push(i)},e.prototype.toggler=function(t){let n=this.$attrib.getWatchItemsByType(this.name,"toggle"),i=class{constructor(r,s,f,y){this.toggle=y.toggle,this.bind=r,this.bases=s,this.cache=y.$cache,this.html=f}check(r){let s=this.toggle[r];if(!s)console.error(`${r} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);else{if(n.length){let{ns:f}=s,y=n.find(d=>d.name==`ns-${f}`);y&&(s.sel=`[data-toggle=${y.sel}]`)}return s}}_toggle(){let r=this.check(this.bind);if(!r)return;let{basis:s="data-name",cls:f="is-active",mode:y="radio",sel:d,persist:h=!0}=r,p=this.html.querySelectorAll(d);if(!p.length)return;let g,b;if(p.length==1){let v=typeof this.bases=="boolean",w=!!this.bases,_=p[0];if(h){let O=function(S,k,C){C?S.classList.contains(k)&&S.classList.remove(k):S.classList.contains(k)||S.classList.add(k)};v?(w?(this.cache.createOrUpdate(this.bind,!0),O(_,f,!0)):(this.cache.createOrUpdate(this.bind,!1),O(_,f,!1)),_.classList.toggle(f)):(this.cache.createOrUpdate(this.bind,!_.classList.contains(f)),_.classList.toggle(f))}}else for(let v=0;v<p.length;v++){let w=p[v],_=w.classList.contains(f),O=w.getAttribute(s);O==this.bases?(y=="switch"?w.classList.toggle(f):_||w.classList.add(f),h&&this.cache.createOrUpdate(this.bind,O),b=O):_&&(w.classList.remove(f),g=w.getAttribute(s))}return{prev:g,next:b}}_recall(){let r=this.check(this.bind);if(!r)return;let{basis:s="data-name",cls:f="is-active",sel:y}=r;return this.cache.get(this.bind).then(d=>{if(!d)return d;let h=d,p=this.html.querySelectorAll(y);if(!!p.length){if(p.length==1){let g=p[0];h&&g.classList.add(f)}else for(let g=0;g<p.length;g++){let b=p[g],v=b.classList.contains(f);b.getAttribute(s)==h&&(v||b.classList.add(f))}return h}})}},u=(r,s)=>new i(r,s,this.html,this)._toggle();return u.recall=r=>new i(r,!1,this.html,this)._recall(),u},e.prototype.findContainer=function(){let t=this.html.getContainers();for(let n=0;n<t.length;n++){let i=t[n],u=i.dataset.container;u&&(this.container[u]=i)}},e.prototype._watchBindedItems=function(){this.items.length||(this.items=this.$attrib.getWatchItems(this.name),Cake.Scope.watch(this.items))},e.prototype.observer=function(t){function n(i){return this.handler[i]}this.observer=new Observer(this,t,n.bind(this))},e.prototype.variable=function(t){let n=Object.keys(t),i={},u=[];function r(s,f,y){f||(i[s]=`value is not '${y}'`)}for(let s in t)if(t.hasOwnProperty(s)){let f=t[s],{type:y,value:d}=f,h;["string","number"].includes(y)?h=typeof d==y:d instanceof Array?h=y=="array":h=y=="object",u.push(d),r(s,h,y)}if(Object.keys(i).length)throw new Error(JSON.stringify(i));return u},e}});var te=P((De,ee)=>{ee.exports=function(T){let{Attrib:m,Scope:a,Component:c,Hasher:e,Persistent:t,StorageKit:n,Observer:i,Formy:u}=T;function r(s){this.name=s,this.components={}}return r.Components=function(s){return{subscribe(f,y){function d(){let h=r.Components[s];if(h&&f instanceof Function){let p=f.name;y&&(f=f.bind(y)),f.binded="external",f.original=p,f.listenTo=h.name,h.Subscribe(f)}}return new Promise((h,p)=>{let g=setInterval(()=>{r.Components[s]&&(d(),clearInterval(g),h())})})}}},r.Models={},r.Subscribe={},r.Handlers={},r.Attributes=new m,r.Models.$loaded=function(s){return new Promise((f,y)=>{let d=setInterval(()=>{r.Models[s]&&(clearInterval(d),f(r.Models[s]))});setTimeout(()=>{r.Models[s]||(clearInterval(d),y(s))},1e4)})},r.MainMessageChannel=function(){let s=new MessageChannel;return{send(f){s.port2.postMessage(f)},receive(f){s.port1.onmessage=function(y){let{isTrusted:d,data:h}=y||{isTrusted:!1};f(d?{status:1,data:h}:{status:0,err:"not trusted!"})}}}}(),r.Utils={scopeTrap(s){return!1},scopeNotifier(s){return s}},r.create=function(s,f,y){new c(s,f,y).create(s,f,y)},r.plugin=function(){},r.init=function(s){return new c(s)},r.Scope=new a(r,{trap(s){return r.Utils.scopeTrap(s)}}),r.Hasher=new e(r.Components),r.Hasher.listen(),r.Scope.registerNotifier(function(s,f,y){return r.Attributes.notifier(s,f,y)}),r.Attributes.registerNotifier(function(s){r.Scope.notifier(s)}),r.Persistent=new t,r.Persistent.listen(r.Components),r.Cache=new n({name:"cache",storage:"session",child:"object"}),r.getSubscriber=function(s,f){let y=r.Subscribe,d={};for(let h in y)if(y.hasOwnProperty(h)){let p=y[h];for(let g in p)if(p.hasOwnProperty(g)){let b=p[g];for(let v of b){let w=v,_=w.original,O=w.binded;if(w.listenTo==s){if(_==f)if(!d[O])d[O]=f;else{let k=d[O]instanceof Array?d[O]:[d[O]];d[O]=k.concat(f)}else if(!f)if(!d[O])d[O]=_;else{let k=d[O]instanceof Array?d[O]:[d[O]];d[O]=k.concat(_)}}}}}return d},r.Cache.getAll().then(s=>{if(s instanceof Array)for(let f=0;f<s.length;f++){let y=s[f];r.Scope.watch(y)}else typeof s=="string"&&r.Scope.watch(s)}),r.Observer=new i(r.Subscribe,r.Handlers),r.prototype._defineProperty=function(s,f,y,d){Object.defineProperty(s,f,{configurable:!0,get(){return y()},set(h){d&&d(h)}})},r.prototype._defineProperty(c.prototype,"$observer",function(){return r.Observer}),r.prototype._defineProperty(c.prototype,"$scope",function(){r.Scope.install();let s=r.$scope;return Object.defineProperty(s,"extend",{configurable:!0,get(){return function(f,y){f=r.Scope.temp[f],f.toString().includes("Object")?Object.assign(f,y):console.error(`${f} is not an intance of Object`)}}}),s}),r.prototype._defineProperty(c.prototype,"$attrib",function(){return r.Attributes}),r.prototype._defineProperty(c.prototype,"$persist",function(){return r.Persistent}),r.prototype._defineProperty(c.prototype,"$cache",function(){return r.Cache}),r.prototype._defineProperty(c.prototype,"$hash",function(){return r.Hasher}),r.prototype.create=function(s,f,y){console.time(s);let d=new c(s,f,y);d.compile.then(()=>{let{subscribe:h,root:p,html:g,handlers:b,role:v}=d;return v=="form"&&function(){u.bind(d)()}(),Cakes.Observer.registerSubscribe(h).then(()=>({root:p,handlers:b}))}).then(({handlers:h,root:p})=>{r.Observer.registerHandlers(h,d.name),this._defineProperty(d,"root",function(){if(d._root)return d._root;{let g=p||"#app",b=document.querySelector(g);if(b)return b}throw new Error(`the selector '${selector}' as container of component '${d.name}' is not found!`)},function(g){Object.assign(d,{_root:g})})}).then(()=>{d.fire=function(){function h(g,b){b=b?typeof b=="function"?b.bind(d)():function(){return b}.bind(d)():null;let v={[g]:()=>b};if(fn=v[g].bind(d),typeof fn=="function"){fn.name=g,fn.original=g,fn.binded=d.name,r.Observer.registerHandlers({[g]:fn},d.name);let w=b;b&&(b.element||b.root)&&(w={status:0,message:"element cant be cloned"}),r.MainMessageChannel.send({component:d.name,event:g,payload:w});let _=r.Observer.notify(d.name,g,{}).then(()=>r.Observer.results[d.name][g]);return d.await[g]=_,d.await[g]}console.error("the param in fire is not an instance of function")}function p(g,b){for(let v in b)if(b.hasOwnProperty(v)){let w=b[v],_=w.original;Object.defineProperty(g,_,{get(){let O={[_]:function(S,k){if(k!=null&&(k=k),k==null&&_=="destroy"&&(k=!0),k==null&&(k=!1),k){let C=new Promise((A,L)=>{setTimeout(()=>{let $=S;S&&S.element&&($={status:0,message:"element cant be cloned"}),r.MainMessageChannel.send({component:d.name,event:s,payload:$}),r.Observer.notify(d.name,_,S).then(()=>r.Observer.results[d.name][_]).then(E=>{A(E)}).catch(E=>{console.error(E)})})});return d.await[_]=C,d.await[_]}else return w(S)}};return O[_]=O[_].bind(d),O[_].originalName=_,O[_].binded=d.name,O[_]}})}}return p(h,d.handlers),h}()}).then(()=>{d.type=="view"&&(d.toggler=d.toggler(d),r.Components[s]=d)}).then(()=>{d.type=="model"&&(r.Models[s]=d),d.isStatic&&d.type=="view"&&d.render()})},r}});var We=N(),Je=M(),Ke=H(),Ge=R(),Xe=U(),ie=B(),re=F(),se=x(),ne=D(),le=W(),oe=J(),ae=K(),ce=G(),he=Y(),fe=Q()({StorageKit:ie,Templating:ne}),ue=V()({Mo:le,Templating:ne,Piece,piece:re}),Ye=te()({Attrib:fe,Scope:oe,Component:ue,Hasher:ce,Persistent:ae,StorageKit:ie,Observer:se,Formy:he});})();
+(() => {
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __commonJS = (cb, mod) => function __require() {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  };
+
+  // src/scripts/env.js
+  var require_env = __commonJS({
+    "src/scripts/env.js"() {
+      (function(global) {
+        global.env = {
+          destructure: true
+        };
+        const env2 = global.env;
+        try {
+          let { a } = { a: true };
+        } catch (err) {
+          env2.destructure = false;
+        }
+        ;
+        Promise.prototype.ObjectType = "Promise";
+      })(window);
+    }
+  });
+
+  // src/scripts/polyfill.js
+  var require_polyfill = __commonJS({
+    "src/scripts/polyfill.js"() {
+      if (!Object.keys) {
+        Object.keys = function(obj) {
+          var keys = [];
+          for (var i in obj) {
+            if (obj.hasOwnProperty(i)) {
+              keys.push(i);
+            }
+          }
+          return keys;
+        };
+      }
+    }
+  });
+
+  // src/scripts/utils.js
+  var require_utils = __commonJS({
+    "src/scripts/utils.js"() {
+      (function(global) {
+        const TYPES = {
+          typeof: function(ctx) {
+            switch (true) {
+              case typeof ctx == "string":
+                return "string";
+              case typeof ctx == "number":
+                return "number";
+              case ctx instanceof Array:
+                return "array";
+              case ctx instanceof Function:
+                return "function";
+              case ctx instanceof HTMLCollection:
+                return "htmlcollection";
+              case ctx instanceof NodeList:
+                return "htmlnodelist";
+              case ctx instanceof Element:
+                return "domlement";
+              case ctx instanceof Object:
+                return "object";
+            }
+            ;
+          },
+          isArray: function(ctx) {
+            return this.typeof(ctx) == "array";
+          },
+          isObject: function(ctx) {
+            return this.typeof(ctx) == "object";
+          },
+          isNumber: function(ctx) {
+            return this.typeof(ctx) == "number";
+          },
+          isString: function(ctx) {
+            return this.typeof(ctx) == "string";
+          },
+          isHTMLCollection: function(ctx) {
+            return this.typeof(ctx) == "htmlcollection";
+          },
+          isNodeList: function(ctx) {
+            return this.typeof(ctx) == "htmlnodelist";
+          },
+          isElement: function(ctx) {
+            return this.typeof(ctx) == "domlement";
+          },
+          isFunction: function(ctx) {
+            return this.typeof(ctx) == "function";
+          }
+        };
+        const LOOP = {
+          each: function(ctx, fn2, type) {
+            if (type == "object") {
+              let i = 0;
+              for (let key in ctx) {
+                if (ctx.hasOwnProperty(key)) {
+                  fn2({ key, value: ctx[key] }, i);
+                  i = i + 1;
+                }
+                ;
+              }
+              ;
+            } else {
+              for (let a = 0; a < ctx.length; a++) {
+                fn2(ctx[a], a);
+              }
+            }
+            ;
+          },
+          map: function(ctx, fn2) {
+            let type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
+            let st = ctx.length && type == "array" ? [] : {};
+            this.each(ctx, function(obj, index) {
+              let r = fn2(obj, index);
+              if (type == "object") {
+                st[r.key] = r.value;
+              } else {
+                st.push(r);
+              }
+              ;
+            }, type);
+            return st;
+          },
+          reduce: function(ctx, accu, fn2) {
+            let type = TYPES.typeof(ctx);
+            this.each(ctx, function(obj, index) {
+              accu = fn2(obj, accu, index);
+            }, type);
+            return accu;
+          },
+          filter: function(ctx, fn2) {
+            let type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
+            let st = ctx.length && type == "array" ? [] : {};
+            this.each(ctx, function(obj, index) {
+              let r = fn2(obj, index);
+              if (r) {
+                if (type == "object") {
+                  st[obj.key] = obj.value;
+                } else {
+                  st.push(obj.value);
+                }
+                ;
+              }
+              ;
+            }, type);
+            return st;
+          }
+        };
+        const OTHERS = {
+          perf: function(fn2) {
+            console.time("test");
+            fn2();
+            console.timeEnd("test");
+          }
+        };
+        try {
+          global.UTILS = { ...LOOP, ...TYPES, ...OTHERS };
+        } catch (err) {
+          global.UTILS = {};
+          let iter = LOOP.each;
+          iter(LOOP, function(key, value) {
+            global.UTILS[key] = value;
+          });
+          iter(TYPES, function(key, value) {
+            global.UTILS[key] = value;
+          });
+          iter(OTHERS, function(key, value) {
+            global.UTILS[key] = value;
+          });
+        }
+        ;
+      })(window);
+    }
+  });
+
+  // src/scripts/extends.js
+  var require_extends = __commonJS({
+    "src/scripts/extends.js"() {
+      (function(global) {
+        HTMLCollection.prototype.toArray = function() {
+          let b = [];
+          for (let a = 0; a < this.length; a++) {
+            b[a] = this[a];
+          }
+          return b;
+        };
+        NodeList.prototype.toArray = function() {
+          let b = [];
+          let index = -1;
+          let length2 = this.length;
+          while (++index < length2) {
+            b[index] = this[index];
+          }
+          ;
+          return b;
+        };
+        Object.cache = /* @__PURE__ */ Object.create(null);
+        String.prototype.toHyphen = function() {
+          let _StringCache = Object.cache;
+          let cvt = null;
+          let str = this;
+          if (!_StringCache.toHyphen) {
+            _StringCache.toHyphen = {};
+          }
+          ;
+          if (_StringCache[str]) {
+            cvt = _StringCache[str];
+          }
+          ;
+          if (cvt != void 0) {
+            return cvt;
+          }
+          ;
+          let splitted = str.split("");
+          let ss = "", i = -1;
+          while (++i < splitted.length) {
+            let s = splitted[i];
+            switch (i) {
+              case 0:
+                {
+                  ss += s.toLowerCase();
+                }
+                break;
+              default: {
+                s.charCodeAt() < 91 && (ss += "-");
+                ss += s.toLowerCase();
+              }
+            }
+          }
+          ;
+          _StringCache[str] = ss;
+          cvt = ss;
+          return cvt;
+        };
+        String.prototype.toCamelCase = function() {
+          let str = this.toLowerCase();
+          let _StringCache = Object.cache;
+          let cvt = null;
+          switch (true) {
+            case !_StringCache.toCamel: {
+              _StringCache.toCamel = {};
+            }
+            case true: {
+              _StringCache = _StringCache.toCamel;
+            }
+            case _StringCache[str]:
+              {
+                cvt = _StringCache[str];
+              }
+              break;
+            default:
+              {
+                let split = str.split("-");
+                if (split.length == 1) {
+                  return str;
+                }
+                ;
+                let join = "";
+                let i = -1;
+                let length2 = split.length;
+                while (++i < length2) {
+                  let str2 = split[i];
+                  switch (i) {
+                    case 0:
+                      {
+                        join += str2;
+                      }
+                      ;
+                    default:
+                      {
+                        let first = str2.substring(0, 1).toUpperCase();
+                        ;
+                        let second = str2.substring(1);
+                        join += first + second;
+                      }
+                      break;
+                  }
+                }
+                ;
+                _StringCache[str] = join;
+                cvt = join;
+              }
+              break;
+          }
+          ;
+          return cvt;
+        };
+        HTMLElement.prototype.querySelectorIncluded = function(selector2, attr, val) {
+          let q = this.querySelector(selector2);
+          return q ? q : (() => {
+            switch (true) {
+              case (!attr && !val):
+                {
+                  let qu = this.closest(selector2);
+                  if (qu == this) {
+                    q = qu;
+                  }
+                  ;
+                }
+                ;
+                break;
+              case (!!attr && !!val):
+                {
+                  q = this.getAttribute(attr) == val ? this : null;
+                }
+                ;
+                break;
+              case (!!attr && !val):
+                {
+                  q = this.getAttribute(attr) ? this : null;
+                }
+                break;
+            }
+            ;
+            return q;
+          })();
+        };
+        HTMLElement.prototype.querySelectorAllIncluded = function(selector2, attr, val) {
+          let q = this.querySelectorAll(selector2).toArray();
+          switch (true) {
+            case (!attr && !val):
+              {
+                let qu = this.closest(selector2);
+                qu == this && q.push(qu);
+              }
+              ;
+              break;
+            case (attr && val):
+              {
+                this.getAttribute(attr) == val && q.push(this);
+              }
+              ;
+              break;
+            case (attr && !val):
+              {
+                this.getAttribute(attr) && q.push(this);
+              }
+              break;
+          }
+          ;
+          return q;
+        };
+        HTMLDocument.prototype.querySelectorIncluded = function(selector2) {
+          return this.querySelector(selector2);
+        };
+        HTMLDocument.prototype.querySelectorAllIncluded = function(selector2) {
+          return this.querySelectorAll(selector2);
+        };
+        Array.prototype.toggler = function(dataName, activeClass) {
+          for (let t = 0; t < this.length; t++) {
+            let node = this[t];
+            let name = node.dataset.name;
+            if (name == dataName) {
+              node.classList.toggle(activeClass);
+            } else {
+              if (node.classList.contains(activeClass)) {
+                node.classList.toggle(activeClass);
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        HTMLElement.prototype.Ref = function() {
+          let n = "_cakes_storage";
+          !this[n] && (this._cakes_storage = {});
+          let storage2 = this[n];
+          return {
+            set(key, value) {
+              storage2[key] = value;
+            },
+            get(key) {
+              return storage2[key];
+            },
+            getAll(key) {
+              return storage2;
+            },
+            remove(key) {
+              delete storage2[key];
+            }
+          };
+        };
+      })(window);
+    }
+  });
+
+  // src/scripts/template-extend.js
+  var require_template_extend = __commonJS({
+    "src/scripts/template-extend.js"() {
+      (function() {
+        customElements.define("sub-template", class extends HTMLElement {
+          constructor() {
+            super();
+          }
+          connectedCallback() {
+            this.replace(this);
+          }
+          replace(subTemplate) {
+            let ref = subTemplate.dataset.template;
+            let refEl = document.getElementsByName(ref);
+            if (refEl.length > 1) {
+              console.error(`template with name ${ref} has more than one reference.`);
+              return;
+            }
+            ;
+            if (!refEl) {
+              subTemplate.remove();
+              throw new Error(`${ref} is not found!`);
+            }
+            ;
+            if (refEl[0]) {
+              let temp = refEl[0];
+              if (temp.constructor.name == "HTMLTemplateElement") {
+                temp = temp.content.cloneNode(true).firstElementChild;
+                if (!temp) {
+                  return;
+                }
+                ;
+                let attrs = subTemplate.attributes;
+                for (let a = 0; a < attrs.length; a++) {
+                  let attr = attrs[a];
+                  if (attr.name != "data-template") {
+                    temp.setAttribute(attr.name, attr.value);
+                  }
+                  ;
+                }
+                ;
+                subTemplate.replaceWith(temp);
+              } else {
+                throw new Error(`${ref} is not referred to a Template Element!`);
+              }
+              ;
+            }
+            ;
+          }
+        });
+        HTMLTemplateElement.prototype.replaceSubTemplate = function(el2) {
+          let subTemplates = el2.getElementsByTagName("sub-template");
+          if (subTemplates) {
+            subTemplates = subTemplates.toArray();
+            for (let s = 0; s < subTemplates.length; s++) {
+              let subTemplate = subTemplates[s];
+              customElements.get("sub-template").prototype.replace(subTemplate);
+            }
+            ;
+          }
+          ;
+        };
+        HTMLTemplateElement.prototype.collectContent = function() {
+          let template = this;
+          let cf = null;
+          let temp = template.cloneNode(true);
+          let fr2 = document.createDocumentFragment();
+          let styles = temp.content.querySelector("style");
+          if (styles) {
+            fr2.appendChild(styles);
+          }
+          let others = [];
+          for (let o2 = 0; o2 < temp.content.children.length; o2++) {
+            let el2 = temp.content.children[0];
+            this.replaceSubTemplate(el2);
+            others.push(el2);
+          }
+          cf = { style: fr2.children[0], others };
+          return cf;
+        };
+        HTMLTemplateElement.prototype.parseStyle = function(style) {
+          if (!style)
+            return false;
+          var styles = style.textContent;
+          styles = styles.replace(/\s/g, "");
+          if (!styles.length) {
+            return;
+          }
+          let isSelector = false;
+          let isOpen = false;
+          let isClose = false;
+          let splitted = styles.split("");
+          let selector2 = "";
+          styles = "";
+          var obj = false;
+          for (let l2 = 0; l2 < splitted.length; l2++) {
+            let cha = splitted[l2];
+            if (cha == "{") {
+              isSelector = true;
+              isOpen = true;
+            }
+            ;
+            if (cha == "}") {
+              isSelector = false;
+              isOpen = false;
+            }
+            ;
+            if (!isSelector && cha != "	" && cha != "}" && cha != " " && cha != ";") {
+              selector2 += cha;
+            }
+            ;
+            if (isOpen && cha != "	" && cha != "{" & cha != " ") {
+              styles += cha;
+            }
+            ;
+            if (cha == "}") {
+              if (!obj) {
+                obj = {};
+              }
+              ;
+              obj[selector2] = styles;
+              selector2 = "";
+              styles = "";
+            }
+            ;
+          }
+          ;
+          return obj;
+        };
+        HTMLTemplateElement.prototype.parseHTML = function(others) {
+          if (others) {
+            var parent = document.createElement("HTML");
+            for (let o2 = 0; o2 < others.length; o2++) {
+              let other = others[o2];
+              parent.append(other);
+            }
+            ;
+          }
+          ;
+          return parent || false;
+        };
+        HTMLTemplateElement.prototype.getContent = function(isConvert) {
+          let { style, others } = this.collectContent();
+          let styles = this.parseStyle(style);
+          let element = this.parseHTML(others);
+          for (let selector2 in styles) {
+            if (styles.hasOwnProperty(selector2)) {
+              let query = element.querySelectorAll(selector2);
+              let css = styles[selector2];
+              for (let q = 0; q < query.length; q++) {
+                let item = query[q];
+                item.setAttribute("style", css);
+              }
+              ;
+            }
+          }
+          ;
+          element = isConvert ? element.children.toArray() : element.innerHTML;
+          return element.length == 1 ? element[0] : element;
+        };
+      })();
+    }
+  });
+
+  // src/scripts/storage.js
+  var require_storage = __commonJS({
+    "src/scripts/storage.js"() {
+      (function(window2) {
+        function typeOf(_obj) {
+          return _obj.constructor.name.toLowerCase();
+        }
+        ;
+        function ObjectForEach(obj, fn2) {
+          for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              fn2(obj[key], key);
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        function ObjectMerge(obj, value, key) {
+          obj = Object.assign(obj, { [key]: value });
+        }
+        ;
+        function isNull(d) {
+          return d === null;
+        }
+        ;
+        function isUndefined(d) {
+          return d === void 0;
+        }
+        ;
+        function isArray(_obj) {
+          return typeOf(_obj) == "array";
+        }
+        ;
+        function isObject(_obj) {
+          return typeOf(_obj) == "object";
+        }
+        ;
+        var hasInArray = function(src, id2) {
+          var has = null;
+          for (var i = 0; i < src.length; i++) {
+            var item = src[i];
+            if (typeOf(id2) == "object") {
+              var obj = id2;
+              var key = Object.keys(id2)[0];
+              var value = obj[key];
+              if (typeOf(item) == "object") {
+                var test = item[key] == value;
+                if (test) {
+                  has = i;
+                  break;
+                }
+                ;
+              }
+              ;
+            } else if (typeOf(id2) != "array") {
+              var test = id2 == item;
+              if (test) {
+                has = i;
+                break;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return has;
+        };
+        var hasInObject = function(src, id2) {
+          var key = null;
+          var type = typeOf(id2);
+          if (type == "object") {
+            var _key = Object.keys(id2)[0];
+            if (src[key] != void 0 && src[key] == id2[_key]) {
+              key = _key;
+            }
+            ;
+          } else if (type == "string") {
+            key = id2;
+          }
+          ;
+          return key;
+        };
+        var hasItem = function(src, id2) {
+          var has = null;
+          if (typeOf(src) == "array") {
+            has = hasInArray(src, id2);
+          } else if (typeOf(src) == "object") {
+            has = hasInObject(src, id2);
+          }
+          ;
+          return has;
+        };
+        var methods = {
+          create: function(storage2, data2) {
+            if (isArray(storage2)) {
+              let unique = new Set(storage2);
+              if (typeOf(data2) == "array") {
+                data2.forEach((i) => {
+                  unique.add(i);
+                });
+              } else {
+                unique.add(data2);
+              }
+              ;
+              storage2 = Array.from(unique);
+            } else if (isObject(storage2)) {
+              if (isObject(data2)) {
+                ObjectForEach(data2, function(value, key) {
+                  storage2[key] = value;
+                });
+              } else {
+                storage2[data2] = data2;
+              }
+              ;
+            }
+            ;
+            return storage2;
+          },
+          createOrUpdate: function(storage2, data2) {
+            var has = hasItem(storage2, data2);
+            if (typeOf(storage2) == "array") {
+              if (!isNull(has)) {
+                storage2[has] = data2;
+              } else {
+                storage2.includes(data2);
+              }
+            } else if (typeOf(storage2) == "object") {
+              if (isNull(has)) {
+                if (isObject(data2)) {
+                  ObjectForEach(data2, function(value, key) {
+                    ObjectMerge(storage2, value, key);
+                  });
+                } else {
+                  storage2[data2] = data2;
+                }
+                ;
+              } else {
+                storage2[has] = data2;
+              }
+              ;
+            }
+            ;
+            return storage2;
+          },
+          remove: function(storage2, id2) {
+            if (typeOf(id2) == "string") {
+              var has = hasItem(storage2, id2);
+              if (typeOf(storage2) == "object") {
+                delete storage2[has];
+              } else if (typeOf(storage2) == "array") {
+                var arr = [];
+                for (var i = 0; i < storage2.length; i++) {
+                  if (i != has) {
+                    arr.push(storage2[i]);
+                  } else {
+                    continue;
+                  }
+                  ;
+                }
+                ;
+                storage2 = arr;
+              }
+              ;
+              return storage2;
+            } else if (typeOf(id2) == "object") {
+              return Object.filter(storage2, function(value, key) {
+                var test = id2[key] != void 0 && id2[key] == value;
+                return !test;
+              });
+            } else if (typeOf(id2) == "array") {
+              return Object.filter(storage2, function(value, key) {
+                var test = id2.contains(key);
+                return !test;
+              });
+            }
+            ;
+            if (isNull(has)) {
+              return false;
+            }
+            ;
+          },
+          get: function(storage2, id2) {
+            var type = typeOf(id2);
+            if (type == "string") {
+              var has = hasItem(storage2, id2);
+              if (has == 0 || has) {
+                return storage2[has];
+              }
+              ;
+            } else if (type == "object") {
+              return Object.filter(storage2, function(value, key) {
+                var test = !isUndefined(id2[key]) && id2[key] == value;
+                return test;
+              });
+            } else if (type == "array") {
+              return Object.filter(storage2, function(value, key) {
+                var test = id2.contains(key);
+                return test;
+              });
+            }
+            return null;
+          },
+          getNot: function(storage2, id2) {
+            var type = typeOf(id2);
+            if (type == "string") {
+              return Object.filter(storage2, function(value, key) {
+                var test = key != id2;
+                return test;
+              });
+            } else if (type == "object") {
+              return Object.filter(storage2, function(value, key) {
+                return Object.some(id2, function(_value, _key) {
+                  var test = _key == key && _value == value;
+                  return !test;
+                });
+              });
+            } else if (type == "array") {
+              return Object.filter(storage2, function(value, key) {
+                var test = !id2.contains(key);
+                return test;
+              });
+            }
+            return null;
+          },
+          getAll: function(storage2) {
+            return storage2;
+          }
+        };
+        var STORAGE = class {
+          constructor(type, name, child) {
+            this.type = type;
+            this.name = name;
+            this.child = child;
+            this.cache = {};
+            if (typeOf(this.child) == "string") {
+              this.child = child == "array" ? [] : child == "object" ? {} : false;
+            }
+            ;
+          }
+          init(save) {
+            if (this[this.type]) {
+              this[this.type](save);
+              return true;
+            }
+            ;
+            return false;
+          }
+          open() {
+            if (this.type == "session") {
+              var decoded = JSON.parse(sessionStorage[this.name]);
+              return decoded[this.name];
+            } else if (this.type == "local") {
+              var decoded = JSON.parse(localStorage[this.name]);
+              return decoded[this.name];
+            } else {
+              return this.cache[this.name];
+            }
+            ;
+          }
+          close(storage2) {
+            this.child = storage2;
+            this.create();
+            return this.init(true);
+          }
+          create() {
+            this.cache[this.name] = this.child;
+          }
+          array() {
+            this.create();
+          }
+          object() {
+            this.create();
+          }
+          session(save) {
+            this.create();
+            try {
+              if (!sessionStorage[this.name]) {
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else if (save) {
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              }
+            } catch (err) {
+              this.create();
+            }
+            ;
+          }
+          local() {
+            this.create();
+            try {
+              localStorage.setItem(this.name, JSON.stringify(this.cache));
+            } catch (err) {
+              this.create();
+            }
+            ;
+          }
+        };
+        var USB = class {
+          constructor(_obj) {
+            this.name = _obj.name;
+            this.storageType = _obj.storage;
+            this.child = _obj.child || "object";
+            if (typeOf(this.child) == "string") {
+              this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
+            }
+            ;
+            if (!["array", "object"].includes(typeOf(this.child))) {
+              throw new Error("the child must be an object or array type.");
+            }
+            ;
+            this.storage = new STORAGE(this.storageType, this.name, this.child);
+            this.storage.init();
+          }
+          has(id2) {
+            var storage2 = this.storage.open();
+            var has = hasItem(storage2, id2);
+            return isNull(has) ? false : has;
+          }
+          get(id2) {
+            var storage2 = this.storage.open();
+            return Promise.resolve(methods.get(storage2, id2));
+          }
+          getNot(id2) {
+            var storage2 = this.storage.open();
+            return methods.getNot(storage2, id2);
+          }
+          getAll() {
+            var storage2 = this.storage.open();
+            return Promise.resolve(storage2);
+          }
+          update(id2, update) {
+            var storage2 = this.storage.open();
+            var has = hasItem(storage2, id2);
+            if (has == 0 || has) {
+              storage2 = methods.createOrUpdate(storage2, data);
+              return this.storage.close(storage2);
+            }
+            ;
+            return false;
+          }
+          createOrUpdate(data2) {
+            if (arguments.length > 1) {
+              let key = arguments[0];
+              let value = arguments[1];
+              data2 = { [key]: value };
+            }
+            ;
+            var storage2 = this.storage.open();
+            storage2 = methods.createOrUpdate(storage2, data2);
+            return this.storage.close(storage2);
+          }
+          create(data2) {
+            var storage2 = this.storage.open();
+            storage2 = methods.create(storage2, data2);
+            return this.storage.close(storage2);
+          }
+          remove(id2) {
+            var storage2 = this.storage.open();
+            storage2 = methods.remove(storage2, id2);
+            return this.storage.close(storage2);
+          }
+        };
+        window2.StorageKit = USB;
+      })(window);
+    }
+  });
+
+  // src/scripts/piece.js
+  var require_piece = __commonJS({
+    "src/scripts/piece.js"() {
+      (function(global) {
+        function Piece2(el2) {
+          this.el = Piece2.toArray(el2);
+        }
+        ;
+        Piece2.toArray = function(el2) {
+          let r = [];
+          switch (true) {
+            case el2 instanceof Array:
+              {
+                r = el2;
+              }
+              break;
+            case (el2.length && (el2.tagName && el2.tagName != "FORM") && !(el2 instanceof Array)):
+              {
+                for (let e = 0; e < el2.length; e++) {
+                  r.push(el2[e]);
+                }
+                ;
+              }
+              break;
+            case !(el2 instanceof Array):
+              {
+                r = [el2];
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.getElements = function() {
+          return this.el;
+        };
+        Piece2.prototype.getElement = function() {
+          return this.el[0];
+        };
+        Piece2.prototype.remove = function(name) {
+          let i = -1, length2 = this.el.length;
+          let fg = document.createDocumentFragment();
+          while (++i < length2) {
+            let el2 = this.el[i];
+            el2 && fg.appendChild(el2);
+          }
+          ;
+          fr = null;
+        };
+        Piece2.prototype.replaceDataSrc = function() {
+          let els = this.el[0];
+          let srcs = els.querySelectorAll("[data-src]");
+          for (let s = 0; s < srcs.length; s++) {
+            el = srcs[s];
+            el.setAttribute("src", el.dataset.src);
+            el.removeAttribute("data-src");
+          }
+          ;
+        };
+        Piece2.cloneNode = function(el2) {
+          el2 = el2 instanceof Array ? el2 : this.toArray(el2);
+          let a = [];
+          for (let e = 0; e < el2.length; e++) {
+            a.push(el2[e].cloneNode(true));
+          }
+          ;
+          return new Piece2(a);
+        };
+        Piece2.prototype.dataset = function(data2, cb) {
+          let l2 = this.el.length;
+          let i = -1;
+          while (++i < l2) {
+            if (this.el[i].dataset[data2]) {
+              let exec = cb(this.el[i]);
+              if (exec == "break") {
+                break;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return true;
+        };
+        Piece2.prototype.getContainers = function() {
+          return this.getElementsByDataset("container").container;
+        };
+        Piece2.prototype.cloneNode = function(el2) {
+          el2 = this.el;
+          return Piece2.cloneNode(el2);
+        };
+        Piece2.prototype.getAllElements = function() {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].getElementsByTagName("*").toArray();
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.getElementsByTagName("*");
+                  if (q) {
+                    for (let i2 = 0; i2 < q.length; i2++) {
+                      r.push(q[i2]);
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.appendTo = function(root, cleaned) {
+          if (!root && !root.attributes) {
+            throw new TypeError(`the ${root} is not an instance of Element`);
+          }
+          ;
+          cleaned && (root.innerHTML = "");
+          for (let i = 0; i < this.el.length; i++) {
+            let el2 = this.el[i];
+            root.appendChild(el2);
+          }
+          ;
+        };
+        Piece2.prototype.getElementsByTagName = function(tag) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].getElementsByTagName(id).toArray();
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.getElementsByTagName(selector);
+                  if (q) {
+                    for (let i2 = 0; i2 < q.length; i2++) {
+                      r.push(q[i2]);
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.getElementById = function(ids) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].getElementById(id);
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.querySelector(selector);
+                  if (q) {
+                    r.push(q);
+                  }
+                  ;
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.querySelectorAll = function(selector2) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].querySelectorAll(selector2);
+              }
+              break;
+            case length2 > 1:
+              {
+                let els = [];
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.querySelectorAll(selector2);
+                  q && (r = r.concat(q.toArra()));
+                }
+                ;
+              }
+              break;
+            default: {
+              r = [];
+            }
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.querySelector = function(selector2) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].querySelector(selector2);
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.querySelector(selector2);
+                  if (q) {
+                    r.push(q);
+                  }
+                  ;
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.querySelectorIncluded = function(selector2, attr, val) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].querySelectorIncluded(selector2, attr, val);
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.querySelectorIncluded(selector2, attr, val);
+                  q && r.push(q);
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.querySelectorAllIncluded = function(selector2, attr, val) {
+          let length2 = this.el.length;
+          let r = [];
+          switch (true) {
+            case length2 == 1:
+              {
+                r = this.el[0].querySelectorAllIncluded(selector2, attr, val);
+              }
+              break;
+            case length2 > 1:
+              {
+                let i = -1;
+                while (++i < length2) {
+                  let el2 = this.el[i];
+                  let q = el2.querySelectorAllIncluded(selector2, attr, val);
+                  q && (r = r.concat(q.toArra()));
+                }
+                ;
+              }
+              break;
+          }
+          ;
+          return r;
+        };
+        Piece2.prototype.contains = function(el2) {
+          let length2 = this.el.length, test = false;
+          switch (length2 == 1) {
+            case true:
+              {
+                test = this.el[0].contains(el2);
+              }
+              break;
+            case false:
+              {
+                let index = -1;
+                while (++index < length2) {
+                  let _el = this.el[index];
+                  if (_el.contains(el2)) {
+                    test = true;
+                    break;
+                  }
+                  ;
+                }
+                ;
+              }
+              break;
+          }
+          return test;
+        };
+        Piece2.prototype.getElementsByDataset = function() {
+          let arg, sel, i, a, el2, query;
+          arg = arguments;
+          o = {};
+          length = arg.length;
+          i = -1;
+          a = -1;
+          while (++i < this.el.length) {
+            el2 = this.el[i];
+            while (++a < length) {
+              sel = arg[a];
+              if (el2.getAttribute(`data-${sel}`)) {
+                o[sel] = [el2];
+              } else {
+                o[sel] = [];
+              }
+              query = el2.querySelectorAll(`[data-${sel}]`);
+              if (query.length) {
+                o[sel] = o[sel].concat([...query]);
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return o;
+        };
+        global.Piece = Piece2;
+      })(window);
+    }
+  });
+
+  // src/scripts/observer.js
+  var require_observer = __commonJS({
+    "src/scripts/observer.js"() {
+      (function(global) {
+        function Observer2(subscribe2, handlers, logger) {
+          this.subscribe = subscribe2;
+          this.handlers = handlers;
+          this.logger = logger || false;
+          this.stat = {
+            handlers: {},
+            subscribe: {}
+          };
+          this.results = {};
+          this.wm = /* @__PURE__ */ new WeakMap();
+        }
+        Observer2.prototype.notify = function(component3, event, e, filter, ispage, appName) {
+          function engrave() {
+            return {
+              _component: component3,
+              _event: event,
+              _e: e
+            };
+          }
+          ;
+          function ret(handler2) {
+            return handler2;
+          }
+          ;
+          let { _component, _event, _e } = engrave();
+          let handler = this.handlers[_component] && this.handlers[_component][_event];
+          if (handler == void 0 && ispage) {
+            let o2 = {
+              [_event]: function() {
+                return _e;
+              }
+            };
+            o2[_event].binded = _component;
+            o2[_event].listenTo = appName;
+            handler = o2[_event];
+          }
+          ;
+          _component = handler.binded;
+          handler = ret(handler);
+          if (!handler) {
+            console.error(`no setup handler for the event ${_event} in ${_component} component`);
+            return;
+          }
+          ;
+          let prom = new Promise((res, rej) => {
+            let e2 = handler(_e);
+            res(e2);
+          });
+          this.stat.handlers[handler.original] += 1;
+          return prom.then((variable) => {
+            let execs = [];
+            if (!this.results[_component]) {
+              this.results[_component] = {};
+            }
+            ;
+            if (this.subscribe[_component] && this.subscribe[_component][_event]) {
+              let subscribe2 = this.subscribe[_component][_event];
+              filter = !filter ? true : (() => {
+                subscribe2 = subscribe2.filter((fn2) => {
+                  let binded = fn2.binded;
+                  return filter.includes(binded);
+                });
+              })();
+              for (let s = 0; s < subscribe2.length; s++) {
+                let fn2 = subscribe2[s];
+                this.stat.subscribe[fn2.original] += 1;
+                execs.push(new Promise((res, rej) => {
+                  try {
+                    let exec = (() => {
+                      return fn2(variable);
+                    })();
+                    if (exec && exec.ObjectType == "Promise") {
+                      exec.then((result) => {
+                        if (!this.results[_component]) {
+                          this.results[_component] = {};
+                        }
+                        ;
+                        this.results[_component][_event] = exec;
+                        res();
+                      }).catch((err) => {
+                        rej(err);
+                      });
+                    } else {
+                      this.results[_component][_event] = exec;
+                      res();
+                    }
+                  } catch (e2) {
+                    console.log(e2);
+                    rej(e2);
+                  }
+                  ;
+                }));
+              }
+              ;
+            } else {
+              if (this.logger) {
+                console.info(`no subscriber for (${_event}) event of (${_component}) component`);
+              }
+              ;
+              this.results[_component][_event] = variable;
+            }
+            ;
+            return Promise.all(execs).then(() => {
+              variable = null;
+            });
+          });
+        };
+        Observer2.prototype.registerSubscribe = function(subscribe2) {
+          return new Promise((res, rej) => {
+            for (component in subscribe2) {
+              if (subscribe2.hasOwnProperty(component)) {
+                if (!this.subscribe[component]) {
+                  this.subscribe[component] = {};
+                } else {
+                  continue;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+            res();
+          }).then(() => {
+            let obj = {};
+            for (component in subscribe2) {
+              if (subscribe2.hasOwnProperty(component)) {
+                let events = subscribe2[component];
+                for (let name in events) {
+                  if (events.hasOwnProperty(name)) {
+                    let arr = events[name];
+                    for (let f = 0; f < arr.length; f++) {
+                      let handler = arr[f];
+                      if (!obj[component]) {
+                        obj[component] = {};
+                      }
+                      ;
+                      if (!obj[component][handler.original]) {
+                        obj[component][handler.original] = [];
+                      }
+                      ;
+                      obj[component][handler.original].push(handler);
+                      this.stat.subscribe[handler.original] = 0;
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+            return obj;
+          }).then((obj) => {
+            for (let component3 in obj) {
+              if (obj.hasOwnProperty(component3)) {
+                if (!this.subscribe[component3]) {
+                  this.subscribe[component3] = {};
+                }
+                ;
+                for (let event in obj[component3]) {
+                  if (obj[component3].hasOwnProperty(event)) {
+                    for (let handler of obj[component3][event]) {
+                      if (!this.subscribe[component3][handler.original]) {
+                        this.subscribe[component3][handler.original] = [];
+                      }
+                      ;
+                      this.subscribe[component3][handler.original].push(handler);
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+            obj = {};
+          });
+        };
+        Observer2.prototype.registerHandlers = function(handlers, component3) {
+          if (!this.handlers[component3]) {
+            this.handlers[component3] = {};
+          }
+          ;
+          for (let fn2 in handlers) {
+            if (handlers.hasOwnProperty(fn2)) {
+              let handler = handlers[fn2];
+              this.handlers[component3][fn2] = handler;
+              this.stat.handlers[handler.original] = 0;
+            }
+            ;
+          }
+          ;
+        };
+        global.Observer = Observer2;
+      })(window);
+    }
+  });
+
+  // src/scripts/templating.js
+  var require_templating = __commonJS({
+    "src/scripts/templating.js"() {
+      (function(global) {
+        function Templating(data2, template, isConvert) {
+          this.data = data2;
+          this.template = template;
+          this.isConvert = isConvert;
+        }
+        ;
+        Templating.prototype._getTag = function(template) {
+          return template.match(new RegExp("(?<=<)|([^/s]+)(?=>)", "g"))[2];
+        };
+        Templating.prototype._bindReplace = function(obj, string) {
+          for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              let pattern = new RegExp(`{{${key}}}`, "g");
+              pattern && (string = string.replace(pattern, `${obj[key]}`));
+            }
+            ;
+          }
+          ;
+          return string;
+        };
+        Templating.prototype._toElement = function(template, tag) {
+          let fr2 = document.createElement("template");
+          fr2.innerHTML = template;
+          return fr2.content.children[0];
+        };
+        Templating.prototype.createElement = function() {
+          let template = this.template;
+          let data2 = this.data;
+          let isConvert = this.isConvert;
+          if (data2) {
+            if (data2 instanceof Array) {
+              let isString = typeof template == "string";
+              let tag = isString ? this._getTag(template) : template.tagName;
+              template = isString ? template : template.outerHTML;
+              let els = [];
+              for (let d = 0; d < data2.length; d++) {
+                let dd = data2[d];
+                let bindData = this._bindReplace(dd, template);
+                let element = this._toElement(bindData, tag);
+                if (isConvert) {
+                  element = element.outerHTML;
+                }
+                ;
+                els.push(element);
+              }
+              ;
+              return els;
+            } else if (data2 instanceof Object) {
+              let isString = typeof template == "string";
+              let tag = isString ? this._getTag(template) : template.tagName;
+              template = isString ? template : template.outerHTML;
+              let bindData = this._bindReplace(data2, template);
+              let element = this._toElement(bindData, tag);
+              if (isConvert) {
+                element = element.outerHTML;
+              }
+              ;
+              return element;
+            }
+          } else {
+            let isString = typeof template == "string";
+            let tag = isString ? this._getTag(template) : template.tagName;
+            return this._toElement(template, tag);
+          }
+          ;
+        };
+        global.Templating = Templating;
+      })(window);
+    }
+  });
+
+  // src/scripts/animate.js
+  var require_animate = __commonJS({
+    "src/scripts/animate.js"() {
+    }
+  });
+
+  // src/scripts/scope.js
+  var require_scope = __commonJS({
+    "src/scripts/scope.js"() {
+      (function(global) {
+        function Scope(parent, options) {
+          this.pKey = options.pKey || "$scope";
+          this.temp = {};
+          this.trap = options.trap;
+          this.notify = [];
+          this.parent = parent;
+          this._clone = {};
+          this.whitelist = ["extend", "set", "get"];
+          this.install();
+        }
+        ;
+        Scope.prototype.registerNotifier = function(fn2) {
+          this.notify.push(fn2);
+        };
+        Scope.prototype.notifier = function(obj) {
+          Cake.$scope[obj.bind] = obj.value;
+        };
+        Scope.prototype.method = function() {
+          let temp = this.temp;
+          let trap = this.trap;
+          let notify = this.notify;
+          let _this = this.parent;
+          let whitelist = this.whitelist;
+          return {
+            update(keys, fn2) {
+              if (!keys.length)
+                return;
+              for (let k = 0; k < keys.length; k++) {
+                let key = keys[k];
+                fn2(key);
+              }
+              ;
+            },
+            defineProperty(key, cloned) {
+              Object.defineProperty(temp, key, {
+                configurable: true,
+                get() {
+                  let t = trap.bind(_this)(key) || false;
+                  if (t) {
+                    return t;
+                  }
+                  ;
+                  return cloned[key];
+                },
+                set(newValue) {
+                  if (whitelist.includes(key)) {
+                  } else {
+                    let prevValue = this[key];
+                    for (let n = 0; n < notify.length; n++) {
+                      let fn2 = notify[n];
+                      fn2(key, newValue, prevValue);
+                    }
+                    ;
+                    cloned[key] = newValue;
+                  }
+                }
+              });
+            }
+          };
+        };
+        Scope.prototype.install = function() {
+          let { update, defineProperty } = this.method();
+          let temp = this.temp;
+          let cloned = this._clone;
+          Object.defineProperty(this.parent, this.pKey, {
+            configurable: true,
+            get() {
+              cloned = Object.assign(cloned, temp);
+              let keys = Object.keys(temp);
+              update(keys, function(key) {
+                defineProperty(key, cloned);
+              });
+              return temp;
+            }
+          });
+        };
+        Scope.prototype.watch = function(array) {
+          if (!array)
+            return;
+          let { update, defineProperty } = this.method();
+          let cloned = this._clone;
+          update(array, function(key) {
+            defineProperty(key, cloned);
+          });
+          return true;
+        };
+        Scope.prototype.set = function(key, value) {
+          if (this.whitelist.includes(key)) {
+            return;
+          }
+          ;
+          let cloned = this._clone;
+          let notify = this.notify || [];
+          let prevValue = cloned[key];
+          cloned[key] = value;
+          return Promise.all(notify.map((cb) => {
+            return cb(key, value, prevValue);
+          }));
+        };
+        global.Scope = Scope;
+      })(window);
+    }
+  });
+
+  // src/scripts/persist.js
+  var require_persist = __commonJS({
+    "src/scripts/persist.js"() {
+    }
+  });
+
+  // src/scripts/hash.js
+  var require_hash = __commonJS({
+    "src/scripts/hash.js"() {
+    }
+  });
+
+  // src/scripts/form.js
+  var require_form = __commonJS({
+    "src/scripts/form.js"(exports, module) {
+      module.exports = function() {
+        let component3 = this;
+        this.$form = {};
+        this.$form.options = (obj, isgroup) => {
+          let { options, params } = obj;
+          if (!options) {
+            options = [];
+          }
+          ;
+          let prom = Promise.all(options.map((item) => {
+            let { control, field, tbl, src, schema } = item;
+            return component3.fire(src, { tbl, field, params }).then((opts) => {
+              opts = opts || [];
+              item.query = opts;
+              opts = opts.map((item2) => {
+                return schema(item2);
+              });
+              let scheme = schema({});
+              for (let key in scheme) {
+                if (scheme.hasOwnProperty(key)) {
+                  scheme[key] = "";
+                }
+                ;
+              }
+              ;
+              opts.unshift(scheme);
+              item.options = opts;
+              return item;
+            });
+          })).then((result) => {
+            if (isgroup) {
+              return result.reduce((accu, iter) => {
+                let { type, control } = iter;
+                if (!type) {
+                  type = "select";
+                }
+                ;
+                if (!accu[type]) {
+                  accu[type] = {};
+                }
+                ;
+                if (!accu[type][control]) {
+                  accu[type][control] = iter;
+                }
+                ;
+                return accu;
+              }, {});
+            } else {
+              return result.reduce((accu, iter) => {
+                accu[iter.control] = iter.options;
+                return accu;
+              }, {});
+            }
+            ;
+          }).catch((err) => {
+            console.error(err);
+          });
+          return prom;
+        };
+        this.$form.plot = (config) => {
+          let { data: data2, container } = config;
+          if (!data2 && !container) {
+            return;
+          }
+          ;
+          const query = (root, selector2, callback) => {
+            if (!root) {
+              console.info("root is not provided!");
+              return;
+            }
+            const els = root.querySelectorAll(`${selector2}`);
+            const len = els.length;
+            if (!len) {
+              callback(null, data2);
+              return;
+            }
+            for (let e = 0; e < len; e++) {
+              let el2 = els[e];
+              let name = el2.name;
+              let value = data2[name];
+              let r = callback(el2, value, e);
+              if (r == "break") {
+                break;
+              }
+              ;
+              if (r == "continue") {
+                continue;
+              }
+              ;
+            }
+            ;
+          };
+          query(container, "INPUT.input", function(el2, value) {
+            if (value != void 0) {
+              if (el2.type == "date") {
+                value = new Date(value) == "Invalid Date" ? "" : new Date(value).toJSON().split("T")[0];
+                el2.value = value;
+              } else {
+                el2.value = value;
+              }
+            }
+            ;
+          });
+          setTimeout(() => {
+            query(container, "SELECT.input:not(.cake-template)", function(select, value) {
+              query(select, "OPTION:not(.cake-template)", function(option, _value, index) {
+                if (option) {
+                  if (option.value == value) {
+                    select.selectedIndex = index;
+                    return "break";
+                  }
+                  ;
+                } else {
+                  console.log(option, _value, "provide schema");
+                }
+              });
+            });
+          }, 500);
+          return Promise.resolve();
+        };
+      };
+    }
+  });
+
+  // src/scripts/attributes.js
+  var require_attributes = __commonJS({
+    "src/scripts/attributes.js"(exports, module) {
+      module.exports = function(dependency) {
+        const {
+          StorageKit: StorageKit2,
+          Templating
+        } = dependency;
+        function Attrib() {
+          this.uiid = 0;
+          this.notify = [];
+          this.st = {};
+          this.cacheStatic = [];
+          this.store = StorageKit2({
+            child: "object",
+            storage: "session",
+            name: "_cake_component_cf"
+          });
+        }
+        ;
+        Attrib.prototype._getConfig = function(type, prop, newValue, prevValue, component3) {
+          if (newValue == null) {
+            return [];
+          }
+          ;
+          if (newValue == prevValue && type != "bind") {
+            return [];
+          }
+          ;
+          let id2 = `${type}-${prop}-${component3}`;
+          let loc = Object.cache._getConfig;
+          if (!loc) {
+            loc = Object.cache._getConfig = {};
+          }
+          ;
+          if (!loc[id2]) {
+            var st = component3 ? this.st[component3] && this.st[component3][type] || [] : (() => {
+              let ctx = [];
+              for (let component4 in this.st) {
+                if (this.st.hasOwnProperty(component4)) {
+                  let s = this.st[component4];
+                  if (s[type]) {
+                    for (let i = 0; i < s[type].length; i++) {
+                      let item = s[type][i];
+                      if (item.bind == prop) {
+                        ctx.push({ ...item, component: component4 });
+                      }
+                      ;
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+              return ctx;
+            })();
+            loc[id2] = st;
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype._notifyToggle = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let subscribe2 = this._getConfig("toggle", prop, newValue, prevValue);
+          if (!subscribe2) {
+            return;
+          }
+          ;
+          html = html || document;
+          for (let s = 0; s < subscribe2.length; s++) {
+            let sub = subscribe2[s];
+            if (!sub)
+              continue;
+            let { sel, bind, value, ops } = sub;
+            let el2 = html.querySelector(`[data-toggle=${sel}]`);
+            if (value == prevValue) {
+              el2 && el2.classList.remove("is-active");
+            }
+            if (value == newValue) {
+              if (el2) {
+                if (el2.classList.contains("is-active")) {
+                  el2.classList.remove("is-active");
+                }
+                ;
+                el2 && el2.classList.add("is-active");
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("switch", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          let forIf = {};
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { bind, sel, map, cases } = config;
+            let parent = html.querySelectorAll(`[data-switch-slot=${sel}]`);
+            for (let n = 0; n < newValue.length; n++) {
+              let row = newValue[n];
+              let slot = parent[n];
+              let prop2 = row[map];
+              if (prop2 != void 0) {
+                let _case = null;
+                for (let c2 = 0; c2 < cases.length; c2++) {
+                  let test = cases[c2].bind.includes(prop2);
+                  if (test) {
+                    _case = cases[c2];
+                    break;
+                  }
+                  ;
+                }
+                ;
+                if (_case) {
+                  let { _id, bind: bind2 } = _case;
+                  let hit = document.querySelector(`[data-case=${sel}-${_id}]`);
+                  if (hit && hit.toString().includes("Element")) {
+                    hit = hit.cloneNode(true);
+                    let forChildren = hit.querySelectorAll("[data-for-auto=true]");
+                    for (let f = 0; f < forChildren.length; f++) {
+                      let ch = forChildren[f];
+                      ch.dataset.for = `${ch.dataset.for}-active`;
+                    }
+                    ;
+                    hit.removeAttribute("data-case");
+                    let template = new Templating(row, hit, false).createElement();
+                    if (hit.dataset.if) {
+                      let sel2 = hit.dataset.if;
+                      let binded = template.dataset.ifBind;
+                      let component4 = config.component;
+                      let { bind: bind3 } = this.getWatchItemsBySel(component4, "if", sel2);
+                      if (sel2) {
+                        if (!forIf[bind3]) {
+                          forIf[bind3] = {};
+                        }
+                        ;
+                        forIf[bind3][binded] = row;
+                      }
+                    }
+                    template.classList.remove("cake-template");
+                    slot.replaceWith(template);
+                  }
+                }
+              }
+            }
+            ;
+          }
+          ;
+          for (let bind in forIf) {
+            if (forIf.hasOwnProperty(bind)) {
+              this._notifyIf(bind, forIf[bind]);
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyBind = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("bind", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { attr, bind, sel } = config;
+            let attrHyphen = attr.toHyphen();
+            if (prop == bind) {
+              let els = html.querySelectorAll(`[data-bind=${sel}]`);
+              for (let p = 0; p < els.length; p++) {
+                let el2 = els[p];
+                if (attr == "className") {
+                  if (prevValue) {
+                    if (newValue) {
+                      el2.classList.replace(prevValue, newValue);
+                    } else {
+                      el2.classList.remove(prevValue);
+                    }
+                    ;
+                  } else {
+                    el2.classList.add(newValue);
+                  }
+                  ;
+                } else {
+                  el2.setAttribute(attrHyphen, newValue);
+                  el2[attr] = newValue;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyFor = function(prop, newValue, prevValue, component3, html) {
+          let configs = this._getConfig("for", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          let vItems = [];
+          for (let c = 0; c < configs.length; c++) {
+            let { bind, sel, iter, ins, component: component4 } = configs[c];
+            html = html || document;
+            if (component4) {
+              html = Cake.Components[component4].html;
+            }
+            ;
+            let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
+            let cloned = target.cloneNode(true);
+            ;
+            (() => {
+              let switchs = cloned && cloned.querySelectorAll(`[data-switch]`);
+              if (switchs && switchs.length) {
+                let l2 = switchs.length, i = -1;
+                while (++i < l2) {
+                  let sw = switchs[i];
+                  let parent = sw.parentElement;
+                  let div = document.createElement("div");
+                  div.dataset.switchSlot = sw.dataset.switch;
+                  parent.replaceChild(div, sw);
+                }
+                ;
+                switchs = null;
+              }
+              ;
+            })();
+            ;
+            (() => {
+              let template = cloned;
+              let i = -1;
+              l = newValue.length;
+              newValue = newValue.map((item) => {
+                for (let key in item) {
+                  if (item.hasOwnProperty(key)) {
+                    item[`${iter}.${key}`] = item[key];
+                  }
+                  ;
+                }
+                ;
+                return item;
+              });
+              newValue.forEach((item) => {
+                let create = new Templating(item, template, false).createElement();
+                create.style.removeProperty("display");
+                create.classList.remove("cake-template");
+                create.removeAttribute("data-for-template");
+                target.insertAdjacentElement("beforebegin", create);
+                let safeSrc = create.querySelectorAll("[data-src]");
+                if (safeSrc) {
+                  for (let s = 0; s < safeSrc.length; s++) {
+                    let el2 = safeSrc[s];
+                    el2.src = el2.dataset.src;
+                    el2.removeAttribute("data-src");
+                  }
+                  ;
+                }
+                ;
+              });
+            })();
+          }
+          ;
+          this._notifyForAuto({ configs, newValue });
+        };
+        Attrib.prototype._notifyForAuto = function(obj) {
+          let { vItems, configs, newValue } = obj;
+          for (let o2 = 0; o2 < configs.length; o2++) {
+            let config = configs[o2];
+            let children = config.children;
+            if (!children)
+              continue;
+            let childCf = [];
+            for (let c = 0; c < children.length; c++) {
+              let child = children[c];
+              if (!this.st[config.component]) {
+                continue;
+              }
+              let cf = this.st[config.component].for.find((item) => {
+                return item.sel == child;
+              });
+              cf && childCf.push(new Promise((res) => {
+                let { bind, sel, iter, ins } = cf;
+                setTimeout(() => {
+                  let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
+                  for (let t = 0; t < targets.length; t++) {
+                    let target = targets[t];
+                    let prop = target.dataset.forBindKey;
+                    let value = target.dataset.forBindVal;
+                    let props = newValue.find((item) => {
+                      return item[prop] == value;
+                    });
+                    let pr = bind.split(".")[bind.split(".").length - 1];
+                    let datas = props[pr].length && props[pr].map((item) => {
+                      if (item instanceof Object) {
+                        return item;
+                      } else {
+                        return { [iter]: item };
+                      }
+                      ;
+                    });
+                    if (datas) {
+                      for (let d = 0; d < datas.length; d++) {
+                        let data2 = datas[d];
+                        let template = target.cloneNode(true);
+                        let create = new Templating(data2, template, false).createElement();
+                        create.style.removeProperty("display");
+                        create.classList.remove("cake-template");
+                        create.removeAttribute("data-for-template");
+                        target.insertAdjacentElement("beforebegin", create);
+                      }
+                      ;
+                    }
+                    ;
+                    if (target.parentElement.tagName == "SELECT") {
+                      target.parentElement.selectedIndex = 0;
+                    }
+                    ;
+                  }
+                  ;
+                });
+              }));
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyForUpdate = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("forUpdate", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          for (let c = 0; c < configs.length; c++) {
+            let { bind, sel, iter, ins } = configs[c];
+            for (let o2 in newValue) {
+              if (newValue.hasOwnProperty(o2)) {
+                let targets = document.querySelectorAll(`[data-for-bind-val=${o2}]`);
+                for (let t = 0; t < targets.length; t++) {
+                  let target = targets[t];
+                  let binded = target.dataset.forBindVal;
+                  if (!target.dataset.forTemplate) {
+                    target.remove();
+                  } else {
+                    let template = target.cloneNode(true);
+                    template.style.removeProperty("display");
+                    template.classList.remove("cake-template");
+                    let dataForIteration = newValue[binded];
+                    let i = -1;
+                    l = dataForIteration.length;
+                    while (++i < l) {
+                      let item = dataForIteration[i];
+                      let create = new Templating(item, template, false).createElement();
+                      create.classList.remove("cake-template");
+                      create.removeAttribute("data-for-template");
+                      target.insertAdjacentElement("beforebegin", create);
+                      if (target.parentElement.tagName == "SELECT") {
+                        target.parentElement.selectedIndex = 0;
+                      }
+                      ;
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyClass = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("class", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          let proc = function(newValue2, ops, testVal) {
+            switch (true) {
+              case ops == ">":
+                return newValue2 > testVal;
+              case ops == "<":
+                return newValue2 < testVal;
+              case ops == "===":
+                return newValue2 === testVal;
+              case ops == "!==":
+                return newValue2 !== testVal;
+              case ops == "==":
+                return newValue2 == testVal;
+              case ops == "!=":
+                return newValue2 != testVal;
+            }
+            ;
+            return false;
+          };
+          let removeWhiteSpace = function(str) {
+            return str.split(" ").join("");
+          };
+          let cache = {};
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { hasNegate, bind, testVal, className, ops, sel } = config;
+            bind = removeWhiteSpace(bind);
+            className = removeWhiteSpace(className);
+            if (prop == bind) {
+              if (!cache[sel]) {
+                cache[sel] = html.querySelectorAll(`[data-class=${sel}]:not(.cake-template)`);
+              }
+              let els = cache[sel];
+              for (let p = 0; p < els.length; p++) {
+                let el2 = els[p];
+                let test = false;
+                if (ops) {
+                  test = proc(newValue, ops, testVal);
+                  hasNegate && (test = !test);
+                } else if (hasNegate) {
+                  test = !newValue;
+                }
+                ;
+                if (test) {
+                  if (!el2.classList.contains(className)) {
+                    el2.classList.add(className);
+                  }
+                } else {
+                  if (el2.classList.contains(className)) {
+                    el2.classList.remove(className);
+                  }
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyIf = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("if", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          let cache = {};
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { attr, bind, sel, testval, _true, _false } = config;
+            let attrHyphen = attr.toHyphen();
+            if (prop == bind) {
+              if (!cache[sel]) {
+                cache[sel] = html.querySelectorAll(`[data-if=${sel}]:not(.cake-template)`);
+              }
+              let els = cache[sel];
+              for (let p = 0; p < els.length; p++) {
+                let el2 = els[p];
+                let binded = el2.dataset.ifBind;
+                let data2 = binded ? newValue[binded] : newValue;
+                let attrValue = data2 instanceof Object ? data2[bind] : data2;
+                let test = testval == null ? !!attrValue : testval == attrValue;
+                if (attrValue == null) {
+                  el2.removeAttribute(attrHyphen, attrValue);
+                } else if (test) {
+                  let ignoreTrue = _true == "null";
+                  if (!ignoreTrue) {
+                    el2.setAttribute(attrHyphen, attrValue);
+                    el2[attr] = attrValue;
+                  }
+                } else {
+                  let ignoreFalse = _false == "null";
+                  if (!ignoreFalse) {
+                    el2.setAttribute(attrHyphen, attrValue);
+                    el2[attr] = attrValue;
+                  }
+                }
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype.notifier = function(prop, newValue, prevValue) {
+          let val = JSON.parse(JSON.stringify(newValue));
+          return new Promise((res) => {
+            this._notifyFor(prop, val, prevValue);
+            res();
+          }).then(() => {
+            return this._notifyForUpdate(prop, val, prevValue);
+          }).then(() => {
+            return this._notifySwitch(prop, val, prevValue);
+          }).then(() => {
+            return this._notifyToggle(prop, val, prevValue);
+          }).then(() => {
+            return this._notifyBind(prop, val, prevValue);
+          }).then(() => {
+            return this._notifyIf(prop, val, prevValue);
+          }).then(() => {
+            return this._notifyClass(prop, val, prevValue);
+          });
+        };
+        Attrib.prototype.registerNotifier = function(fn2) {
+          this.notify.push(fn2);
+        };
+        Attrib.prototype.getEventTarget = function(component3) {
+          let id2 = `${component3}`;
+          let loc = Object.cache.getEventTarget;
+          if (!loc) {
+            loc = Object.cache.getEventTarget = {};
+          }
+          ;
+          if (!loc[id2]) {
+            let cf = this.st[component3];
+            loc[id2] = cf && (cf?.evt ?? []) || [];
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype.getWatchItems = function(component3) {
+          let id2 = `${component3}`;
+          let loc = Object.cache.getWatchItems;
+          if (!loc) {
+            loc = Object.cache.getWatchItems = {};
+          }
+          ;
+          if (!loc[id2]) {
+            let st = this.st[component3] || {};
+            let wt = /* @__PURE__ */ new Set();
+            for (let type in st) {
+              if (st.hasOwnProperty(type)) {
+                let tst = st[type];
+                for (let t = 0; t < tst.length; t++) {
+                  let item = tst[t];
+                  let { bind } = item;
+                  if (bind) {
+                    wt.add(bind);
+                  } else {
+                    continue;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+            loc[id2] = [...wt];
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype.getWatchItemsByType = function(component3, type) {
+          let id2 = `${component3}-${type}`;
+          let loc = Object.cache.getWatchItemsByType;
+          if (!loc) {
+            loc = Object.cache.getWatchItemsByType = {};
+          }
+          ;
+          if (!loc[id2]) {
+            let st = this.st[component3] || {};
+            let tst = st[type] || [];
+            let wt = /* @__PURE__ */ new Set();
+            for (let t = 0; t < tst.length; t++) {
+              let item = tst[t];
+              let { bind } = item;
+              switch (!!bind) {
+                case true:
+                  {
+                    wt.add(bind);
+                  }
+                  break;
+                default:
+                  {
+                    switch (true) {
+                      case (type == "animate" || type == "toggle"): {
+                        if (wt.constructor.name = "Set") {
+                          wt = [];
+                        }
+                        ;
+                        wt.push(item);
+                      }
+                    }
+                    ;
+                  }
+                  ;
+              }
+              ;
+            }
+            ;
+            loc[id2] = [...wt];
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype.getWatchItemsBySel = function(component3, type, sel) {
+          let id2 = `${component3}-${type}-${sel}`;
+          let loc = Object.cache.watchItemsBySel;
+          if (!loc) {
+            loc = Object.cache.watchItemsBySel = {};
+          }
+          ;
+          if (!loc[id2]) {
+            let array = this.st[component3][type];
+            let find = array.find((item) => {
+              return item.sel == sel;
+            });
+            loc[id2] = find ? find : false;
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype._register = function(store, f, s, obj) {
+          switch (true) {
+            case !store[f]:
+              {
+                store[f] = {};
+              }
+              ;
+            case !store[f][s]:
+              {
+                store[f][s] = [];
+              }
+              ;
+            default:
+              {
+                store[f][s].push(obj);
+              }
+              ;
+              break;
+          }
+          ;
+        };
+        Attrib.prototype._static = function(component3) {
+          return function(qs, isStatic) {
+            let els = [];
+            for (let t = 0; t < qs.length; t++) {
+              let el2 = qs[t];
+              switch (isStatic) {
+                case false:
+                  {
+                    els.push(el2);
+                  }
+                  ;
+                  break;
+                case true:
+                  {
+                    let dComponent = el2.closest("[data-component]");
+                    dComponent = dComponent && dComponent.dataset.component;
+                    switch (dComponent == component3) {
+                      case true:
+                        {
+                          els.push(el2);
+                        }
+                        break;
+                    }
+                    ;
+                  }
+                  break;
+                default: {
+                  continue;
+                }
+              }
+              ;
+            }
+            ;
+            return els;
+          };
+        };
+        Attrib.prototype._compileEvents = function(events, component3, isStatic) {
+          return new Promise((res) => {
+            if (!events.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(events, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let e = 0; e < els.length; e++) {
+              let id2 = `cke${this.uiid}`;
+              let el2 = els[e];
+              let splitted = el2.dataset.event.split(" ").join("").split(",");
+              for (let s = 0; s < splitted.length; s++) {
+                let [event, cb] = splitted[s].split(":");
+                cb = cb || event;
+                this._register(this.st, component3, "evt", { event, sel: id2, cb });
+                el2.dataset.event = id2;
+                this.uiid++;
+              }
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileToggle = function(toggles, component3, isStatic) {
+          return new Promise((res) => {
+            if (!toggles.length) {
+              res();
+              return;
+            }
+            let els = this._static(component3)(toggles, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            let c = {};
+            for (let t = 0; t < toggles.length; t++) {
+              let id2 = `ckt${this.uiid}`;
+              let el2 = toggles[t];
+              let ns = el2.dataset.toggle;
+              if (c[ns]) {
+                id2 = c[ns];
+              }
+              ;
+              this._register(this.st, component3, "toggle", { sel: id2, name: "ns-" + ns });
+              el2.dataset.toggle = id2;
+              this.uiid++;
+              c[ns] = id2;
+            }
+            ;
+            c = {};
+            res();
+          });
+        };
+        Attrib.prototype._compileFor = function(fors, component3, isStatic, el2) {
+          return new Promise((res) => {
+            let target = el2;
+            if (!fors.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(fors, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            let o2 = {};
+            for (let f = 0; f < els.length; f++) {
+              let id2 = `ckf${this.uiid}`;
+              let el3 = els[f];
+              let fr2 = el3.dataset.for;
+              let [a, b, c] = fr2.split(" ");
+              el3.style.display = "none";
+              el3.classList.add("cake-template");
+              el3.dataset.for = id2;
+              el3.dataset.forTemplate = id2;
+              o2[id2] = { bind: c, sel: id2, iter: a, ins: b };
+              ++this.uiid;
+              if (f != 0) {
+                let parent = el3.parentElement && el3.parentElement.closest("[data-for]");
+                if (!parent) {
+                  continue;
+                }
+                let parentIsFor = !!parent.dataset.for;
+                if (target.contains(parent) && parentIsFor) {
+                  let parentId = parent.dataset.for;
+                  let parentCf = o2[parentId];
+                  if (parentCf && !parentCf.children) {
+                    parentCf.children = [id2];
+                  } else if (parentCf) {
+                    parentCf.children.push(id2);
+                  }
+                  ;
+                }
+              }
+              ;
+            }
+            ;
+            for (let key in o2) {
+              if (o2.hasOwnProperty(key)) {
+                this._register(this.st, component3, "for", o2[key]);
+              }
+              ;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileForUpdate = function(fors, component3, isStatic) {
+          return new Promise((res) => {
+            if (!fors.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(fors, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let f = 0; f < els.length; f++) {
+              let id2 = `ckfu${this.uiid}`;
+              let el2 = els[f];
+              let fr2 = el2.dataset.forUpdate;
+              el2.style.display = "none";
+              el2.classList.add("cake-template");
+              el2.dataset.forUpdate = id2;
+              if (!el2.dataset.for) {
+                el2.dataset.forTemplate = id2;
+              }
+              let [a, b, c] = fr2.split(" ");
+              this._register(this.st, component3, "forUpdate", { bind: c, sel: id2, iter: a, ins: b });
+              this.uiid++;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileSwitch = function(switchs, component3, isStatic) {
+          return new Promise((res) => {
+            if (!switchs.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(switchs, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `cks${this.uiid}`;
+              let el2 = els[s];
+              let bind = el2.dataset.switch, map = "def";
+              if (bind.includes(".")) {
+                var [f, ...rest] = el2.dataset.switch.split(".");
+                bind = f;
+                map = rest[0];
+              }
+              ;
+              el2.dataset.switch = id2;
+              let cases = el2.querySelectorAll("[data-case]");
+              let casesId = [];
+              for (let c = 0; c < cases.length; c++) {
+                let _case = cases[c];
+                let closest = _case.closest(`[data-switch=${id2}]`);
+                _case.classList.add("cake-template");
+                if (closest) {
+                  let caseBind = _case.dataset.case;
+                  let _id = `cksc${this.uiid}`;
+                  _case.dataset.case = `${id2}-${_id}`;
+                  casesId.push({ _id, bind: caseBind });
+                  this.uiid++;
+                }
+                ;
+              }
+              ;
+              this._register(this.st, component3, "switch", { bind, sel: id2, map, cases: casesId });
+              this.uiid++;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileBind = function(elModels, component3, isStatic) {
+          return new Promise((res) => {
+            if (!elModels.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(elModels, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `ckm${this.uiid}`;
+              let el2 = els[s];
+              let model = el2.dataset.bind;
+              let gr = model.split(",");
+              for (let g = 0; g < gr.length; g++) {
+                let val = gr[g].split(" ").join("");
+                if (val.includes(":")) {
+                  var [attr, bind] = val.split(":");
+                } else {
+                  var bind = val;
+                  var attr = "value";
+                }
+                ;
+                this._register(this.st, component3, "bind", { attr, bind, sel: id2 });
+              }
+              this.uiid++;
+              el2.dataset.bind = id2;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileAnimate = function(anims, component3, isStatic) {
+          return new Promise((res) => {
+            if (!anims.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(anims, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `cka${this.uiid}`;
+              let el2 = els[s];
+              let anim = el2.dataset.animate;
+              anim = anim.split(" ").join("");
+              let o2 = {};
+              let split = anim.split(",");
+              for (let a = 0; a < split.length; a++) {
+                let item = split[a];
+                let [ctx, anims2] = item.split(":");
+                if (ctx == "ns") {
+                  o2.ns = anims2;
+                  break;
+                } else {
+                  o2[ctx] = { keyframes: anims2.split("-") };
+                }
+                ;
+              }
+              ;
+              o2.selector = { attr: "data-animate", val: id2 };
+              this._register(this.st, component3, "animate", o2);
+              this.uiid++;
+              el2.dataset.animate = id2;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileIf = function(ifs, component3, isStatic) {
+          return new Promise((res) => {
+            if (!ifs.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(ifs, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `ci${this.uiid}`;
+              let el2 = els[s];
+              let _if = el2.dataset.if;
+              let gr = _if.split(",");
+              for (let g = 0; g < gr.length; g++) {
+                let val = gr[g].split(" ").join("");
+                let [attr, exp] = val.split("=");
+                exp = exp.split(new RegExp("[()]")).join("");
+                let [test, r] = exp.split("?");
+                let [bind, testval] = test.split(new RegExp("<|>|===|==|!==|!="));
+                let [_true, _false] = r.split(":");
+                this._register(this.st, component3, "if", { attr, bind, testval: testval || null, _true, _false, sel: id2 });
+              }
+              this.uiid++;
+              el2.dataset.if = id2;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileClass = function(cls, component3, isStatic) {
+          return new Promise((res) => {
+            if (!cls.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(cls, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `cc${this.uiid}`;
+              let el2 = els[s];
+              let cl = el2.dataset.class;
+              let [test, className] = cl.split("&&");
+              test = test.trim();
+              let [bind, ops, testVal] = test.split(" ");
+              let hasNegate = bind.substring(0, 1);
+              hasNegate && (bind = bind.slice(1));
+              this._register(this.st, component3, "class", { hasNegate, bind, testVal, className, ops, sel: id2 });
+              this.uiid++;
+              el2.dataset.class = id2;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype.inject = function(el2, component3, isStatic = false) {
+          return new Promise((res) => {
+            let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class");
+            res(query);
+          }).then((query) => {
+            let r = [];
+            let map = {
+              "bind": this._compileBind,
+              "for": this._compileFor,
+              "for-update": this._compileForUpdate,
+              "switch": this._compileSwitch,
+              "toggle": this._compileToggle,
+              "event": this._compileEvents,
+              "animate": this._compileAnimate,
+              "if": this._compileIf,
+              "class": this._compileClass
+            };
+            for (let q in query) {
+              if (query.hasOwnProperty(q)) {
+                if (query[q].length) {
+                  r.push(map[q].apply(this, [query[q], component3, isStatic, el2]));
+                }
+                ;
+              }
+              ;
+            }
+            ;
+            console.timeEnd(component3);
+            return r.length ? Promise.all(r) : Promise.resolve();
+          }).then(() => {
+            return this.store.createOrUpdate(component3, this.st[component3]);
+          });
+        };
+        return Attrib;
+      };
+    }
+  });
+
+  // src/scripts/component.js
+  var require_component = __commonJS({
+    "src/scripts/component.js"(exports, module) {
+      module.exports = function(dependency) {
+        const {
+          Mo,
+          Templating,
+          Piece: Piece2
+        } = dependency;
+        function Component(name, template, options) {
+          this.name = name;
+          this.template = template;
+          this.handlers = options.handlers;
+          this.subscribe = options.subscribe;
+          this.data = {};
+          this.root = options.root;
+          this.items = false;
+          this.type = options.type || "view";
+          this.toggle = options.toggle;
+          this.targets = {};
+          this.animateOptions = options.animate;
+          this.role = options.role;
+          this.isReady = false;
+          this.await = {};
+          this.utils = {
+            createFn(name2, variable) {
+              let o2 = { [name2]: function() {
+                return variable;
+              } };
+              return o2[name2];
+            }
+          };
+          options.data && options.data.bind(this.data)(this);
+          (name == "app" || options.role == "app") && (() => {
+            this.staticComponent = options.static || [];
+          })();
+          options.trigger && options.trigger.bind(this)();
+          options.utils && options.utils.bind(this.utils)(this);
+          this.container = {};
+          this.compile = new Promise((res) => {
+            this._bindHandlers();
+            res();
+          }).then(() => {
+            this._bindSubscribe();
+          }).then(() => {
+            switch (this.type == "view" && !!this.template) {
+              case true:
+                this.createElementAsync();
+                break;
+              default:
+                this.isStatic = false;
+                break;
+            }
+            ;
+          });
+        }
+        ;
+        Component.prototype.isStatic = false;
+        Component.prototype.hasEvent = false;
+        Component.prototype.isConnected = false;
+        Component.prototype.destroyed = false;
+        Component.prototype.isCreated = false;
+        Component.prototype.Subscribe = function(handler) {
+          this.$observer.registerSubscribe({
+            [handler.listenTo]: {
+              [handler.original]: [handler]
+            }
+          });
+        };
+        Component.prototype.Node = function(el2) {
+          return new Piece2(el2);
+        };
+        Component.prototype._bindHandlers = function() {
+          for (let key in this.handlers) {
+            if (this.handlers.hasOwnProperty(key)) {
+              let fn2 = this.handlers[key];
+              let originalName = fn2.name;
+              fn2 = fn2.bind(this);
+              fn2.original = originalName;
+              fn2.binded = this.name;
+              this.handlers[originalName] = fn2;
+              this.initAwaitHandlers(key);
+            }
+            ;
+          }
+          ;
+          if (!this.await.destroy) {
+            this.await.destroy = Promise.resolve();
+          }
+          if (!this.await.animateRemove) {
+            this.await.animateRemove = Promise.resolve();
+          }
+        };
+        Component.prototype.initAwaitHandlers = function(handlerName) {
+          this.await[handlerName] = Promise.resolve();
+        };
+        Component.prototype._bindSubscribe = function() {
+          let flattened = {};
+          for (let component3 in this.subscribe) {
+            if (this.subscribe.hasOwnProperty(component3)) {
+              subscribe = this.subscribe[component3];
+              let isMany = !!subscribe.components && !!subscribe.handler;
+              if (isMany) {
+                let event = component3;
+                let { components, handler } = subscribe;
+                handler = handler.bind(this);
+                handler.binded = this.name;
+                handler.original = event;
+                for (let c = 0; c < components.length; c++) {
+                  let component4 = components[c];
+                  if (!flattened[component4]) {
+                    flattened[component4] = {};
+                  }
+                  ;
+                  if (!flattened[component4][event]) {
+                    flattened[component4][event] = [];
+                  }
+                  handler.listenTo = component4;
+                  flattened[component4][event].push(handler);
+                }
+                ;
+              } else {
+                if (!flattened[component3]) {
+                  flattened[component3] = {};
+                }
+                ;
+                let fns = subscribe;
+                for (let fn2 in fns) {
+                  if (fns.hasOwnProperty(fn2)) {
+                    let handler = fns[fn2];
+                    let original = handler.name;
+                    handler = handler.bind(this);
+                    handler.original = original;
+                    handler.binded = this.name;
+                    handler.listenTo = component3;
+                    if (!flattened[component3][original]) {
+                      flattened[component3][original] = [];
+                    }
+                    ;
+                    flattened[component3][original].push(handler);
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          this.subscribe = flattened;
+        };
+        Component.prototype.notifyStaticComponent = function(page, event, data2) {
+          Cake.Observer.notify(page, event, data2, this.staticComponent[page], true, this.name);
+        };
+        Component.prototype.doFor = function(prop, newValue) {
+          const getHTML = () => {
+            return this.html;
+          };
+          if (newValue == null)
+            return;
+          this.$attrib._notifyFor(prop, newValue, null, this.name, getHTML());
+        };
+        Component.prototype.doToggle = function(prop, newValue) {
+          this.$attrib._notifyToggle(prop, newValue, null, this.name, this.html);
+        };
+        Component.prototype.doSwitch = function(prop, newValue) {
+          this.$attrib._notifySwitch(prop, newValue, null, this.name, this.html);
+        };
+        Component.prototype.doIf = function(prop, newValue) {
+          this.$attrib._notifyIf(prop, newValue, null, this.name, this.html);
+        };
+        Component.prototype.$animate = function(moment) {
+          let ata = this.$attrib.getWatchItemsByType(this.name, "animate");
+          let da = this.animateOptions;
+          let arr = [];
+          ;
+          (() => {
+            if (!ata.length && !(ata instanceof Array) || !da) {
+              return;
+            }
+            for (let a = 0; a < ata.length; a++) {
+              let at = ata[a];
+              let { ns: name, selector: selector2 } = at;
+              if (at.ns) {
+                if (da[name]) {
+                  let ns = da[name];
+                  Object.assign(at, da[name]);
+                  delete da[name];
+                }
+                ;
+              } else {
+                arr.push(ata);
+              }
+              ;
+            }
+            ;
+          })();
+          if (!ata.length) {
+            return false;
+          }
+          ;
+          (() => {
+            let obj = {};
+            let selector2 = {};
+            for (let key in da) {
+              if (da.hasOwnProperty(key)) {
+                selector2.val = key;
+                obj.selector = selector2;
+                Object.assign(obj, da[key]);
+                ata.push(obj);
+                obj = {};
+                selector2 = {};
+              }
+              ;
+            }
+            ;
+          })();
+          return new Mo(ata, this.html).animate(moment);
+        };
+        Component.prototype.$templating = function(data2, t, isConvert) {
+          let template = t || this.template;
+          return new Templating(data2, template, isConvert).createElement();
+        };
+        Component.prototype.createElement = function() {
+          let isSelector = this.template.substring(0, 1) == "#";
+          if (!isSelector)
+            return;
+          let selector2 = this.template.substr(1);
+          let query = document.getElementById(selector2);
+          let isTemplate = this.isTemplate = query && query.toString().includes("Template");
+          switch (isTemplate) {
+            case true:
+              {
+                let element = query.getContent(true);
+                element.cake_component = this.name;
+                this.html = this.Node(element);
+                this._parseHTML(this.isStatic).then(() => {
+                  this._watchBindedItems();
+                });
+              }
+              break;
+            case null:
+              {
+              }
+              break;
+            default:
+              {
+                let element = query;
+                element.cake_component = this.name;
+                this.html = this.Node(element);
+                this.isStatic = true;
+                this._parseHTML(this.isStatic).then(() => {
+                });
+              }
+              ;
+          }
+          ;
+        };
+        Component.prototype.createElementAsync = function() {
+          new Promise((res) => {
+            this.createElement();
+            res();
+          }).then(() => {
+            this.isReady = true;
+          });
+        };
+        Component.prototype._isParsed = false;
+        Component.prototype._parseHTML = function(isStatic = false) {
+          return this.$attrib.inject(this.html, this.name, isStatic).then(() => {
+            this.original = this.html.cloneNode();
+            this._isParsed = true;
+          });
+        };
+        Component.prototype.render = function(options) {
+          let payload = null;
+          const getValue = (item) => {
+            return this.data[item] || this.$scope[item] || null;
+          };
+          !this.isReady && this.createElement();
+          let { root, multiple, cleaned, emit, static: static2, hashed, data: data2 } = options || {};
+          hashed === true && this.$hash.add(this.name);
+          !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
+          !!root && (this.root = root);
+          multiple && this._smoothReset();
+          return new Promise((res, rej) => {
+            this.await.destroy.then(() => {
+              return this.await.animateRemove;
+            }).then(() => {
+              new Promise((res2, rej2) => {
+                res2();
+              }).then(() => {
+                let forItems = this.$attrib.getWatchItemsByType(this.name, "for");
+                for (let i = 0; i < forItems.length; i++) {
+                  let nv = getValue(forItems[i]);
+                  this.doFor(forItems[i], nv);
+                }
+                ;
+                return this.html;
+              }).then((element) => {
+                payload = { element, emit };
+                this.fire.beforeConnected && this.fire.beforeConnected(payload, true);
+                return element;
+              }).then((element) => {
+                if (this.isStatic) {
+                } else {
+                  let prom = !data2 ? Promise.resolve() : (() => {
+                    return new Promise((res2) => {
+                      let el2 = element.getElement();
+                      el2 = this.$templating(data2, el2);
+                      this.html = element = this.Node(el2);
+                      this.html.replaceDataSrc();
+                      data2 = null;
+                      res2();
+                    });
+                  })();
+                  return prom.then(() => {
+                    element.appendTo(this.root, cleaned);
+                    this.isConnected = true;
+                  });
+                }
+              }).then(() => {
+                return this.findTarget();
+              }).then(() => {
+                return this.findContainer();
+              }).then(() => {
+                let switchItems = this.$attrib.getWatchItemsByType(this.name, "switch");
+                for (let i = 0; i < switchItems.length; i++) {
+                  this.doSwitch(switchItems[i], getValue(switchItems[i]));
+                }
+                ;
+              }).then(() => {
+                return this.addEvent(static2, multiple);
+              }).then(() => {
+                return this.fire.isConnected && this.fire.isConnected(payload, true);
+              }).then(() => {
+                return this.$animate("render");
+              }).then(() => {
+                res();
+              });
+            });
+          });
+        };
+        Component.prototype.renderAsync = function(options) {
+          this.render(options).then(() => {
+            this.$persist.append(this.name);
+          });
+        };
+        Component.prototype._smoothReset = function() {
+          this.isConnected = false;
+          this.html = this.original.cloneNode();
+        };
+        Component.prototype._hardReset = function(name) {
+          this.isConnected = false;
+          this.$persist.remove(name);
+          this.html = this.original.cloneNode();
+        };
+        Component.prototype.reset = function() {
+          let animate2 = this.$animate("remove");
+          if (animate2 instanceof Promise) {
+            this.await.animateRemove = new Promise((res) => {
+              animate2.then(() => {
+                return this.html.remove();
+              }).then(() => {
+                return this._hardReset(this.name);
+              }).then(() => {
+                res();
+              });
+            });
+          } else {
+            this.html.remove(this.name);
+            this._hardReset(this.name);
+          }
+        };
+        Component.prototype.addEvent = function(static2, multiple) {
+          let isStatic = !!static2;
+          let isMultiple = !!multiple;
+          if (isMultiple && isStatic) {
+            return false;
+          }
+          ;
+          let component3 = this.name;
+          function notify(event, component4, isPrevent) {
+            return function(e) {
+              if (isPrevent) {
+                e.preventDefault();
+              }
+              ;
+              Cake.Observer.notify(component4, event, e);
+            };
+          }
+          ;
+          if (!this.targets)
+            return;
+          for (let event in this.targets) {
+            if (this.targets.hasOwnProperty(event)) {
+              let cf = this.targets[event];
+              for (let item of cf) {
+                let { sel, el: el2, cb } = item;
+                cb = cb || event;
+                if (!el2.Ref().get("__cake__events")) {
+                  el2.Ref().set("__cake__events", {});
+                }
+                ;
+                let store = el2.Ref().get("__cake__events");
+                if (!store[cb]) {
+                  let isPrevented = !(event.substring(0, 1) == "~");
+                  el2.addEventListener(event, notify(cb, component3, isPrevented), true);
+                  store[cb] = true;
+                  el2.Ref().set("__cake__events", store);
+                } else {
+                  continue;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Component.prototype.findTarget = function() {
+          let q = this.$attrib.getEventTarget(this.name);
+          let e = JSON.parse(JSON.stringify(q));
+          for (let item of e) {
+            item.el = document.querySelector(`[data-event=${item.sel}]`);
+            if (!this.targets[item.event]) {
+              this.targets[item.event] = [];
+            }
+            ;
+            this.targets[item.event].push(item);
+          }
+          ;
+        };
+        Component.prototype.toggler = function(_this) {
+          let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
+          let cl = class {
+            constructor(bind, bases, html, _this2) {
+              this.toggle = _this2.toggle;
+              this.bind = bind;
+              this.bases = bases;
+              this.cache = _this2.$cache;
+              this.html = html;
+            }
+            check(bind) {
+              let config = this.toggle[bind];
+              if (!config) {
+                console.error(`${bind} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
+              } else {
+                if (attrToggle.length) {
+                  let { ns } = config;
+                  let f = attrToggle.find((item) => {
+                    return item.name == `ns-${ns}`;
+                  });
+                  f && (config.sel = `[data-toggle=${f.sel}]`);
+                }
+                ;
+                return config;
+              }
+              ;
+            }
+            _toggle() {
+              let config = this.check(this.bind);
+              if (!config) {
+                return;
+              }
+              let { basis = "data-name", cls = "is-active", mode = "radio", sel, persist: persist2 = true } = config;
+              let targets = this.html.querySelectorAll(sel);
+              if (!targets.length) {
+                return;
+              }
+              ;
+              let prev, next;
+              if (targets.length == 1) {
+                let isbool = typeof this.bases == "boolean";
+                let isforce = !!this.bases;
+                let el2 = targets[0];
+                if (persist2) {
+                  const _forceState = function(el3, cls2, isforce2) {
+                    if (isforce2) {
+                      if (el3.classList.contains(cls2)) {
+                        el3.classList.remove(cls2);
+                      }
+                      ;
+                    } else {
+                      if (!el3.classList.contains(cls2)) {
+                        el3.classList.add(cls2);
+                      }
+                      ;
+                    }
+                  };
+                  if (isbool) {
+                    if (isforce) {
+                      this.cache.createOrUpdate(this.bind, true);
+                      _forceState(el2, cls, true);
+                    } else {
+                      this.cache.createOrUpdate(this.bind, false);
+                      _forceState(el2, cls, false);
+                    }
+                    el2.classList.toggle(cls);
+                  } else {
+                    this.cache.createOrUpdate(this.bind, !el2.classList.contains(cls));
+                    el2.classList.toggle(cls);
+                  }
+                  ;
+                }
+                ;
+              } else {
+                for (let t = 0; t < targets.length; t++) {
+                  let el2 = targets[t];
+                  let has = el2.classList.contains(cls);
+                  let attr = el2.getAttribute(basis);
+                  if (attr == this.bases) {
+                    if (mode == "switch") {
+                      el2.classList.toggle(cls);
+                    } else {
+                      if (!has) {
+                        el2.classList.add(cls);
+                      }
+                      ;
+                    }
+                    ;
+                    if (persist2) {
+                      this.cache.createOrUpdate(this.bind, attr);
+                    }
+                    ;
+                    next = attr;
+                  } else {
+                    if (has) {
+                      el2.classList.remove(cls);
+                      prev = el2.getAttribute(basis);
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              return { prev, next };
+            }
+            _recall() {
+              let config = this.check(this.bind);
+              if (!config) {
+                return;
+              }
+              let { basis = "data-name", cls = "is-active", sel } = config;
+              return this.cache.get(this.bind).then((result) => {
+                if (!result) {
+                  return result;
+                }
+                ;
+                let bases = result;
+                let targets = this.html.querySelectorAll(sel);
+                if (!targets.length) {
+                  return;
+                }
+                ;
+                if (targets.length == 1) {
+                  let el2 = targets[0];
+                  if (bases) {
+                    el2.classList.add(cls);
+                  }
+                  ;
+                } else {
+                  for (let t = 0; t < targets.length; t++) {
+                    let el2 = targets[t];
+                    let has = el2.classList.contains(cls);
+                    let attr = el2.getAttribute(basis);
+                    if (attr == bases) {
+                      if (!has) {
+                        el2.classList.add(cls);
+                      }
+                      ;
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+                return bases;
+              });
+            }
+          };
+          let fn2 = (bind, bases) => {
+            return new cl(bind, bases, this.html, this)._toggle();
+          };
+          fn2.recall = (bind) => {
+            return new cl(bind, false, this.html, this)._recall();
+          };
+          return fn2;
+        };
+        Component.prototype.findContainer = function() {
+          let containers = this.html.getContainers();
+          for (let c = 0; c < containers.length; c++) {
+            let el2 = containers[c];
+            let name = el2.dataset.container;
+            if (name) {
+              this.container[name] = el2;
+            }
+            ;
+          }
+          ;
+        };
+        Component.prototype._watchBindedItems = function() {
+          if (!this.items.length) {
+            this.items = this.$attrib.getWatchItems(this.name);
+            Cake.Scope.watch(this.items);
+          }
+          ;
+        };
+        Component.prototype.observer = function(subscribe2) {
+          function callback(name) {
+            return this.handler[name];
+          }
+          this.observer = new Observer(this, subscribe2, callback.bind(this));
+        };
+        Component.prototype.variable = function(obj) {
+          let vary = Object.keys(obj);
+          let validate = {};
+          let values = [];
+          function invalid(name, test, type) {
+            if (!test) {
+              validate[name] = `value is not '${type}'`;
+            }
+            ;
+          }
+          ;
+          for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              let config = obj[key];
+              let { type, value } = config;
+              let test;
+              if (["string", "number"].includes(type)) {
+                test = typeof value == type;
+              } else if (value instanceof Array) {
+                test = type == "array";
+              } else {
+                test = type == "object";
+              }
+              values.push(value);
+              invalid(key, test, type);
+            }
+            ;
+          }
+          ;
+          if (Object.keys(validate).length) {
+            throw new Error(JSON.stringify(validate));
+          } else {
+            return values;
+          }
+        };
+        return Component;
+      };
+    }
+  });
+
+  // src/scripts/cake.js
+  var require_cake = __commonJS({
+    "src/scripts/cake.js"(exports, module) {
+      module.exports = function(dependency) {
+        const {
+          Attrib,
+          Scope,
+          Component,
+          Hasher,
+          Persistent,
+          StorageKit: StorageKit2,
+          Observer: Observer2,
+          Formy
+        } = dependency;
+        function Cake2(name) {
+          this.name = name;
+          this.components = {};
+        }
+        ;
+        Cake2.Components = function(name) {
+          return {
+            subscribe(cb, ctx) {
+              function subscribeExternal() {
+                let component3 = Cake2.Components[name];
+                if (component3) {
+                  if (cb instanceof Function) {
+                    let name2 = cb.name;
+                    if (ctx) {
+                      cb = cb.bind(ctx);
+                    }
+                    cb.binded = "external";
+                    cb.original = name2;
+                    cb.listenTo = component3.name;
+                    component3.Subscribe(cb);
+                  }
+                } else {
+                }
+                ;
+              }
+              ;
+              return new Promise((res, rej) => {
+                let lk = setInterval(() => {
+                  if (Cake2.Components[name]) {
+                    subscribeExternal();
+                    clearInterval(lk);
+                    res();
+                  }
+                  ;
+                });
+              });
+            }
+          };
+        };
+        Cake2.Models = {};
+        Cake2.Subscribe = {};
+        Cake2.Handlers = {};
+        Cake2.Attributes = new Attrib();
+        Cake2.Models.$loaded = function(name) {
+          return new Promise((res, rej) => {
+            let mk = setInterval(() => {
+              if (Cake2.Models[name]) {
+                clearInterval(mk);
+                res(Cake2.Models[name]);
+              }
+              ;
+            });
+            setTimeout(() => {
+              if (!Cake2.Models[name]) {
+                clearInterval(mk);
+                rej(name);
+              }
+            }, 1e4);
+          });
+        };
+        Cake2.MainMessageChannel = function() {
+          let channel = new MessageChannel();
+          return {
+            send(data2) {
+              channel.port2.postMessage(data2);
+            },
+            receive(fn2) {
+              channel.port1.onmessage = function(payload) {
+                let { isTrusted, data: data2 } = payload || { isTrusted: false };
+                if (isTrusted) {
+                  fn2({ status: 1, data: data2 });
+                } else {
+                  fn2({ status: 0, err: "not trusted!" });
+                }
+                ;
+              };
+            }
+          };
+        }();
+        Cake2.Utils = {
+          scopeTrap(k) {
+            return false;
+          },
+          scopeNotifier(m) {
+            return m;
+          }
+        };
+        Cake2.create = function(name, template, options) {
+          let group = new Component(name, template, options);
+          group.create(name, template, options);
+        };
+        Cake2.plugin = function() {
+        };
+        Cake2.init = function(name) {
+          return new Component(name);
+        };
+        Cake2.Scope = new Scope(Cake2, {
+          trap(k) {
+            return Cake2.Utils.scopeTrap(k);
+          }
+        });
+        Cake2.Hasher = new Hasher(Cake2.Components);
+        Cake2.Hasher.listen();
+        Cake2.Scope.registerNotifier(function(prop, newValue, prevValue) {
+          return Cake2.Attributes.notifier(prop, newValue, prevValue);
+        });
+        Cake2.Attributes.registerNotifier(function(obj) {
+          Cake2.Scope.notifier(obj);
+        });
+        Cake2.Persistent = new Persistent();
+        Cake2.Persistent.listen(Cake2.Components);
+        Cake2.Cache = new StorageKit2({
+          name: "cache",
+          storage: "session",
+          child: "object"
+        });
+        Cake2.getSubscriber = function(component3, handler) {
+          let subscribe2 = Cake2.Subscribe;
+          let obj = {};
+          for (let c in subscribe2) {
+            if (subscribe2.hasOwnProperty(c)) {
+              let handlers = subscribe2[c];
+              for (let h in handlers) {
+                if (handlers.hasOwnProperty(h)) {
+                  let hs = handlers[h];
+                  for (let h2 of hs) {
+                    let _handler = h2;
+                    let original = _handler.original;
+                    let binded = _handler.binded;
+                    let listenTo = _handler.listenTo;
+                    if (listenTo == component3) {
+                      if (original == handler) {
+                        if (!obj[binded]) {
+                          obj[binded] = handler;
+                        } else {
+                          let v = obj[binded] instanceof Array ? obj[binded] : [obj[binded]];
+                          obj[binded] = v.concat(handler);
+                        }
+                        ;
+                      } else if (!handler) {
+                        if (!obj[binded]) {
+                          obj[binded] = original;
+                        } else {
+                          let v = obj[binded] instanceof Array ? obj[binded] : [obj[binded]];
+                          obj[binded] = v.concat(original);
+                        }
+                        ;
+                      }
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+          }
+          ;
+          return obj;
+        };
+        Cake2.Cache.getAll().then((items) => {
+          if (items instanceof Array) {
+            for (let i = 0; i < items.length; i++) {
+              let item = items[i];
+              Cake2.Scope.watch(item);
+            }
+          } else if (typeof items == "string") {
+            Cake2.Scope.watch(items);
+          }
+          ;
+        });
+        Cake2.Observer = new Observer2(Cake2.Subscribe, Cake2.Handlers);
+        Cake2.prototype._defineProperty = function(component3, prop, get, set) {
+          Object.defineProperty(component3, prop, {
+            configurable: true,
+            get() {
+              return get();
+            },
+            set(value) {
+              if (set) {
+                set(value);
+              } else {
+              }
+            }
+          });
+        };
+        Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
+          return Cake2.Observer;
+        });
+        Cake2.prototype._defineProperty(Component.prototype, "$scope", function() {
+          Cake2.Scope.install();
+          let scope2 = Cake2.$scope;
+          Object.defineProperty(scope2, "extend", {
+            configurable: true,
+            get() {
+              return function(target, obj) {
+                target = Cake2.Scope.temp[target];
+                if (target.toString().includes("Object")) {
+                  Object.assign(target, obj);
+                } else {
+                  console.error(`${target} is not an intance of Object`);
+                }
+                ;
+              };
+            }
+          });
+          return scope2;
+        });
+        Cake2.prototype._defineProperty(Component.prototype, "$attrib", function() {
+          return Cake2.Attributes;
+        });
+        Cake2.prototype._defineProperty(Component.prototype, "$persist", function() {
+          return Cake2.Persistent;
+        });
+        Cake2.prototype._defineProperty(Component.prototype, "$cache", function() {
+          return Cake2.Cache;
+        });
+        Cake2.prototype._defineProperty(Component.prototype, "$hash", function() {
+          return Cake2.Hasher;
+        });
+        Cake2.prototype.create = function(name, template, options) {
+          console.time(name);
+          let component3 = new Component(name, template, options);
+          component3.compile.then(() => {
+            let { subscribe: subscribe2, root, html, handlers, role } = component3;
+            role == "form" && function() {
+              Formy.bind(component3)();
+            }();
+            return Cakes.Observer.registerSubscribe(subscribe2).then(() => {
+              return { root, handlers };
+            });
+          }).then(({ handlers, root }) => {
+            Cake2.Observer.registerHandlers(handlers, component3.name);
+            this._defineProperty(component3, "root", function() {
+              if (component3._root) {
+                return component3._root;
+              } else {
+                let selector2 = root || "#app";
+                let query = document.querySelector(selector2);
+                if (query) {
+                  return query;
+                }
+              }
+              ;
+              throw new Error(`the selector '${selector}' as container of component '${component3.name}' is not found!`);
+            }, function(value) {
+              Object.assign(component3, { _root: value });
+            });
+          }).then(() => {
+            component3.fire = function() {
+              function fire(name2, variable) {
+                variable = !variable ? null : typeof variable == "function" ? variable.bind(component3)() : function() {
+                  return variable;
+                }.bind(component3)();
+                let o2 = {
+                  [name2]: () => {
+                    return variable;
+                  }
+                };
+                fn = o2[name2].bind(component3);
+                if (typeof fn == "function") {
+                  fn.name = name2;
+                  fn.original = name2;
+                  fn.binded = component3.name;
+                  Cake2.Observer.registerHandlers({ [name2]: fn }, component3.name);
+                  let payload = variable;
+                  if (variable && (variable.element || variable.root)) {
+                    payload = { status: 0, message: "element cant be cloned" };
+                  }
+                  ;
+                  Cake2.MainMessageChannel.send({ component: component3.name, event: name2, payload });
+                  const notify = Cake2.Observer.notify(component3.name, name2, {}).then(() => {
+                    return Cake2.Observer.results[component3.name][name2];
+                  });
+                  component3.await[name2] = notify;
+                  return component3.await[name2];
+                }
+                ;
+                console.error(`the param in fire is not an instance of function`);
+              }
+              ;
+              function addStaticMethod(fn2, handlers) {
+                for (let h in handlers) {
+                  if (handlers.hasOwnProperty(h)) {
+                    let handler = handlers[h];
+                    let event = handler.original;
+                    Object.defineProperty(fn2, event, {
+                      get() {
+                        let fn3 = {
+                          [event]: function(variable, isBroadcast) {
+                            if (isBroadcast != void 0) {
+                              isBroadcast = isBroadcast;
+                            }
+                            ;
+                            if (isBroadcast == void 0 && event == "destroy") {
+                              isBroadcast = true;
+                            }
+                            ;
+                            if (isBroadcast == void 0) {
+                              isBroadcast = false;
+                            }
+                            if (isBroadcast) {
+                              const notify = new Promise((res, rej) => {
+                                setTimeout(() => {
+                                  let payload = variable;
+                                  if (variable && variable.element) {
+                                    payload = { status: 0, message: "element cant be cloned" };
+                                  }
+                                  ;
+                                  Cake2.MainMessageChannel.send({ component: component3.name, event: name, payload });
+                                  Cake2.Observer.notify(component3.name, event, variable).then(() => {
+                                    return Cake2.Observer.results[component3.name][event];
+                                  }).then((r) => {
+                                    res(r);
+                                  }).catch((err) => {
+                                    console.error(err);
+                                  });
+                                });
+                              });
+                              component3.await[event] = notify;
+                              return component3.await[event];
+                            } else {
+                              return handler(variable);
+                            }
+                            ;
+                          }
+                        };
+                        fn3[event] = fn3[event].bind(component3);
+                        fn3[event].originalName = event;
+                        fn3[event].binded = component3.name;
+                        return fn3[event];
+                      }
+                    });
+                  }
+                  ;
+                }
+                ;
+              }
+              addStaticMethod(fire, component3.handlers);
+              return fire;
+            }();
+          }).then(() => {
+            if (component3.type == "view") {
+              component3.toggler = component3.toggler(component3);
+              Cake2.Components[name] = component3;
+            }
+            ;
+          }).then(() => {
+            if (component3.type == "model") {
+              Cake2.Models[name] = component3;
+            }
+            if (component3.isStatic && component3.type == "view") {
+              component3.render();
+            } else {
+            }
+            ;
+          });
+        };
+        return Cake2;
+      };
+    }
+  });
+
+  // src/app.js
+  var env = require_env();
+  var polyfill = require_polyfill();
+  var utils = require_utils();
+  var extensions = require_extends();
+  var templateExtend = require_template_extend();
+  var storage = require_storage();
+  var piece = require_piece();
+  var observer = require_observer();
+  var templating = require_templating();
+  var animate = require_animate();
+  var scope = require_scope();
+  var persist = require_persist();
+  var hash = require_hash();
+  var form = require_form();
+  var attributes = require_attributes()({
+    StorageKit: storage,
+    Templating: templating
+  });
+  var component2 = require_component()({
+    Mo: animate,
+    Templating: templating,
+    Piece,
+    piece
+  });
+  var cake = require_cake()({
+    Attrib: attributes,
+    Scope: scope,
+    Component: component2,
+    Hasher: hash,
+    Persistent: persist,
+    StorageKit: storage,
+    Observer: observer,
+    Formy: form
+  });
+})();
