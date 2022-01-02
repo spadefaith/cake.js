@@ -4027,7 +4027,7 @@
             role == "form" && function() {
               Formy.bind(component3)();
             }();
-            return Cakes.Observer.registerSubscribe(subscribe2).then(() => {
+            return Cake2.Observer.registerSubscribe(subscribe2).then(() => {
               return { root, handlers };
             });
           }).then(({ handlers, root }) => {
