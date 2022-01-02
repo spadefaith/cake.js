@@ -1806,10 +1806,8 @@
   var require_attributes = __commonJS({
     "src/scripts/attributes.js"(exports, module) {
       module.exports = function(dependency) {
-        const {
-          StorageKit: StorageKit2,
-          Templating
-        } = dependency;
+        const StorageKit2 = dependency.StorageKit;
+        const Templating = dependency.Templating;
         function Attrib() {
           this.uiid = 0;
           this.notify = [];
@@ -2837,11 +2835,9 @@
   var require_component = __commonJS({
     "src/scripts/component.js"(exports, module) {
       module.exports = function(dependency) {
-        const {
-          Mo,
-          Templating,
-          Piece: Piece2
-        } = dependency;
+        const Mo = dependency.Mo;
+        const Templating = dependency.Templating;
+        const Piece2 = dependency.Piece;
         function Component(name, template, options) {
           this.name = name;
           this.template = template;
@@ -3493,16 +3489,14 @@
   var require_cake = __commonJS({
     "src/scripts/cake.js"(exports, module) {
       module.exports = function(dependency) {
-        const {
-          Attrib,
-          Scope,
-          Component,
-          Hasher,
-          Persistent,
-          StorageKit: StorageKit2,
-          Observer: Observer2,
-          Formy
-        } = dependency;
+        const Attrib = dependency.Attrib;
+        const Scope = dependency.Scope;
+        const Component = dependency.Component;
+        const Hasher = dependency.Hasher;
+        const Persistent = dependency.Persistent;
+        const StorageKit2 = dependency.StorageKit;
+        const Observer2 = dependency.Observer;
+        const Formy = dependency.Formy;
         function Cake2(name) {
           this.name = name;
           this.components = {};
