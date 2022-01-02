@@ -1759,6 +1759,7 @@
           this.notify = [];
           this.parent = parent;
           this._clone = {};
+          this._cloneAsync = {};
           this.whitelist = ["extend", "set", "get"];
           this.install();
         }
@@ -1816,10 +1817,12 @@
           let { update, defineProperty } = this.method();
           let temp = this.temp;
           let cloned = this._clone;
+          let clonedAsync = this._cloneAsync;
           Object.defineProperty(this.parent, this.pKey, {
             configurable: true,
             get() {
               cloned = Object.assign(cloned, temp);
+              cloned = Object.assign(cloned, clonedAsync);
               let keys = Object.keys(temp);
               update(keys, function(key) {
                 defineProperty(key, cloned);
@@ -4037,7 +4040,7 @@
             configurable: true,
             get() {
               return function(key, value) {
-                const cloned = Cake2.Scope._clone;
+                const cloned = Cake2.Scope._cloneAsync;
                 return set(key, value, cloned);
               };
             }
