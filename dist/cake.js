@@ -3426,7 +3426,7 @@
           return new Promise((res, rej) => {
             if (!this.isReady) {
               this.createElement().then(() => {
-                hashed === true && this.$hash.add(this.name);
+                console.log(341, root, !!root)(hashed === true) && this.$hash.add(this.name);
                 !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
                 !!root && (this.root = root);
                 multiple && this._smoothReset();
