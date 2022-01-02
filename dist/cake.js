@@ -3369,7 +3369,6 @@
                   let element = query.getContent(true);
                   element.cake_component = this.name;
                   this.html = this.Node(element);
-                  console.log(274, this.html);
                   this._parseHTML(this.isStatic).then(() => {
                     this._watchBindedItems();
                     res();
@@ -3386,7 +3385,6 @@
                   let element = query;
                   element.cake_component = this.name;
                   this.html = this.Node(element);
-                  console.log(290, this.html);
                   this.isStatic = true;
                   this._parseHTML(this.isStatic).then(() => {
                     res();
@@ -3419,8 +3417,6 @@
           const getValue = (item) => {
             return this.data[item] || this.$scope[item] || null;
           };
-          console.log(356, "render");
-          console.log(356, this.isReady);
           return new Promise((res, rej) => {
             if (!this.isReady) {
               this.createElement().then(() => {
@@ -3428,7 +3424,6 @@
                 !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
                 !!root && (this.root = root);
                 multiple && this._smoothReset();
-                console.log(366, this.html);
               }).then(() => {
                 this.isReady = true;
                 res();
@@ -3752,7 +3747,6 @@
               ;
             }
             ;
-            console.log(703, containers);
             res();
           });
         };
