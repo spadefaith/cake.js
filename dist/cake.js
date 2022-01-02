@@ -1839,6 +1839,7 @@
           return true;
         };
         Scope.prototype.set = function(key, value) {
+          console.log(96, key, value);
           if (this.whitelist.includes(key)) {
             return;
           }
