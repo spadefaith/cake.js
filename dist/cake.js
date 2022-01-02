@@ -1789,6 +1789,9 @@
               Object.defineProperty(temp, key, {
                 configurable: true,
                 get() {
+                  if (key == "detail") {
+                    console.log(cloned);
+                  }
                   let t = trap.bind(_this)(key) || false;
                   if (t) {
                     return t;
@@ -1797,6 +1800,9 @@
                   return cloned[key];
                 },
                 set(newValue) {
+                  if (key == "detail") {
+                    console.trace();
+                  }
                   if (whitelist.includes(key)) {
                   } else {
                     let prevValue = this[key];
