@@ -3362,25 +3362,40 @@
           let selector2 = this.template.substr(1);
           let query = document.getElementById(selector2);
           let isTemplate = this.isTemplate = query && query.toString().includes("Template");
-          if (isTemplate) {
-            let element = query.getContent(true);
-            element.cake_component = this.name;
-            this.html = this.Node(element);
-            console.log(274, this.html);
-            console.log(275, this);
-            return this._parseHTML(this.isStatic).then(() => {
-              this._watchBindedItems();
-            });
-          } else if (isTemplate == null) {
-            return Promise.resolve({});
-          } else {
-            let element = query;
-            element.cake_component = this.name;
-            this.html = this.Node(element);
-            this.isStatic = true;
-            return this._parseHTML(this.isStatic).then(() => {
-            });
-          }
+          return new Promise((res) => {
+            switch (isTemplate) {
+              case true:
+                {
+                  let element = query.getContent(true);
+                  element.cake_component = this.name;
+                  this.html = this.Node(element);
+                  console.log(274, this.html);
+                  this._parseHTML(this.isStatic).then(() => {
+                    this._watchBindedItems();
+                    res();
+                  });
+                }
+                break;
+              case null:
+                {
+                  res();
+                }
+                break;
+              default:
+                {
+                  let element = query;
+                  element.cake_component = this.name;
+                  this.html = this.Node(element);
+                  console.log(290, this.html);
+                  this.isStatic = true;
+                  this._parseHTML(this.isStatic).then(() => {
+                    res();
+                  });
+                }
+                ;
+            }
+            ;
+          });
         };
         Component.prototype.createElementAsync = function() {
           return new Promise((res) => {
