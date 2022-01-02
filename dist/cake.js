@@ -4046,8 +4046,8 @@
             configurable: true,
             get() {
               const cloned = Cake2.Scope._clone;
-              return function(key, value, cloned2) {
-                return set(key, value, cloned2);
+              return function(key, value) {
+                return set(key, value, cloned);
               };
             }
           });
