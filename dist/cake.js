@@ -3489,6 +3489,7 @@
         };
         Component.prototype.reset = function() {
           let animate2 = this.$animate("remove");
+          console.log(this.html, animate2);
           if (animate2 instanceof Promise) {
             this.await.animateRemove = new Promise((res) => {
               animate2.then(() => {
