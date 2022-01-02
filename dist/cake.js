@@ -554,8 +554,8 @@
 
   // src/scripts/storage.js
   var require_storage = __commonJS({
-    "src/scripts/storage.js"() {
-      (function(window2) {
+    "src/scripts/storage.js"(exports, module) {
+      module.exports = function() {
         function typeOf(_obj) {
           return _obj.constructor.name.toLowerCase();
         }
@@ -914,20 +914,20 @@
             return this.storage.close(storage2);
           }
         };
-        window2.StorageKit = USB;
-      })(window);
+        return USB;
+      };
     }
   });
 
   // src/scripts/piece.js
   var require_piece = __commonJS({
-    "src/scripts/piece.js"() {
-      (function(global) {
-        function Piece2(el2) {
-          this.el = Piece2.toArray(el2);
+    "src/scripts/piece.js"(exports, module) {
+      module.exports = function() {
+        function Piece(el2) {
+          this.el = Piece.toArray(el2);
         }
         ;
-        Piece2.toArray = function(el2) {
+        Piece.toArray = function(el2) {
           let r = [];
           switch (true) {
             case el2 instanceof Array:
@@ -952,13 +952,13 @@
           ;
           return r;
         };
-        Piece2.prototype.getElements = function() {
+        Piece.prototype.getElements = function() {
           return this.el;
         };
-        Piece2.prototype.getElement = function() {
+        Piece.prototype.getElement = function() {
           return this.el[0];
         };
-        Piece2.prototype.remove = function(name) {
+        Piece.prototype.remove = function(name) {
           let i = -1, length2 = this.el.length;
           let fg = document.createDocumentFragment();
           while (++i < length2) {
@@ -968,7 +968,7 @@
           ;
           fr = null;
         };
-        Piece2.prototype.replaceDataSrc = function() {
+        Piece.prototype.replaceDataSrc = function() {
           let els = this.el[0];
           let srcs = els.querySelectorAll("[data-src]");
           for (let s = 0; s < srcs.length; s++) {
@@ -978,16 +978,16 @@
           }
           ;
         };
-        Piece2.cloneNode = function(el2) {
+        Piece.cloneNode = function(el2) {
           el2 = el2 instanceof Array ? el2 : this.toArray(el2);
           let a = [];
           for (let e = 0; e < el2.length; e++) {
             a.push(el2[e].cloneNode(true));
           }
           ;
-          return new Piece2(a);
+          return new Piece(a);
         };
-        Piece2.prototype.dataset = function(data2, cb) {
+        Piece.prototype.dataset = function(data2, cb) {
           let l2 = this.el.length;
           let i = -1;
           while (++i < l2) {
@@ -1003,14 +1003,14 @@
           ;
           return true;
         };
-        Piece2.prototype.getContainers = function() {
+        Piece.prototype.getContainers = function() {
           return this.getElementsByDataset("container").container;
         };
-        Piece2.prototype.cloneNode = function(el2) {
+        Piece.prototype.cloneNode = function(el2) {
           el2 = this.el;
-          return Piece2.cloneNode(el2);
+          return Piece.cloneNode(el2);
         };
-        Piece2.prototype.getAllElements = function() {
+        Piece.prototype.getAllElements = function() {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1040,7 +1040,7 @@
           ;
           return r;
         };
-        Piece2.prototype.appendTo = function(root, cleaned) {
+        Piece.prototype.appendTo = function(root, cleaned) {
           if (!root && !root.attributes) {
             throw new TypeError(`the ${root} is not an instance of Element`);
           }
@@ -1052,7 +1052,7 @@
           }
           ;
         };
-        Piece2.prototype.getElementsByTagName = function(tag) {
+        Piece.prototype.getElementsByTagName = function(tag) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1082,7 +1082,7 @@
           ;
           return r;
         };
-        Piece2.prototype.getElementById = function(ids) {
+        Piece.prototype.getElementById = function(ids) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1109,7 +1109,7 @@
           ;
           return r;
         };
-        Piece2.prototype.querySelectorAll = function(selector2) {
+        Piece.prototype.querySelectorAll = function(selector2) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1137,7 +1137,7 @@
           ;
           return r;
         };
-        Piece2.prototype.querySelector = function(selector2) {
+        Piece.prototype.querySelector = function(selector2) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1164,7 +1164,7 @@
           ;
           return r;
         };
-        Piece2.prototype.querySelectorIncluded = function(selector2, attr, val) {
+        Piece.prototype.querySelectorIncluded = function(selector2, attr, val) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1188,7 +1188,7 @@
           ;
           return r;
         };
-        Piece2.prototype.querySelectorAllIncluded = function(selector2, attr, val) {
+        Piece.prototype.querySelectorAllIncluded = function(selector2, attr, val) {
           let length2 = this.el.length;
           let r = [];
           switch (true) {
@@ -1212,7 +1212,7 @@
           ;
           return r;
         };
-        Piece2.prototype.contains = function(el2) {
+        Piece.prototype.contains = function(el2) {
           let length2 = this.el.length, test = false;
           switch (length2 == 1) {
             case true:
@@ -1237,7 +1237,7 @@
           }
           return test;
         };
-        Piece2.prototype.getElementsByDataset = function() {
+        Piece.prototype.getElementsByDataset = function() {
           let arg, sel, i, a, el2, query;
           arg = arguments;
           o = {};
@@ -1264,15 +1264,15 @@
           ;
           return o;
         };
-        global.Piece = Piece2;
-      })(window);
+        return Piece;
+      };
     }
   });
 
   // src/scripts/observer.js
   var require_observer = __commonJS({
-    "src/scripts/observer.js"() {
-      (function(global) {
+    "src/scripts/observer.js"(exports, module) {
+      module.exports = function() {
         function Observer2(subscribe2, handlers, logger) {
           this.subscribe = subscribe2;
           this.handlers = handlers;
@@ -1469,15 +1469,15 @@
           }
           ;
         };
-        global.Observer = Observer2;
-      })(window);
+        return Observer2;
+      };
     }
   });
 
   // src/scripts/templating.js
   var require_templating = __commonJS({
-    "src/scripts/templating.js"() {
-      (function(global) {
+    "src/scripts/templating.js"(exports, module) {
+      module.exports = function() {
         function Templating(data2, template, isConvert) {
           this.data = data2;
           this.template = template;
@@ -1544,21 +1544,214 @@
           }
           ;
         };
-        global.Templating = Templating;
-      })(window);
+        return Templating;
+      };
     }
   });
 
   // src/scripts/animate.js
   var require_animate = __commonJS({
-    "src/scripts/animate.js"() {
+    "src/scripts/animate.js"(exports, module) {
+      module.exports = class {
+        constructor(config = [], html) {
+          this.html = html || document;
+          this.cf = config;
+          this.duration = 300;
+        }
+        animate(moment) {
+          this.config = this.parse(this.cf);
+          return new Promise((res) => {
+            for (let i = 0; i < this.config.length; i++) {
+              let cf = this.config[i];
+              let { element } = cf;
+              if (!cf[moment]) {
+                res();
+                break;
+              }
+              ;
+              let config = cf[moment];
+              if (!config.options && !(config.options && config.options.duration)) {
+                config.options = { duration: this.duration };
+              }
+              ;
+              if (!config.keyframes && !element) {
+                continue;
+              }
+              let keyframes = config.keyframes;
+              let index = 0;
+              let fr2 = [];
+              for (let k = 0; k < keyframes.length; k++) {
+                let kk = keyframes[k];
+                switch (true) {
+                  case typeof kk == "string":
+                    {
+                      fr2.push(this.dic(kk));
+                    }
+                    break;
+                  case kk instanceof Object: {
+                    let { name, offset } = kk;
+                    if (name && offset) {
+                      let def = this.dic(name);
+                      def[def.length - 1].offset = offset;
+                      fr2.push(def);
+                    } else {
+                      fr2.push(kk);
+                    }
+                  }
+                }
+                ;
+              }
+              keyframes = fr2;
+              fr2 = null;
+              let recurseCall = () => {
+                let kf = keyframes[index];
+                let animate2 = element.animate(kf, config.options || this.duration);
+                animate2.finished.then(() => {
+                  if (index < keyframes.length - 1) {
+                    index += 1;
+                    recurseCall();
+                  } else {
+                    keyframes = [];
+                    res();
+                  }
+                });
+              };
+              recurseCall();
+            }
+            ;
+          });
+        }
+        parse(config) {
+          let configs = [], length2 = config.length, i = -1;
+          while (++i < length2) {
+            let cf = config[i];
+            let selector2 = cf.selector, el2;
+            switch (true) {
+              case !!(selector2.val && selector2.attr):
+                {
+                  el2 = this.html.querySelectorIncluded(`[${selector2.attr}=${selector2.val}]`, selector2.attr, selector2.val);
+                }
+                break;
+              case !!(selector2.val && !selector2.attr):
+                {
+                  let attr = selector2.val.match(new RegExp(`^[.]`)) ? "class" : selector2.val.match(new RegExp(`^[#]`)) ? "id" : null;
+                  let val = attr ? selector2.val.slice(1) : null;
+                  el2 = this.html.querySelectorIncluded(selector2.val, attr, val);
+                }
+                break;
+            }
+            ;
+            cf.element = el2;
+            configs.push(cf);
+          }
+          ;
+          return configs;
+        }
+        dic(name) {
+          let coll = {
+            slideOutUp: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(0,100%,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideOutRight: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideOutLeft: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(-100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideOutDown: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(0,-100%,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideInUp: [{
+              transform: "translate3d(0,100%,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            slideInRight: [{
+              transform: "translate3d(100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            slideInLeft: [{
+              transform: "translate3d(-100%,0,0)",
+              visibility: "hidden",
+              opacity: "0",
+              easing: "ease-out"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            slideInDown: [{
+              transform: "translate3d(0,-100%,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            disappear: [{
+              opacity: "1"
+            }, {
+              opacity: "0"
+            }],
+            appear: [{
+              opacity: "0"
+            }, {
+              opacity: "1"
+            }],
+            flipInX: [
+              ,
+              { offset: 0, backfaceVisibility: "visible" },
+              { transform: "perspective(400px) rotate3d(1,0,0,90deg)", opacity: "0", offset: 0 },
+              { transform: "perspective(400px) rotate3d(1,0,0,-20deg)", offset: 0.4, easing: "ease-in" },
+              { offset: 0.6, opacity: "1", transform: "perspective(400px) rotate3d(1,0,0,10deg)" },
+              { transform: "perspective(400px) rotate3d(1,0,0,-5deg)", offset: 0.8 },
+              { offset: 1, backfaceVisibility: "visible", transform: "perspective(400px) rotate3d(1,0,0,0)" }
+            ]
+          };
+          return coll[name.trim()] || [];
+        }
+      };
     }
   });
 
   // src/scripts/scope.js
   var require_scope = __commonJS({
-    "src/scripts/scope.js"() {
-      (function(global) {
+    "src/scripts/scope.js"(exports, module) {
+      module.exports = function() {
         function Scope(parent, options) {
           this.pKey = options.pKey || "$scope";
           this.temp = {};
@@ -1658,20 +1851,125 @@
             return cb(key, value, prevValue);
           }));
         };
-        global.Scope = Scope;
-      })(window);
+        return Scope;
+      };
     }
   });
 
   // src/scripts/persist.js
   var require_persist = __commonJS({
-    "src/scripts/persist.js"() {
+    "src/scripts/persist.js"(exports, module) {
+      module.exports = class {
+        constructor() {
+          this.storage = new StorageKit({
+            child: "array",
+            storage: "session",
+            name: "_cake_persistent"
+          });
+        }
+        listen(components) {
+          window.addEventListener("DOMContentLoaded", (e) => {
+            setTimeout(() => {
+              this.storage.getAll().then((result) => {
+                if (result && !result.length)
+                  return;
+                for (let r = 0; r < result.length; r++) {
+                  let item = result[r];
+                  let component3 = components[item];
+                  component3.isConnected = false;
+                  if (component3) {
+                    !component3.isConnected && component3.render.bind(component3)();
+                  } else {
+                    console.error(`component ${component3} is not found!`);
+                  }
+                }
+                ;
+              });
+            });
+          });
+        }
+        append(name) {
+          this.storage.create(name);
+        }
+        remove(name) {
+          this.storage.remove(name);
+        }
+      };
     }
   });
 
   // src/scripts/hash.js
   var require_hash = __commonJS({
-    "src/scripts/hash.js"() {
+    "src/scripts/hash.js"(exports, module) {
+      module.exports = class {
+        constructor(Components) {
+          this.Components = Components;
+        }
+        listen() {
+          window.addEventListener("hashchange", (e) => {
+            let hit = this.compare(e);
+            this.find(hit, this.notify);
+          });
+        }
+        compare(e) {
+          let { oldURL, newURL } = e;
+          let hit = null;
+          if (oldURL.length > newURL.length) {
+            let prev = new URL(oldURL).hash.substring(1).split("/");
+            let next = new URL(newURL).hash.substring(1).split("/");
+            for (let p = 0; p < prev.length; p++) {
+              if (!next.includes(prev[p])) {
+                hit = prev[p];
+                break;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return hit;
+        }
+        find(name, cb) {
+          if (!name)
+            return;
+          if (!this.Components[name]) {
+            let lk = setInterval(() => {
+              if (this.Components[name]) {
+                if (this.Components[name].isConnected) {
+                  cb(this.Components[name]);
+                }
+                ;
+                clearTimeout(lk);
+              }
+              ;
+            }, 50);
+            setTimeout(() => {
+              clearTimeout(lk);
+            }, 5e3);
+          } else {
+            if (this.Components[name].isConnected) {
+              cb(this.Components[name]);
+            }
+            ;
+          }
+          ;
+        }
+        notify(component3) {
+          component3.fire.destroy();
+        }
+        add(componentName) {
+          let hash2 = location.hash;
+          if (!hash2.includes(componentName)) {
+            location.hash = hash2 + "/" + componentName;
+          }
+          ;
+        }
+        remove(componentName) {
+          let hash2 = location.hash;
+          let removed = hash2.replace(componentName, "");
+          location.replace(removed);
+        }
+      };
     }
   });
 
@@ -2837,7 +3135,7 @@
       module.exports = function(dependency) {
         const Mo = dependency.Mo;
         const Templating = dependency.Templating;
-        const Piece2 = dependency.Piece;
+        const Piece = dependency.Piece;
         function Component(name, template, options) {
           this.name = name;
           this.template = template;
@@ -2899,7 +3197,7 @@
           });
         };
         Component.prototype.Node = function(el2) {
-          return new Piece2(el2);
+          return new Piece(el2);
         };
         Component.prototype._bindHandlers = function() {
           for (let key in this.handlers) {
@@ -3877,23 +4175,22 @@
   var hash = require_hash();
   var form = require_form();
   var attributes = require_attributes()({
-    StorageKit: storage,
-    Templating: templating
+    StorageKit: storage(),
+    Templating: templating()
   });
   var component2 = require_component()({
     Mo: animate,
-    Templating: templating,
-    Piece,
-    piece
+    Templating: templating(),
+    Piece: piece()
   });
   var cake = require_cake()({
     Attrib: attributes,
-    Scope: scope,
+    Scope: scope(),
     Component: component2,
     Hasher: hash,
     Persistent: persist,
-    StorageKit: storage,
-    Observer: observer,
+    StorageKit: storage(),
+    Observer: observer(),
     Formy: form
   });
 })();
