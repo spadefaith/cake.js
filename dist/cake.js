@@ -2585,7 +2585,7 @@
         Attrib.prototype.notifier = function(prop, newValue, prevValue) {
           let val = JSON.parse(JSON.stringify(newValue));
           return new Promise((res) => {
-            console.log(539, newValue);
+            console.trace();
             this._notifyFor(prop, val, prevValue);
             res();
           }).then(() => {
