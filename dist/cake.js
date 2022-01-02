@@ -3505,12 +3505,12 @@
           this.isConnected = false;
           this.$persist.remove(name);
           this.html = this.original.cloneNode();
+          return true;
         };
         Component.prototype.reset = function() {
           let animate2 = this.$animate("remove");
-          console.log(this, this.html, animate2);
           if (animate2 instanceof Promise) {
-            this.await.animateRemove = new Promise((res) => {
+            return this.await.animateRemove = new Promise((res) => {
               animate2.then(() => {
                 return this.html.remove();
               }).then(() => {
@@ -3520,8 +3520,11 @@
               });
             });
           } else {
-            this.html.remove(this.name);
-            this._hardReset(this.name);
+            return new Promise((res) => {
+              this.html.remove(this.name);
+              this._hardReset(this.name);
+              res();
+            });
           }
         };
         Component.prototype.addEvent = function(static2, multiple) {
