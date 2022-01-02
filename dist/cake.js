@@ -1776,6 +1776,7 @@
           let notify = this.notify;
           let _this = this.parent;
           let whitelist = this.whitelist;
+          let cloneAsync = this._cloneAsync;
           return {
             update(keys, fn2) {
               if (!keys.length)
@@ -1798,7 +1799,7 @@
                   return cloned[key];
                 },
                 set(newValue) {
-                  if (whitelist.includes(key) || _this._cloneAsync[key]) {
+                  if (whitelist.includes(key) || cloneAsync[key]) {
                   } else {
                     let prevValue = this[key];
                     for (let n = 0; n < notify.length; n++) {
