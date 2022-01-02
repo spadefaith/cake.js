@@ -4031,6 +4031,12 @@
               };
             }
           });
+          Object.defineProperty(scope2, "set", {
+            configurable: true,
+            get() {
+              return Cake2.Scope.set;
+            }
+          });
           return scope2;
         });
         Cake2.prototype._defineProperty(Component.prototype, "$attrib", function() {
