@@ -2111,7 +2111,7 @@
           this.notify = [];
           this.st = {};
           this.cacheStatic = [];
-          this.store = StorageKit2({
+          this.store = new StorageKit2({
             child: "object",
             storage: "session",
             name: "_cake_component_cf"
