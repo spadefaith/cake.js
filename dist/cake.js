@@ -1040,12 +1040,12 @@
           ;
           return r;
         };
-        Piece.prototype.appendTo = function(root, cleaned) {
+        Piece.prototype.appendTo = function(root, cleaned2) {
           if (!root && !root.attributes) {
             throw new TypeError(`the ${root} is not an instance of Element`);
           }
           ;
-          cleaned && (root.innerHTML = "");
+          cleaned2 && (root.innerHTML = "");
           for (let i = 0; i < this.el.length; i++) {
             let el2 = this.el[i];
             root.appendChild(el2);
@@ -1317,9 +1317,9 @@
             return;
           }
           ;
-          let prom = new Promise((res, rej) => {
+          let prom = new Promise((res2, rej) => {
             let e2 = handler(_e);
-            res(e2);
+            res2(e2);
           });
           this.stat.handlers[handler.original] += 1;
           return prom.then((variable) => {
@@ -1339,7 +1339,7 @@
               for (let s = 0; s < subscribe2.length; s++) {
                 let fn2 = subscribe2[s];
                 this.stat.subscribe[fn2.original] += 1;
-                execs.push(new Promise((res, rej) => {
+                execs.push(new Promise((res2, rej) => {
                   try {
                     let exec = (() => {
                       return fn2(variable);
@@ -1351,13 +1351,13 @@
                         }
                         ;
                         this.results[_component][_event] = exec;
-                        res();
+                        res2();
                       }).catch((err) => {
                         rej(err);
                       });
                     } else {
                       this.results[_component][_event] = exec;
-                      res();
+                      res2();
                     }
                   } catch (e2) {
                     console.log(e2);
@@ -1381,7 +1381,7 @@
           });
         };
         Observer2.prototype.registerSubscribe = function(subscribe2) {
-          return new Promise((res, rej) => {
+          return new Promise((res2, rej) => {
             for (component in subscribe2) {
               if (subscribe2.hasOwnProperty(component)) {
                 if (!this.subscribe[component]) {
@@ -1394,7 +1394,7 @@
               ;
             }
             ;
-            res();
+            res2();
           }).then(() => {
             let obj = {};
             for (component in subscribe2) {
@@ -1560,12 +1560,12 @@
         }
         animate(moment) {
           this.config = this.parse(this.cf);
-          return new Promise((res) => {
+          return new Promise((res2) => {
             for (let i = 0; i < this.config.length; i++) {
               let cf = this.config[i];
               let { element } = cf;
               if (!cf[moment]) {
-                res();
+                res2();
                 break;
               }
               ;
@@ -1612,7 +1612,7 @@
                     recurseCall();
                   } else {
                     keyframes = [];
-                    res();
+                    res2();
                   }
                 });
               };
@@ -2384,7 +2384,7 @@
               let cf = this.st[config.component].for.find((item) => {
                 return item.sel == child;
               });
-              cf && childCf.push(new Promise((res) => {
+              cf && childCf.push(new Promise((res2) => {
                 let { bind, sel, iter, ins } = cf;
                 setTimeout(() => {
                   let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
@@ -2584,9 +2584,9 @@
         };
         Attrib.prototype.notifier = function(prop, newValue, prevValue) {
           let val = JSON.parse(JSON.stringify(newValue));
-          return new Promise((res) => {
+          return new Promise((res2) => {
             this._notifyFor(prop, val, prevValue);
-            res();
+            res2();
           }).then(() => {
             return this._notifyForUpdate(prop, val, prevValue);
           }).then(() => {
@@ -2769,15 +2769,15 @@
           };
         };
         Attrib.prototype._compileEvents = function(events, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!events.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(events, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let e = 0; e < els.length; e++) {
@@ -2793,18 +2793,18 @@
               }
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileToggle = function(toggles, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!toggles.length) {
-              res();
+              res2();
               return;
             }
             let els = this._static(component3)(toggles, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             let c = {};
@@ -2823,20 +2823,20 @@
             }
             ;
             c = {};
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileFor = function(fors, component3, isStatic, el2) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             let target = el2;
             if (!fors.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(fors, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             let o2 = {};
@@ -2878,19 +2878,19 @@
               ;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileForUpdate = function(fors, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!fors.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(fors, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let f = 0; f < els.length; f++) {
@@ -2908,19 +2908,19 @@
               this.uiid++;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileSwitch = function(switchs, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!switchs.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(switchs, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let s = 0; s < els.length; s++) {
@@ -2954,19 +2954,19 @@
               this.uiid++;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileBind = function(elModels, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!elModels.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(elModels, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let s = 0; s < els.length; s++) {
@@ -2989,19 +2989,19 @@
               el2.dataset.bind = id2;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileAnimate = function(anims, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!anims.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(anims, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let s = 0; s < els.length; s++) {
@@ -3029,19 +3029,19 @@
               el2.dataset.animate = id2;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileIf = function(ifs, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!ifs.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(ifs, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let s = 0; s < els.length; s++) {
@@ -3062,19 +3062,19 @@
               el2.dataset.if = id2;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype._compileClass = function(cls, component3, isStatic) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             if (!cls.length) {
-              res();
+              res2();
               return;
             }
             ;
             let els = this._static(component3)(cls, isStatic);
             if (!els.length) {
-              res();
+              res2();
               return;
             }
             for (let s = 0; s < els.length; s++) {
@@ -3091,13 +3091,13 @@
               el2.dataset.class = id2;
             }
             ;
-            res();
+            res2();
           });
         };
         Attrib.prototype.inject = function(el2, component3, isStatic = false) {
-          return new Promise((res) => {
+          return new Promise((res2) => {
             let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class");
-            res(query);
+            res2(query);
           }).then((query) => {
             let r = [];
             let map = {
@@ -3169,16 +3169,15 @@
           options.trigger && options.trigger.bind(this)();
           options.utils && options.utils.bind(this.utils)(this);
           this.container = {};
-          this.compile = new Promise((res) => {
+          this.compile = new Promise((res2) => {
             this._bindHandlers();
-            res();
+            res2();
           }).then(() => {
             this._bindSubscribe();
           }).then(() => {
             switch (this.type == "view" && !!this.template) {
               case true:
-                this.createElementAsync();
-                break;
+                return this.createElementAsync();
               default:
                 this.isStatic = false;
                 break;
@@ -3363,40 +3362,31 @@
           let selector2 = this.template.substr(1);
           let query = document.getElementById(selector2);
           let isTemplate = this.isTemplate = query && query.toString().includes("Template");
-          switch (isTemplate) {
-            case true:
-              {
-                let element = query.getContent(true);
-                element.cake_component = this.name;
-                this.html = this.Node(element);
-                console.log(274, this.html);
-                this._parseHTML(this.isStatic).then(() => {
-                  this._watchBindedItems();
-                });
-              }
-              break;
-            case null:
-              {
-              }
-              break;
-            default:
-              {
-                let element = query;
-                element.cake_component = this.name;
-                this.html = this.Node(element);
-                console.log(290, this.html);
-                this.isStatic = true;
-                this._parseHTML(this.isStatic).then(() => {
-                });
-              }
-              ;
+          if (isTemplate) {
+            let element = query.getContent(true);
+            element.cake_component = this.name;
+            this.html = this.Node(element);
+            console.log(274, this.html);
+            console.log(275, this);
+            return this._parseHTML(this.isStatic).then(() => {
+              this._watchBindedItems();
+            });
+          } else if (isTemplate == null) {
+            return Promise.resolve({});
+          } else {
+            let element = query;
+            element.cake_component = this.name;
+            this.html = this.Node(element);
+            this.isStatic = true;
+            return this._parseHTML(this.isStatic).then(() => {
+            });
           }
-          ;
         };
         Component.prototype.createElementAsync = function() {
-          new Promise((res) => {
-            this.createElement();
-            res();
+          return new Promise((res2) => {
+            this.createElement().then(() => {
+              res2();
+            });
           }).then(() => {
             this.isReady = true;
           });
@@ -3413,17 +3403,21 @@
           const getValue = (item) => {
             return this.data[item] || this.$scope[item] || null;
           };
-          !this.isReady && this.createElement();
-          let { root, multiple, cleaned, emit, static: static2, hashed, data: data2 } = options || {};
-          hashed === true && this.$hash.add(this.name);
-          !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
-          !!root && (this.root = root);
-          multiple && this._smoothReset();
-          return new Promise((res, rej) => {
-            this.await.destroy.then(() => {
+          return new Promise((res2, rej) => {
+            !this.isReady && this.createElement().then(() => {
+              let { root, multiple: multiple2, cleaned: cleaned2, emit: emit2, static: static2, hashed, data: data2 } = options || {};
+              hashed === true && this.$hash.add(this.name);
+              !this.template && this.fire.isConnected && this.fire.isConnected({ emit: emit2 }, true);
+              !!root && (this.root = root);
+              multiple2 && this._smoothReset();
+            }).then(() => {
+              res2();
+            });
+          }).then(() => {
+            return this.await.destroy.then(() => {
               return this.await.animateRemove;
             }).then(() => {
-              new Promise((res2, rej2) => {
+              new Promise((res2, rej) => {
                 res2();
               }).then(() => {
                 let forItems = this.$attrib.getWatchItemsByType(this.name, "for");
@@ -3440,13 +3434,13 @@
               }).then((element) => {
                 if (this.isStatic) {
                 } else {
-                  let prom = !data2 ? Promise.resolve() : (() => {
+                  let prom = !data ? Promise.resolve() : (() => {
                     return new Promise((res2) => {
                       let el2 = element.getElement();
-                      el2 = this.$templating(data2, el2);
+                      el2 = this.$templating(data, el2);
                       this.html = element = this.Node(el2);
                       this.html.replaceDataSrc();
-                      data2 = null;
+                      data = null;
                       res2();
                     });
                   })();
@@ -3466,7 +3460,7 @@
                 }
                 ;
               }).then(() => {
-                return this.addEvent(static2, multiple);
+                return this.addEvent(static, multiple);
               }).then(() => {
                 return this.fire.isConnected && this.fire.isConnected(payload, true);
               }).then(() => {
@@ -3495,13 +3489,13 @@
           let animate2 = this.$animate("remove");
           console.log(this, this.html, animate2);
           if (animate2 instanceof Promise) {
-            this.await.animateRemove = new Promise((res) => {
+            this.await.animateRemove = new Promise((res2) => {
               animate2.then(() => {
                 return this.html.remove();
               }).then(() => {
                 return this._hardReset(this.name);
               }).then(() => {
-                res();
+                res2();
               });
             });
           } else {
@@ -3509,9 +3503,9 @@
             this._hardReset(this.name);
           }
         };
-        Component.prototype.addEvent = function(static2, multiple) {
+        Component.prototype.addEvent = function(static2, multiple2) {
           let isStatic = !!static2;
-          let isMultiple = !!multiple;
+          let isMultiple = !!multiple2;
           if (isMultiple && isStatic) {
             return false;
           }
@@ -3829,12 +3823,12 @@
                 ;
               }
               ;
-              return new Promise((res, rej) => {
+              return new Promise((res2, rej) => {
                 let lk = setInterval(() => {
                   if (Cake2.Components[name]) {
                     subscribeExternal();
                     clearInterval(lk);
-                    res();
+                    res2();
                   }
                   ;
                 });
@@ -3847,11 +3841,11 @@
         Cake2.Handlers = {};
         Cake2.Attributes = new Attrib();
         Cake2.Models.$loaded = function(name) {
-          return new Promise((res, rej) => {
+          return new Promise((res2, rej) => {
             let mk = setInterval(() => {
               if (Cake2.Models[name]) {
                 clearInterval(mk);
-                res(Cake2.Models[name]);
+                res2(Cake2.Models[name]);
               }
               ;
             });
@@ -4130,7 +4124,7 @@
                               isBroadcast = false;
                             }
                             if (isBroadcast) {
-                              const notify = new Promise((res, rej) => {
+                              const notify = new Promise((res2, rej) => {
                                 setTimeout(() => {
                                   let payload = variable;
                                   if (variable && variable.element) {
@@ -4141,7 +4135,7 @@
                                   Cake2.Observer.notify(component3.name, event, variable).then(() => {
                                     return Cake2.Observer.results[component3.name][event];
                                   }).then((r) => {
-                                    res(r);
+                                    res2(r);
                                   }).catch((err) => {
                                     console.error(err);
                                   });
