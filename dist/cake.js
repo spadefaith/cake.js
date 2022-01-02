@@ -3732,8 +3732,8 @@
               ;
             }
             ;
+            console.log(703, containers);
             res2();
-            console.log(containers);
           });
         };
         Component.prototype._watchBindedItems = function() {
