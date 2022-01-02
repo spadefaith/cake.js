@@ -1859,41 +1859,44 @@
   // src/scripts/persist.js
   var require_persist = __commonJS({
     "src/scripts/persist.js"(exports, module) {
-      module.exports = class {
-        constructor() {
-          this.storage = new StorageKit({
-            child: "array",
-            storage: "session",
-            name: "_cake_persistent"
-          });
-        }
-        listen(components) {
-          window.addEventListener("DOMContentLoaded", (e) => {
-            setTimeout(() => {
-              this.storage.getAll().then((result) => {
-                if (result && !result.length)
-                  return;
-                for (let r = 0; r < result.length; r++) {
-                  let item = result[r];
-                  let component3 = components[item];
-                  component3.isConnected = false;
-                  if (component3) {
-                    !component3.isConnected && component3.render.bind(component3)();
-                  } else {
-                    console.error(`component ${component3} is not found!`);
+      module.exports = function(dependency) {
+        const StorageKit = dependency.StorageKit;
+        return class {
+          constructor() {
+            this.storage = new StorageKit({
+              child: "array",
+              storage: "session",
+              name: "_cake_persistent"
+            });
+          }
+          listen(components) {
+            window.addEventListener("DOMContentLoaded", (e) => {
+              setTimeout(() => {
+                this.storage.getAll().then((result) => {
+                  if (result && !result.length)
+                    return;
+                  for (let r = 0; r < result.length; r++) {
+                    let item = result[r];
+                    let component3 = components[item];
+                    component3.isConnected = false;
+                    if (component3) {
+                      !component3.isConnected && component3.render.bind(component3)();
+                    } else {
+                      console.error(`component ${component3} is not found!`);
+                    }
                   }
-                }
-                ;
+                  ;
+                });
               });
             });
-          });
-        }
-        append(name) {
-          this.storage.create(name);
-        }
-        remove(name) {
-          this.storage.remove(name);
-        }
+          }
+          append(name) {
+            this.storage.create(name);
+          }
+          remove(name) {
+            this.storage.remove(name);
+          }
+        };
       };
     }
   });
@@ -2104,14 +2107,14 @@
   var require_attributes = __commonJS({
     "src/scripts/attributes.js"(exports, module) {
       module.exports = function(dependency) {
-        const StorageKit2 = dependency.StorageKit;
+        const StorageKit = dependency.StorageKit;
         const Templating = dependency.Templating;
         function Attrib() {
           this.uiid = 0;
           this.notify = [];
           this.st = {};
           this.cacheStatic = [];
-          this.store = new StorageKit2({
+          this.store = new StorageKit({
             child: "object",
             storage: "session",
             name: "_cake_component_cf"
@@ -3792,7 +3795,7 @@
         const Component = dependency.Component;
         const Hasher = dependency.Hasher;
         const Persistent = dependency.Persistent;
-        const StorageKit2 = dependency.StorageKit;
+        const StorageKit = dependency.StorageKit;
         const Observer2 = dependency.Observer;
         const Formy = dependency.Formy;
         function Cake2(name) {
@@ -3906,7 +3909,7 @@
         });
         Cake2.Persistent = new Persistent();
         Cake2.Persistent.listen(Cake2.Components);
-        Cake2.Cache = new StorageKit2({
+        Cake2.Cache = new StorageKit({
           name: "cache",
           storage: "session",
           child: "object"
@@ -4188,7 +4191,7 @@
     Scope: scope(),
     Component: component2,
     Hasher: hash,
-    Persistent: persist,
+    Persistent: persist(storage()),
     StorageKit: storage(),
     Observer: observer(),
     Formy: form
