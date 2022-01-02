@@ -4050,7 +4050,6 @@
           let component3 = new Component(name, template, options);
           component3.compile.then(() => {
             let { subscribe: subscribe2, root, html, handlers, role } = component3;
-            console.log(root);
             role == "form" && function() {
               Formy.bind(component3)();
             }();
@@ -4060,6 +4059,7 @@
           }).then(({ handlers, root }) => {
             Cake2.Observer.registerHandlers(handlers, component3.name);
             this._defineProperty(component3, "root", function() {
+              console.log(281, component3);
               if (component3._root) {
                 return component3._root;
               } else {
