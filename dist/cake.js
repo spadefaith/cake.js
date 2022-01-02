@@ -3411,6 +3411,7 @@
                 !this.template && this.fire.isConnected && this.fire.isConnected({ emit: emit2 }, true);
                 !!root && (this.root = root);
                 multiple2 && this._smoothReset();
+                console.log(366, this.html);
               }).then(() => {
                 this.isReady = true;
                 res();
