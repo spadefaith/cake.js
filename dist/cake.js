@@ -3721,16 +3721,20 @@
           return fn2;
         };
         Component.prototype.findContainer = function() {
-          let containers = this.html.getContainers();
-          for (let c = 0; c < containers.length; c++) {
-            let el2 = containers[c];
-            let name = el2.dataset.container;
-            if (name) {
-              this.container[name] = el2;
+          return new Promise((res2) => {
+            let containers = this.html.getContainers();
+            for (let c = 0; c < containers.length; c++) {
+              let el2 = containers[c];
+              let name = el2.dataset.container;
+              if (name) {
+                this.container[name] = el2;
+              }
+              ;
             }
             ;
-          }
-          ;
+            res2();
+            console.log(containers);
+          });
         };
         Component.prototype._watchBindedItems = function() {
           if (!this.items.length) {
