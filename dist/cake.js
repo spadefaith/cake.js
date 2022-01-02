@@ -1040,12 +1040,12 @@
           ;
           return r;
         };
-        Piece.prototype.appendTo = function(root, cleaned2) {
+        Piece.prototype.appendTo = function(root, cleaned) {
           if (!root && !root.attributes) {
             throw new TypeError(`the ${root} is not an instance of Element`);
           }
           ;
-          cleaned2 && (root.innerHTML = "");
+          cleaned && (root.innerHTML = "");
           for (let i = 0; i < this.el.length; i++) {
             let el2 = this.el[i];
             root.appendChild(el2);
@@ -3415,6 +3415,7 @@
         };
         Component.prototype.render = function(options) {
           let payload = null;
+          let { root, multiple, cleaned, emit, static: static2, hashed, data: data2 } = options || {};
           const getValue = (item) => {
             return this.data[item] || this.$scope[item] || null;
           };
@@ -3423,11 +3424,10 @@
           return new Promise((res, rej) => {
             if (!this.isReady) {
               this.createElement().then(() => {
-                let { root, multiple: multiple2, cleaned: cleaned2, emit: emit2, static: static2, hashed, data: data2 } = options || {};
                 hashed === true && this.$hash.add(this.name);
-                !this.template && this.fire.isConnected && this.fire.isConnected({ emit: emit2 }, true);
+                !this.template && this.fire.isConnected && this.fire.isConnected({ emit }, true);
                 !!root && (this.root = root);
-                multiple2 && this._smoothReset();
+                multiple && this._smoothReset();
                 console.log(366, this.html);
               }).then(() => {
                 this.isReady = true;
@@ -3456,13 +3456,13 @@
               }).then((element) => {
                 if (this.isStatic) {
                 } else {
-                  let prom = !data ? Promise.resolve() : (() => {
+                  let prom = !data2 ? Promise.resolve() : (() => {
                     return new Promise((res) => {
                       let el2 = element.getElement();
-                      el2 = this.$templating(data, el2);
+                      el2 = this.$templating(data2, el2);
                       this.html = element = this.Node(el2);
                       this.html.replaceDataSrc();
-                      data = null;
+                      data2 = null;
                       res();
                     });
                   })();
@@ -3482,7 +3482,7 @@
                 }
                 ;
               }).then(() => {
-                return this.addEvent(static, multiple);
+                return this.addEvent(static2, multiple);
               }).then(() => {
                 return this.fire.isConnected && this.fire.isConnected(payload, true);
               }).then(() => {
@@ -3523,9 +3523,9 @@
             this._hardReset(this.name);
           }
         };
-        Component.prototype.addEvent = function(static2, multiple2) {
+        Component.prototype.addEvent = function(static2, multiple) {
           let isStatic = !!static2;
-          let isMultiple = !!multiple2;
+          let isMultiple = !!multiple;
           if (isMultiple && isStatic) {
             return false;
           }
