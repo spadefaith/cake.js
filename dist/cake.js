@@ -854,12 +854,30 @@
             this.name = _obj.name;
             this.storageType = _obj.storage;
             this.child = _obj.child || "object";
-            if (typeOf(this.child) == "string") {
-              this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
-            }
-            ;
-            if (!["array", "object"].includes(typeOf(this.child))) {
-              throw new Error("the child must be an object or array type.");
+            try {
+              if (typeOf(this.child) == "string") {
+                this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
+              }
+              ;
+              if (!["array", "object"].includes(typeOf(this.child))) {
+                throw new Error("the child must be an object or array type.");
+              }
+              ;
+            } catch (err) {
+              if (this.storageType == "session") {
+                sessionStorage.clear();
+              } else if (this.storageType == "local") {
+                localStorage.clear();
+              }
+              ;
+              if (typeOf(this.child) == "string") {
+                this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
+              }
+              ;
+              if (!["array", "object"].includes(typeOf(this.child))) {
+                throw new Error("the child must be an object or array type.");
+              }
+              ;
             }
             ;
             this.storage = new STORAGE(this.storageType, this.name, this.child);
