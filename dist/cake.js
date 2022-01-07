@@ -859,6 +859,10 @@
                 this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
               }
               ;
+              if (!["array", "object"].includes(typeOf(this.child))) {
+                throw new Error("the child must be an object or array type.");
+              }
+              ;
             } catch (err) {
               if (this.storageType == "session") {
                 sessionStorage.clear();
@@ -870,10 +874,10 @@
                 this.child = this.child == "array" ? [] : this.child == "object" ? {} : null;
               }
               ;
-            }
-            ;
-            if (!["array", "object"].includes(typeOf(this.child))) {
-              throw new Error("the child must be an object or array type.");
+              if (!["array", "object"].includes(typeOf(this.child))) {
+                throw new Error("the child must be an object or array type.");
+              }
+              ;
             }
             ;
             this.storage = new STORAGE(this.storageType, this.name, this.child);
