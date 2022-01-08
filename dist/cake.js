@@ -839,10 +839,14 @@
             }
             ;
           }
-          local() {
+          local(save) {
             this.create();
             try {
-              localStorage.setItem(this.name, JSON.stringify(this.cache));
+              if (!localStorage[this.name]) {
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else if (save) {
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              }
             } catch (err) {
               this.create();
             }
@@ -3147,7 +3151,14 @@
             console.timeEnd(component3);
             return r.length ? Promise.all(r) : Promise.resolve();
           }).then(() => {
-            return this.store.createOrUpdate(component3, this.st[component3]);
+            try {
+              return this.store.createOrUpdate(component3, this.st[component3]);
+            } catch (err) {
+              sessionStorage.clear();
+              localStorage.clear();
+              return this.store.createOrUpdate(component3, this.st[component3]);
+            }
+            ;
           });
         };
         return Attrib;
