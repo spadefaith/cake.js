@@ -3151,14 +3151,7 @@
             console.timeEnd(component3);
             return r.length ? Promise.all(r) : Promise.resolve();
           }).then(() => {
-            try {
-              return this.store.createOrUpdate(component3, this.st[component3]);
-            } catch (err) {
-              sessionStorage.clear();
-              localStorage.clear();
-              return this.store.createOrUpdate(component3, this.st[component3]);
-            }
-            ;
+            return this.store.createOrUpdate(component3, this.st[component3]);
           });
         };
         return Attrib;
