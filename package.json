@@ -21,6 +21,7 @@
     "path": "path-browserify"
   },
   "dependencies": {
-    "esbuild": "^0.14.10"
+    "esbuild": "^0.14.10",
+    "express": "^4.17.2"
   }
 }

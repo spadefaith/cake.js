@@ -23,159 +23,6 @@
     }
   });
 
-  // src/scripts/polyfill.js
-  var require_polyfill = __commonJS({
-    "src/scripts/polyfill.js"() {
-      if (!Object.keys) {
-        Object.keys = function(obj) {
-          var keys = [];
-          for (var i in obj) {
-            if (obj.hasOwnProperty(i)) {
-              keys.push(i);
-            }
-          }
-          return keys;
-        };
-      }
-    }
-  });
-
-  // src/scripts/utils.js
-  var require_utils = __commonJS({
-    "src/scripts/utils.js"() {
-      (function(global) {
-        const TYPES = {
-          typeof: function(ctx) {
-            switch (true) {
-              case typeof ctx == "string":
-                return "string";
-              case typeof ctx == "number":
-                return "number";
-              case ctx instanceof Array:
-                return "array";
-              case ctx instanceof Function:
-                return "function";
-              case ctx instanceof HTMLCollection:
-                return "htmlcollection";
-              case ctx instanceof NodeList:
-                return "htmlnodelist";
-              case ctx instanceof Element:
-                return "domlement";
-              case ctx instanceof Object:
-                return "object";
-            }
-            ;
-          },
-          isArray: function(ctx) {
-            return this.typeof(ctx) == "array";
-          },
-          isObject: function(ctx) {
-            return this.typeof(ctx) == "object";
-          },
-          isNumber: function(ctx) {
-            return this.typeof(ctx) == "number";
-          },
-          isString: function(ctx) {
-            return this.typeof(ctx) == "string";
-          },
-          isHTMLCollection: function(ctx) {
-            return this.typeof(ctx) == "htmlcollection";
-          },
-          isNodeList: function(ctx) {
-            return this.typeof(ctx) == "htmlnodelist";
-          },
-          isElement: function(ctx) {
-            return this.typeof(ctx) == "domlement";
-          },
-          isFunction: function(ctx) {
-            return this.typeof(ctx) == "function";
-          }
-        };
-        const LOOP = {
-          each: function(ctx, fn2, type) {
-            if (type == "object") {
-              let i = 0;
-              for (let key in ctx) {
-                if (ctx.hasOwnProperty(key)) {
-                  fn2({ key, value: ctx[key] }, i);
-                  i = i + 1;
-                }
-                ;
-              }
-              ;
-            } else {
-              for (let a = 0; a < ctx.length; a++) {
-                fn2(ctx[a], a);
-              }
-            }
-            ;
-          },
-          map: function(ctx, fn2) {
-            let type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
-            let st = ctx.length && type == "array" ? [] : {};
-            this.each(ctx, function(obj, index) {
-              let r = fn2(obj, index);
-              if (type == "object") {
-                st[r.key] = r.value;
-              } else {
-                st.push(r);
-              }
-              ;
-            }, type);
-            return st;
-          },
-          reduce: function(ctx, accu, fn2) {
-            let type = TYPES.typeof(ctx);
-            this.each(ctx, function(obj, index) {
-              accu = fn2(obj, accu, index);
-            }, type);
-            return accu;
-          },
-          filter: function(ctx, fn2) {
-            let type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
-            let st = ctx.length && type == "array" ? [] : {};
-            this.each(ctx, function(obj, index) {
-              let r = fn2(obj, index);
-              if (r) {
-                if (type == "object") {
-                  st[obj.key] = obj.value;
-                } else {
-                  st.push(obj.value);
-                }
-                ;
-              }
-              ;
-            }, type);
-            return st;
-          }
-        };
-        const OTHERS = {
-          perf: function(fn2) {
-            console.time("test");
-            fn2();
-            console.timeEnd("test");
-          }
-        };
-        try {
-          global.UTILS = { ...LOOP, ...TYPES, ...OTHERS };
-        } catch (err) {
-          global.UTILS = {};
-          let iter = LOOP.each;
-          iter(LOOP, function(key, value) {
-            global.UTILS[key] = value;
-          });
-          iter(TYPES, function(key, value) {
-            global.UTILS[key] = value;
-          });
-          iter(OTHERS, function(key, value) {
-            global.UTILS[key] = value;
-          });
-        }
-        ;
-      })(window);
-    }
-  });
-
   // src/scripts/extends.js
   var require_extends = __commonJS({
     "src/scripts/extends.js"() {
@@ -385,6 +232,159 @@
           };
         };
       })(window);
+    }
+  });
+
+  // src/scripts/polyfill.js
+  var require_polyfill = __commonJS({
+    "src/scripts/polyfill.js"() {
+      if (!Object.keys) {
+        Object.keys = function(obj) {
+          var keys = [];
+          for (var i in obj) {
+            if (obj.hasOwnProperty(i)) {
+              keys.push(i);
+            }
+          }
+          return keys;
+        };
+      }
+    }
+  });
+
+  // src/scripts/utils.js
+  var require_utils = __commonJS({
+    "src/scripts/utils.js"(exports, module) {
+      var global = {};
+      var TYPES = {
+        typeof: function(ctx) {
+          switch (true) {
+            case typeof ctx == "string":
+              return "string";
+            case typeof ctx == "number":
+              return "number";
+            case ctx instanceof Array:
+              return "array";
+            case ctx instanceof Function:
+              return "function";
+            case ctx instanceof HTMLCollection:
+              return "htmlcollection";
+            case ctx instanceof NodeList:
+              return "htmlnodelist";
+            case ctx instanceof Element:
+              return "domlement";
+            case ctx instanceof Object:
+              return "object";
+          }
+          ;
+        },
+        isArray: function(ctx) {
+          return this.typeof(ctx) == "array";
+        },
+        isObject: function(ctx) {
+          return this.typeof(ctx) == "object";
+        },
+        isNumber: function(ctx) {
+          return this.typeof(ctx) == "number";
+        },
+        isString: function(ctx) {
+          return this.typeof(ctx) == "string";
+        },
+        isHTMLCollection: function(ctx) {
+          return this.typeof(ctx) == "htmlcollection";
+        },
+        isNodeList: function(ctx) {
+          return this.typeof(ctx) == "htmlnodelist";
+        },
+        isElement: function(ctx) {
+          return this.typeof(ctx) == "domlement";
+        },
+        isFunction: function(ctx) {
+          return this.typeof(ctx) == "function";
+        }
+      };
+      var LOOP = {
+        each: function(ctx, fn2, type) {
+          if (type == "object") {
+            var i = 0;
+            for (var key in ctx) {
+              if (ctx.hasOwnProperty(key)) {
+                fn2({ key, value: ctx[key] }, i);
+                i = i + 1;
+              }
+              ;
+            }
+            ;
+          } else {
+            for (var a = 0; a < ctx.length; a++) {
+              fn2(ctx[a], a);
+            }
+          }
+          ;
+        },
+        map: function(ctx, fn2) {
+          var type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
+          var st = ctx.length && type == "array" ? [] : {};
+          this.each(ctx, function(obj, index) {
+            var r = fn2(obj, index);
+            if (type == "object") {
+              st[r.key] = r.value;
+            } else {
+              st.push(r);
+            }
+            ;
+          }, type);
+          return st;
+        },
+        reduce: function(ctx, accu, fn2) {
+          var type = TYPES.typeof(ctx);
+          this.each(ctx, function(obj, index) {
+            accu = fn2(obj, accu, index);
+          }, type);
+          return accu;
+        },
+        filter: function(ctx, fn2) {
+          var type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
+          var st = ctx.length && type == "array" ? [] : {};
+          this.each(ctx, function(obj, index) {
+            var r = fn2(obj, index);
+            if (r) {
+              if (type == "object") {
+                st[obj.key] = obj.value;
+              } else {
+                st.push(obj.value);
+              }
+              ;
+            }
+            ;
+          }, type);
+          return st;
+        }
+      };
+      var OTHERS = {
+        perf: function(fn2) {
+          console.time("test");
+          fn2();
+          console.timeEnd("test");
+        }
+      };
+      try {
+        global.UTILS = { ...LOOP, ...TYPES, ...OTHERS };
+      } catch (err) {
+        global.UTILS = {};
+        iter = LOOP.each;
+        iter(LOOP, function(key, value) {
+          global.UTILS[key] = value;
+        });
+        iter(TYPES, function(key, value) {
+          global.UTILS[key] = value;
+        });
+        iter(OTHERS, function(key, value) {
+          global.UTILS[key] = value;
+        });
+      }
+      var iter;
+      module.exports = global.UTILS;
     }
   });
 
@@ -833,6 +833,9 @@
                 sessionStorage.setItem(this.name, JSON.stringify(this.cache));
               } else if (save) {
                 sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else {
+                sessionStorage.removeItem(this.name);
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
               }
             } catch (err) {
               this.create();
@@ -845,6 +848,9 @@
               if (!localStorage[this.name]) {
                 localStorage.setItem(this.name, JSON.stringify(this.cache));
               } else if (save) {
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else {
+                localStorage.removeItem(this.name);
                 localStorage.setItem(this.name, JSON.stringify(this.cache));
               }
             } catch (err) {
@@ -1998,6 +2004,174 @@
     }
   });
 
+  // src/scripts/router.js
+  var require_router = __commonJS({
+    "src/scripts/router.js"(exports, module) {
+      module.exports = function(components) {
+        return class {
+          constructor(routes) {
+            this.route = this.compile(routes);
+            this.prev = null;
+            this.components = components;
+            this.watch();
+            this.persist();
+          }
+          persist() {
+            if (!document.hasRouterPersist) {
+              document.addEventListener("DOMContentLoaded", (e) => {
+                this.navigate();
+              });
+              document.hasRouterPersist = true;
+            }
+            ;
+          }
+          watch() {
+            if (!window.hasRouterPop) {
+              window.onpopstate = (e) => {
+                const { state, originalTarget: { location: { pathname } } } = e;
+                this.clear().then(() => {
+                  this.navigate();
+                });
+              };
+              window.hasRouterPop = true;
+            }
+            ;
+          }
+          compile(routes) {
+            let con = {};
+            for (let key in routes) {
+              const len = key.length;
+              let regex = String(key);
+              regex = regex.slice(1);
+              regex = regex.split("/");
+              regex = regex.map((item, index) => {
+                let param = item.includes(":");
+                let a = "";
+                index == 0 ? a += "^/" : a += "/";
+                param ? a += "(([^/#?]+?))" : a += item;
+                index == len - 1 ? a += "/?$" : a += "";
+                if (param) {
+                  const paramKey = item.replace(":", "");
+                  if (!con[key]) {
+                    con[key] = {};
+                  }
+                  ;
+                  con[key].params = {
+                    [paramKey]: index
+                  };
+                }
+                ;
+                return a;
+              });
+              if (con[key] && con[key].params) {
+                con[key] = {
+                  params: con[key].params,
+                  regex: new RegExp(regex.join("")),
+                  ...routes[key]
+                };
+              } else {
+                con[key] = {
+                  regex: new RegExp(regex.join("")),
+                  ...routes[key]
+                };
+              }
+            }
+            ;
+            con.length = Object.keys(routes).length;
+            con.keys = Object.keys(routes);
+            return con;
+          }
+          navigate() {
+            let hash2 = window.location.hash;
+            let scheme = hash2.includes("#!/") ? 2 : hash2.includes("#/") ? 1 : null;
+            if (!scheme) {
+              return;
+            }
+            ;
+            hash2 = hash2.slice(scheme);
+            const url = new URL(`http://localhost${hash2}`);
+            const { search, pathname: path } = url;
+            const keys = this.route.keys;
+            const state = {};
+            if (search) {
+              new URLSearchParams(search).forEach((value, key) => {
+                state[key] = value;
+              });
+            }
+            ;
+            for (let i = 0; i < keys.length; i++) {
+              const route = this.route[keys[i]];
+              const { regex, components: components2, params, name } = route;
+              if (params) {
+                let _path = String(path);
+                _path = _path.slice(1);
+                _path = _path.split("/");
+                Object.entries(params).forEach((param) => {
+                  const [key, value] = param;
+                  if (_path[value]) {
+                    state[key] = _path[value];
+                  }
+                  ;
+                });
+              }
+              ;
+              const test = regex.test(path);
+              if (test) {
+                this.prev = { components: components2, state, path, name };
+                break;
+              }
+              ;
+            }
+            ;
+            if (this.prev) {
+              const { components: components2, state: state2, path: path2, name } = this.prev;
+              try {
+                return Promise.all(components2.map((item) => {
+                  return this.components[item].render({ emit: { data: state2 } });
+                }));
+              } catch (err) {
+                throw new Error(`some of the component in ${JSON.stringify(components2)} in path ${path2} of router is not found, make sure the it is created`);
+              }
+            }
+          }
+          static pushState(data2, notused, path) {
+            window.history.pushState(data2, notused, path);
+            let promise = Promise.resolve();
+            if (this.prev) {
+              const { components: _components, state, path: path2, name } = this.prev;
+              promise = Promise.all(_components.map((item) => {
+                return components[item].fire.destroy();
+              }));
+            }
+            ;
+            return promise.then(() => {
+              return this.navigate();
+            });
+          }
+          clear() {
+            let promise = Promise.resolve();
+            if (this.prev) {
+              const { components: _components, state, path, name } = this.prev;
+              promise = Promise.all(_components.map((item) => {
+                return components[item].fire.destroy();
+              }));
+            }
+            ;
+            return promise;
+          }
+          pushState(data2, notused, path) {
+            window.history.pushState(data2, notused, path);
+            let promise = Promise.resolve();
+            this.clear();
+            return promise.then(() => {
+              return this.navigate();
+            });
+          }
+        };
+      };
+    }
+  });
+
   // src/scripts/form.js
   var require_form = __commonJS({
     "src/scripts/form.js"(exports, module) {
@@ -2438,6 +2612,7 @@
                         create.style.removeProperty("display");
                         create.classList.remove("cake-template");
                         create.removeAttribute("data-for-template");
+                        fragment.append(create);
                         target.insertAdjacentElement("beforebegin", create);
                       }
                       ;
@@ -2640,6 +2815,20 @@
           if (!loc[id2]) {
             let cf = this.st[component3];
             loc[id2] = cf && (cf?.evt ?? []) || [];
+          }
+          ;
+          return loc[id2];
+        };
+        Attrib.prototype.getRouterTarget = function(component3) {
+          let id2 = `${component3}`;
+          let loc = Object.cache.getRouterTarget;
+          if (!loc) {
+            loc = Object.cache.getRouterTarget = {};
+          }
+          ;
+          if (!loc[id2]) {
+            let cf = this.st[component3];
+            loc[id2] = cf && (cf?.router ?? []) || [];
           }
           ;
           return loc[id2];
@@ -3121,6 +3310,30 @@
             res();
           });
         };
+        Attrib.prototype._compileRouter = function(router2, component3, isStatic) {
+          return new Promise((res) => {
+            if (!router2.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(router2, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `rt${this.uiid}`;
+              let el2 = els[s];
+              let value = el2.dataset.routerLink;
+              this._register(this.st, component3, "router", { value, sel: id2 });
+              this.uiid++;
+              el2.dataset.routerLink = id2;
+            }
+            ;
+            res();
+          });
+        };
         Attrib.prototype.inject = function(el2, component3, isStatic = false) {
           return new Promise((res) => {
             let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class");
@@ -3166,6 +3379,7 @@
         const Mo = dependency.Mo;
         const Templating = dependency.Templating;
         const Piece = dependency.Piece;
+        const pushState = dependency.pushState;
         function Component(name, template, options) {
           this.name = name;
           this.template = template;
@@ -3389,6 +3603,10 @@
           let selector2 = this.template.substr(1);
           let query = document.getElementById(selector2);
           let isTemplate = this.isTemplate = query && query.toString().includes("Template");
+          if (!query) {
+            throw new Error(`the template for ${this.name} is not found with.`);
+          }
+          ;
           return new Promise((res) => {
             switch (isTemplate) {
               case true:
@@ -3503,7 +3721,8 @@
                 return this.findTarget();
               }).then(() => {
                 return this.findContainer();
-              }).then(() => {
+              });
+              then(() => {
                 let switchItems = this.$attrib.getWatchItemsByType(this.name, "switch");
                 for (let i = 0; i < switchItems.length; i++) {
                   this.doSwitch(switchItems[i], getValue(switchItems[i]));
@@ -3847,6 +4066,7 @@
         const Scope = dependency.Scope;
         const Component = dependency.Component;
         const Hasher = dependency.Hasher;
+        const Router = dependency.Router;
         const Persistent = dependency.Persistent;
         const StorageKit = dependency.StorageKit;
         const Observer2 = dependency.Observer;
@@ -3954,6 +4174,7 @@
         });
         Cake2.Hasher = new Hasher(Cake2.Components);
         Cake2.Hasher.listen();
+        Cake2.Router = Router(Cake2.Components);
         Cake2.Scope.registerNotifier(function(prop, newValue, prevValue) {
           return Cake2.Attributes.notifier(prop, newValue, prevValue);
         });
@@ -4038,6 +4259,9 @@
             }
           });
         };
+        Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
+          return Cake2.Observer;
+        });
         Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
           return Cake2.Observer;
         });
@@ -4251,9 +4475,9 @@
 
   // src/app.js
   var env = require_env();
+  var extensions = require_extends();
   var polyfill = require_polyfill();
   var utils = require_utils();
-  var extensions = require_extends();
   var templateExtend = require_template_extend();
   var storage = require_storage();
   var piece = require_piece();
@@ -4263,6 +4487,7 @@
   var scope = require_scope();
   var persist = require_persist();
   var hash = require_hash();
+  var router = require_router();
   var form = require_form();
   var attributes = require_attributes()({
     StorageKit: storage(),
@@ -4271,13 +4496,15 @@
   var component2 = require_component()({
     Mo: animate,
     Templating: templating(),
-    Piece: piece()
+    Piece: piece(),
+    pushState: router.pushState
   });
   var cake = require_cake()({
     Attrib: attributes,
     Scope: scope(),
     Component: component2,
     Hasher: hash,
+    Router: router,
     Persistent: persist({
       StorageKit: storage()
     }),

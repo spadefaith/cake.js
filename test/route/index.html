@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implement URL Route</title>
+</head>
+<body>
+    <a href='#!/home' data-router-link>Home</a>
+    <a href='#!/about' data-router-link>About</a>
+    <a href='#!/about/1' data-router-link>About 1</a>
+
+    <div id='table-container'></div>
+    <div id='tab-container'></div>
+
+
+    <template id='table'>
+        <div>This is Table</div>
+    </template>
+
+    <template id='tab'>
+        <div>This is Tab</div>
+    </template>
+
+    <script src='/asset/cake.js'></script>
+    <!-- <script src='/asset/route.js'></script> -->
+    <script src='./components/table.js'></script>
+    <script src='./components/tab.js'></script>
+
+
+
+
+
+    <script>
+
+        const R = new Cake.Router({
+            '/home':{
+                name:'home',
+                components:['table'],
+            },
+            '/about/:id':{
+                name:'about',
+                components:['tab'],
+            },
+            '/about':{
+                name:'about',
+                components:['table'],
+            },
+        });
+
+    </script>
+</body>
+</html>
