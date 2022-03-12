@@ -1,5 +1,5 @@
 {
-  "name": "cake.js",
+  "name": "cake",
   "version": "1.0.0",
   "description": "vanilla simple component library",
   "main": "bundle.js",

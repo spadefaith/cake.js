@@ -366,6 +366,114 @@
           console.time("test");
           fn2();
           console.timeEnd("test");
+        },
+        logTest: function(a, ops, b) {
+          switch (ops) {
+            case "==":
+              {
+                return a == b;
+              }
+              ;
+            case "!=":
+              {
+                return a != b;
+              }
+              ;
+            case "<":
+              {
+                return a < b;
+              }
+              ;
+            case ">":
+              {
+                return a > b;
+              }
+              ;
+            case ">=":
+              {
+                return a >= b;
+              }
+              ;
+            case "<=":
+              {
+                return a <= b;
+              }
+              ;
+          }
+        },
+        toUrlSearchParams: function(obj, istrim = true) {
+          let searchParams = "";
+          for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+              let val = obj[key];
+              if (istrim && val) {
+                searchParams += `${encodeURI(key)}=${encodeURI(val)}&`;
+              } else {
+                searchParams += `${encodeURI(key)}=${encodeURI(val)}&`;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return searchParams;
+        },
+        sanitize: function(string) {
+          if (typeof string != "string") {
+            return string;
+          }
+          ;
+          const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#x27;",
+            "/": "&#x2F;"
+          };
+          const reg = /[&<>"'/]/ig;
+          return string.replace(reg, (match) => map[match]);
+        },
+        toFormData: function(form2, options = {}) {
+          let formData = new FormData(form2);
+          let o2 = {};
+          let fd = new FormData();
+          for (let [key, value] of formData.entries()) {
+            if (!!value) {
+              value = this.sanitize(value);
+            }
+            ;
+            if (options.json) {
+              if (options.trim) {
+                if (!!value) {
+                  o2[key] = value;
+                }
+                ;
+              } else {
+                o2[key] = value;
+              }
+              ;
+            } else {
+              fd.append(key, value);
+            }
+          }
+          ;
+          if (options.json) {
+            return o2;
+          } else {
+            return fd;
+          }
+          ;
+        },
+        loopStringSplitSpace: function(string, fn2) {
+          string = string.split(" ");
+          if (TYPES.isArray(string)) {
+            for (let i = 0; i < string.length; i++) {
+              fn2(string[i]);
+            }
+            ;
+          }
+          ;
         }
       };
       try {
@@ -895,8 +1003,14 @@
             return isNull(has) ? false : has;
           }
           get(id2) {
-            var storage2 = this.storage.open();
-            return Promise.resolve(methods.get(storage2, id2));
+            return new Promise((res, rej) => {
+              setTimeout(() => {
+                var storage2 = this.storage.open();
+                res(storage2);
+              });
+            }).then((storage2) => {
+              return methods.get(storage2, id2);
+            });
           }
           getNot(id2) {
             var storage2 = this.storage.open();
@@ -1772,118 +1886,6 @@
     }
   });
 
-  // src/scripts/scope.js
-  var require_scope = __commonJS({
-    "src/scripts/scope.js"(exports, module) {
-      module.exports = function() {
-        function Scope(parent, options) {
-          this.pKey = options.pKey || "$scope";
-          this.temp = {};
-          this.trap = options.trap;
-          this.notify = [];
-          this.parent = parent;
-          this._clone = {};
-          this._cloneAsync = {};
-          this.whitelist = ["extend", "set", "get"];
-          this.install();
-        }
-        ;
-        Scope.prototype.registerNotifier = function(fn2) {
-          this.notify.push(fn2);
-        };
-        Scope.prototype.notifier = function(obj) {
-          Cake.$scope[obj.bind] = obj.value;
-        };
-        Scope.prototype.method = function() {
-          let temp = this.temp;
-          let trap = this.trap;
-          let notify = this.notify;
-          let _this = this.parent;
-          let whitelist = this.whitelist;
-          let cloneAsync = this._cloneAsync;
-          return {
-            update(keys, fn2) {
-              if (!keys.length)
-                return;
-              for (let k = 0; k < keys.length; k++) {
-                let key = keys[k];
-                fn2(key);
-              }
-              ;
-            },
-            defineProperty(key, cloned) {
-              Object.defineProperty(temp, key, {
-                configurable: true,
-                get() {
-                  let t = trap.bind(_this)(key) || false;
-                  if (t) {
-                    return t;
-                  }
-                  ;
-                  return cloned[key];
-                },
-                set(newValue) {
-                  if (whitelist.includes(key) || cloneAsync[key]) {
-                  } else {
-                    let prevValue = this[key];
-                    for (let n = 0; n < notify.length; n++) {
-                      let fn2 = notify[n];
-                      fn2(key, newValue, prevValue);
-                    }
-                    ;
-                    cloned[key] = newValue;
-                  }
-                }
-              });
-            }
-          };
-        };
-        Scope.prototype.install = function() {
-          let { update, defineProperty } = this.method();
-          let temp = this.temp;
-          let cloned = this._clone;
-          let clonedAsync = this._cloneAsync;
-          Object.defineProperty(this.parent, this.pKey, {
-            configurable: true,
-            get() {
-              cloned = Object.assign(cloned, temp);
-              cloned = Object.assign(cloned, clonedAsync);
-              let keys = Object.keys(temp);
-              update(keys, function(key) {
-                defineProperty(key, cloned);
-              });
-              return temp;
-            }
-          });
-        };
-        Scope.prototype.watch = function(array) {
-          if (!array)
-            return;
-          let { update, defineProperty } = this.method();
-          let cloned = this._clone;
-          update(array, function(key) {
-            defineProperty(key, cloned);
-          });
-          return true;
-        };
-        Scope.prototype.set = function(key, value, cloned) {
-          if (this.whitelist.includes(key)) {
-            return;
-          }
-          ;
-          let notify = this.notify || [];
-          let prevValue = cloned[key];
-          cloned[key] = value;
-          Object.assign(this.temp, cloned);
-          return Promise.all(notify.map((cb) => {
-            return cb(key, value, prevValue);
-          }));
-        };
-        return Scope;
-      };
-    }
-  });
-
   // src/scripts/persist.js
   var require_persist = __commonJS({
     "src/scripts/persist.js"(exports, module) {
@@ -2007,7 +2009,8 @@
   // src/scripts/router.js
   var require_router = __commonJS({
     "src/scripts/router.js"(exports, module) {
-      module.exports = function(components) {
+      module.exports = function(components, component3) {
+        const hooks = [];
         return class {
           constructor(routes) {
             this.route = this.compile(routes);
@@ -2015,11 +2018,36 @@
             this.components = components;
             this.watch();
             this.persist();
+            Object.defineProperty(component3.prototype, "$router", {
+              configurable: true,
+              get: () => {
+                return {
+                  goTo: this.goTo,
+                  ...this.prev
+                };
+              },
+              set(value) {
+                return;
+              }
+            });
+          }
+          goTo(hash2, params) {
+            if (params) {
+              let p = "";
+              for (let key in params) {
+                p += `${key}=${params[key]}&`;
+              }
+              ;
+              params = p;
+              window.location.hash = `!/${hash2}?${params}`;
+            } else {
+              window.location.hash = `!/${hash2}`;
+            }
           }
           persist() {
             if (!document.hasRouterPersist) {
               document.addEventListener("DOMContentLoaded", (e) => {
-                this.navigate();
+                this.navigate(true);
               });
               document.hasRouterPersist = true;
             }
@@ -2028,7 +2056,6 @@
           watch() {
             if (!window.hasRouterPop) {
               window.onpopstate = (e) => {
-                const { state, originalTarget: { location: { pathname } } } = e;
                 this.clear().then(() => {
                   this.navigate();
                 });
@@ -2081,14 +2108,20 @@
             con.keys = Object.keys(routes);
             return con;
           }
-          navigate() {
-            let hash2 = window.location.hash;
-            let scheme = hash2.includes("#!/") ? 2 : hash2.includes("#/") ? 1 : null;
+          navigate(ispersist) {
+            let hash2 = window.location.hash, scheme;
+            if (hash2) {
+              scheme = hash2.includes("#!/") ? 2 : hash2.includes("#/") ? 1 : null;
+              hash2 = hash2.slice(scheme);
+            } else {
+              hash2 = "/";
+              scheme = true;
+            }
+            ;
             if (!scheme) {
               return;
             }
             ;
-            hash2 = hash2.slice(scheme);
             const url = new URL(`http://localhost${hash2}`);
             const { search, pathname: path } = url;
             const keys = this.route.keys;
@@ -2116,6 +2149,7 @@
               }
               ;
               const test = regex.test(path);
+              console.log(147, test, path);
               if (test) {
                 this.prev = { components: components2, state, path, name };
                 break;
@@ -2126,9 +2160,15 @@
             if (this.prev) {
               const { components: components2, state: state2, path: path2, name } = this.prev;
               try {
-                return Promise.all(components2.map((item) => {
-                  return this.components[item].render({ emit: { data: state2 } });
-                }));
+                return Promise.all(ispersist ? [Promise.resolve()] : hooks.map((subscribe2) => {
+                  return subscribe2();
+                })).then(() => {
+                  if (components2.length) {
+                    return Promise.all(components2.map((item) => {
+                      return this.components[item].render({ emit: { data: this.prev } });
+                    }));
+                  }
+                });
               } catch (err) {
                 throw new Error(`some of the component in ${JSON.stringify(components2)} in path ${path2} of router is not found, make sure the it is created`);
               }
@@ -2153,7 +2193,12 @@
             if (this.prev) {
               const { components: _components, state, path, name } = this.prev;
               promise = Promise.all(_components.map((item) => {
-                return components[item].fire.destroy();
+                if (components[item].fire.destroy) {
+                  return components[item].fire.destroy();
+                } else {
+                  console.error(`there is no destroy handler in "${item}" component`);
+                  return Promise.resolve();
+                }
               }));
             }
             ;
@@ -2166,6 +2211,12 @@
             return promise.then(() => {
               return this.navigate();
             });
+          }
+          static subscribe(fn2) {
+            if (fn2 && fn2.constructor.name == "Function") {
+              hooks.push(fn2);
+            }
+            ;
           }
         };
       };
@@ -2299,15 +2350,153 @@
     }
   });
 
+  // src/scripts/scope.js
+  var require_scope = __commonJS({
+    "src/scripts/scope.js"(exports, module) {
+      module.exports = function(dependency) {
+        const StorageKit = dependency.StorageKit;
+        const _hooks = {};
+        class Scope {
+          constructor(name) {
+            this.name = name;
+            this.reactiveData = {};
+            this.notify = [];
+            this.install(this.name);
+            this.pKeys = {};
+            this.sanitize = function(data2) {
+              const map = {
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#x27;",
+                "/": "&#x2F;"
+              };
+              const reg = /[&<>"'/]/ig;
+              if (typeof data2 == "string") {
+                return data2.replace(reg, (match) => map[match] || "");
+              } else {
+                return data2;
+              }
+              ;
+            };
+          }
+          registerNotifier(fn2) {
+            this.notify.push(fn2);
+          }
+          install(component3) {
+            this.session = new StorageKit({
+              child: "object",
+              storage: "session",
+              name: "_cake_scope_cf"
+            });
+            this.memory = new StorageKit({
+              child: "object",
+              storage: "object",
+              name: "_cake_scope_cf"
+            });
+          }
+          notifier(component3, obj) {
+            const { value, bind: bind2 } = obj;
+            if (!this.reactiveData[component3]) {
+              this.reactiveData[component3] = {};
+            }
+            ;
+            this.reactiveData[component3][bind2] = value;
+            return this.set(bind2, value);
+          }
+          getInputData(type = "json", _component) {
+            let component3 = _component || this.name;
+            console.log(this.reactiveData);
+            let data2 = JSON.parse(JSON.stringify(this.reactiveData[component3]));
+            for (let key in data2) {
+              let value = data2[key];
+              data2[key] = this.sanitize(value);
+            }
+            ;
+            if (type == "json") {
+              return data2;
+            } else if (type == "formdata") {
+              const formData = new FormData();
+              for (let key in data2) {
+                let value = data2[key];
+                formData.append(key, value);
+              }
+              ;
+              return formData;
+            }
+            ;
+          }
+          hook(component3, bind2, callback) {
+            if (!_hooks[component3]) {
+              _hooks[component3] = {};
+            }
+            ;
+            if (!_hooks[component3][bind2]) {
+              _hooks[component3][bind2] = [];
+            }
+            ;
+            _hooks[component3][bind2].push(callback);
+          }
+          get(key, quick = false) {
+            let pkey = this.pKeys[key];
+            if (!pkey) {
+              return Promise.reject(`${key} is not found`);
+            }
+            if (quick) {
+              return this.memory.get(pkey);
+            } else {
+              return this.session.get(pkey);
+            }
+            ;
+          }
+          set(key, value) {
+            let pkey = `${this.name}-${key}`;
+            let notify = this.notify;
+            let name = this.name;
+            let prevValue = null;
+            this.pKeys[key] = pkey;
+            return new Promise(async (res, rej) => {
+              prevValue = await this.get(key, true);
+              if (key != "password") {
+                this.session.createOrUpdate(pkey, value);
+              }
+              ;
+              res();
+            }).then(() => {
+              this.memory.createOrUpdate(pkey, value);
+              const hooks = _hooks[this.name];
+              if (hooks) {
+                const callbacks = hooks[key];
+                if (callbacks) {
+                  callbacks.forEach((cb) => {
+                    cb(value);
+                  });
+                }
+                ;
+              }
+              ;
+              return Promise.all(notify.map((cb) => {
+                return cb(key, value, prevValue, name);
+              }));
+            });
+          }
+        }
+        return Scope;
+      };
+    }
+  });
+
   // src/scripts/attributes.js
   var require_attributes = __commonJS({
     "src/scripts/attributes.js"(exports, module) {
       module.exports = function(dependency) {
         const StorageKit = dependency.StorageKit;
         const Templating = dependency.Templating;
+        const Utils = dependency.Utils;
         function Attrib() {
           this.uiid = 0;
-          this.notify = [];
+          this.notify = {};
           this.st = {};
           this.cacheStatic = [];
           this.store = new StorageKit({
@@ -2333,7 +2522,18 @@
           }
           ;
           if (!loc[id2]) {
-            var st = component3 ? this.st[component3] && this.st[component3][type] || [] : (() => {
+            var st = component3 ? (() => {
+              let config = this.st[component3] && this.st[component3][type];
+              if (config && config.length) {
+                return config.filter((item) => {
+                  let { bind: bind2 } = item || { bind: false };
+                  return bind2 == prop || false;
+                });
+              } else {
+                return [];
+              }
+              ;
+            })() : (() => {
               let ctx = [];
               for (let component4 in this.st) {
                 if (this.st.hasOwnProperty(component4)) {
@@ -2372,7 +2572,7 @@
             let sub = subscribe2[s];
             if (!sub)
               continue;
-            let { sel, bind, value, ops } = sub;
+            let { sel, bind: bind2, value, ops } = sub;
             let el2 = html.querySelector(`[data-toggle=${sel}]`);
             if (value == prevValue) {
               el2 && el2.classList.remove("is-active");
@@ -2399,7 +2599,7 @@
           let forIf = {};
           for (let c = 0; c < configs.length; c++) {
             let config = configs[c];
-            let { bind, sel, map, cases } = config;
+            let { bind: bind2, sel, map, cases } = config;
             let parent = html.querySelectorAll(`[data-switch-slot=${sel}]`);
             for (let n = 0; n < newValue.length; n++) {
               let row = newValue[n];
@@ -2417,7 +2617,7 @@
                 }
                 ;
                 if (_case) {
-                  let { _id, bind: bind2 } = _case;
+                  let { _id, bind: bind3 } = _case;
                   let hit = document.querySelector(`[data-case=${sel}-${_id}]`);
                   if (hit && hit.toString().includes("Element")) {
                     hit = hit.cloneNode(true);
@@ -2433,13 +2633,13 @@
                       let sel2 = hit.dataset.if;
                       let binded = template.dataset.ifBind;
                       let component4 = config.component;
-                      let { bind: bind3 } = this.getWatchItemsBySel(component4, "if", sel2);
+                      let { bind: bind4 } = this.getWatchItemsBySel(component4, "if", sel2);
                       if (sel2) {
-                        if (!forIf[bind3]) {
-                          forIf[bind3] = {};
+                        if (!forIf[bind4]) {
+                          forIf[bind4] = {};
                         }
                         ;
-                        forIf[bind3][binded] = row;
+                        forIf[bind4][binded] = row;
                       }
                     }
                     template.classList.remove("cake-template");
@@ -2451,9 +2651,9 @@
             ;
           }
           ;
-          for (let bind in forIf) {
-            if (forIf.hasOwnProperty(bind)) {
-              this._notifyIf(bind, forIf[bind]);
+          for (let bind2 in forIf) {
+            if (forIf.hasOwnProperty(bind2)) {
+              this._notifyIf(bind2, forIf[bind2]);
             }
             ;
           }
@@ -2466,10 +2666,49 @@
             return;
           for (let c = 0; c < configs.length; c++) {
             let config = configs[c];
-            let { attr, bind, sel } = config;
+            let { attr, bind: bind2, sel } = config;
             let attrHyphen = attr.toHyphen();
-            if (prop == bind) {
+            if (prop == bind2) {
               let els = html.querySelectorAll(`[data-bind=${sel}]`);
+              for (let p = 0; p < els.length; p++) {
+                let el2 = els[p];
+                if (attr == "class" || attr == "className") {
+                  if (el2.classList.length) {
+                    Utils.loopStringSplitSpace(prevValue, function(cls) {
+                      el2.classList.remove(cls);
+                    });
+                    Utils.loopStringSplitSpace(newValue, function(cls) {
+                      el2.classList.add(cls);
+                    });
+                  } else {
+                    Utils.loopStringSplitSpace(newValue, function(cls) {
+                      el2.classList.add(cls);
+                    });
+                  }
+                  ;
+                } else {
+                  el2.setAttribute(attrHyphen, newValue);
+                  el2[attr] = newValue;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyInput = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("input", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { attr, bind: bind2, sel } = config;
+            let attrHyphen = attr.toHyphen();
+            if (prop == bind2) {
+              let els = html.querySelectorAll(`[data-input=${sel}]`);
               for (let p = 0; p < els.length; p++) {
                 let el2 = els[p];
                 if (attr == "className") {
@@ -2502,7 +2741,7 @@
             return;
           let vItems = [];
           for (let c = 0; c < configs.length; c++) {
-            let { bind, sel, iter, ins, component: component4, cleaned } = configs[c];
+            let { bind: bind2, sel, iter, ins, component: component4, cleaned } = configs[c];
             html = html || document;
             if (component4) {
               html = Cake.Components[component4].html;
@@ -2585,7 +2824,7 @@
                 return item.sel == child;
               });
               cf && childCf.push(new Promise((res) => {
-                let { bind, sel, iter, ins } = cf;
+                let { bind: bind2, sel, iter, ins } = cf;
                 setTimeout(() => {
                   let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
                   for (let t = 0; t < targets.length; t++) {
@@ -2595,7 +2834,7 @@
                     let props = newValue.find((item) => {
                       return item[prop] == value;
                     });
-                    let pr = bind.split(".")[bind.split(".").length - 1];
+                    let pr = bind2.split(".")[bind2.split(".").length - 1];
                     let datas = props[pr].length && props[pr].map((item) => {
                       if (item instanceof Object) {
                         return item;
@@ -2637,7 +2876,7 @@
           if (!configs.length)
             return;
           for (let c = 0; c < configs.length; c++) {
-            let { bind, sel, iter, ins } = configs[c];
+            let { bind: bind2, sel, iter, ins } = configs[c];
             for (let o2 in newValue) {
               if (newValue.hasOwnProperty(o2)) {
                 let targets = document.querySelectorAll(`[data-for-bind-val=${o2}]`);
@@ -2681,34 +2920,15 @@
           let configs = this._getConfig("class", prop, newValue, prevValue, component3);
           if (!configs.length)
             return;
-          let proc = function(newValue2, ops, testVal) {
-            switch (true) {
-              case ops == ">":
-                return newValue2 > testVal;
-              case ops == "<":
-                return newValue2 < testVal;
-              case ops == "===":
-                return newValue2 === testVal;
-              case ops == "!==":
-                return newValue2 !== testVal;
-              case ops == "==":
-                return newValue2 == testVal;
-              case ops == "!=":
-                return newValue2 != testVal;
-            }
-            ;
-            return false;
-          };
           let removeWhiteSpace = function(str) {
             return str.split(" ").join("");
           };
           let cache = {};
           for (let c = 0; c < configs.length; c++) {
             let config = configs[c];
-            let { hasNegate, bind, testVal, className, ops, sel } = config;
-            bind = removeWhiteSpace(bind);
-            className = removeWhiteSpace(className);
-            if (prop == bind) {
+            let { hasNegate, bind: bind2, testVal, className, ops, sel } = config;
+            bind2 = removeWhiteSpace(bind2);
+            if (prop == bind2) {
               if (!cache[sel]) {
                 cache[sel] = html.querySelectorAll(`[data-class=${sel}]:not(.cake-template)`);
               }
@@ -2717,19 +2937,71 @@
                 let el2 = els[p];
                 let test = false;
                 if (ops) {
-                  test = proc(newValue, ops, testVal);
+                  test = Utils.logTest(newValue, ops, testVal);
                   hasNegate && (test = !test);
                 } else if (hasNegate) {
                   test = !newValue;
+                } else {
+                  test = !!newValue;
                 }
                 ;
                 if (test) {
-                  if (!el2.classList.contains(className)) {
-                    el2.classList.add(className);
-                  }
+                  Utils.loopStringSplitSpace(className, function(cls) {
+                    if (!el2.classList.contains(cls)) {
+                      el2.classList.add(cls);
+                    }
+                  });
                 } else {
-                  if (el2.classList.contains(className)) {
-                    el2.classList.remove(className);
+                  Utils.loopStringSplitSpace(className, function(cls) {
+                    if (el2.classList.contains(cls)) {
+                      el2.classList.remove(cls);
+                    }
+                  });
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        };
+        Attrib.prototype._notifyAttr = function(prop, newValue, prevValue, component3, html) {
+          html = html || document;
+          let configs = this._getConfig("attr", prop, newValue, prevValue, component3);
+          if (!configs.length)
+            return;
+          let removeWhiteSpace = function(str) {
+            return !str ? str : str.split(" ").join("");
+          };
+          let cache = {};
+          for (let c = 0; c < configs.length; c++) {
+            let config = configs[c];
+            let { hasNegate, bind: bind2, testVal, attr, ops, sel, attrkey, attrvalue } = config;
+            bind2 = removeWhiteSpace(bind2);
+            attr = removeWhiteSpace(attr);
+            if (prop == bind2) {
+              if (!cache[sel]) {
+                cache[sel] = html.querySelectorAll(`[data-attr=${sel}]:not(.cake-template)`);
+              }
+              let els = cache[sel];
+              for (let p = 0; p < els.length; p++) {
+                let el2 = els[p];
+                let test = false;
+                if (ops) {
+                  test = Utils.logTest(newValue, ops, testVal);
+                  hasNegate && (test = !test);
+                } else if (hasNegate) {
+                  test = !newValue;
+                } else {
+                  test = !!newValue;
+                }
+                ;
+                if (test) {
+                  el2.removeAttribute(attrkey);
+                } else {
+                  if (attrvalue) {
+                    el2.setAttribute(attrkey, attrvalue);
                   }
                 }
                 ;
@@ -2748,34 +3020,79 @@
           let cache = {};
           for (let c = 0; c < configs.length; c++) {
             let config = configs[c];
-            let { attr, bind, sel, testval, _true, _false } = config;
+            let { attr, bind: bind2, sel, testval, _true, _false, ops, hasNegate } = config;
             let attrHyphen = attr.toHyphen();
-            if (prop == bind) {
+            let trueNotIgnore = _true != "null";
+            let falseNotIgnore = _false != "null";
+            if (prop == bind2) {
               if (!cache[sel]) {
                 cache[sel] = html.querySelectorAll(`[data-if=${sel}]:not(.cake-template)`);
               }
               let els = cache[sel];
               for (let p = 0; p < els.length; p++) {
                 let el2 = els[p];
-                let binded = el2.dataset.ifBind;
-                let data2 = binded ? newValue[binded] : newValue;
-                let attrValue = data2 instanceof Object ? data2[bind] : data2;
-                let test = testval == null ? !!attrValue : testval == attrValue;
-                if (attrValue == null) {
-                  el2.removeAttribute(attrHyphen, attrValue);
-                } else if (test) {
-                  let ignoreTrue = _true == "null";
-                  if (!ignoreTrue) {
-                    el2.setAttribute(attrHyphen, attrValue);
-                    el2[attr] = attrValue;
+                let data2 = newValue;
+                let test;
+                if (testval) {
+                  test = Utils.logTest(testval, ops, data2);
+                } else {
+                  test = hasNegate ? !data2 : !!data2;
+                }
+                ;
+                if (test) {
+                  if (trueNotIgnore) {
+                    if (attr == "class") {
+                      let trueClasses2 = _true.split(" ");
+                      if (falseNotIgnore) {
+                        let falseClasses = _false.split(" ");
+                        falseClasses.forEach((cls) => {
+                          el2.classList.remove(cls);
+                        });
+                        trueClasses2.forEach((cls) => {
+                          el2.classList.add(cls);
+                        });
+                      } else {
+                        trueClasses2.forEach((cls) => {
+                          if (!el2.classList.contains(cls)) {
+                            el2.classList.add(cls);
+                          }
+                          ;
+                        });
+                      }
+                      ;
+                    } else {
+                      el2.setAttribute(attr, _true);
+                    }
+                    ;
                   }
                 } else {
-                  let ignoreFalse = _false == "null";
-                  if (!ignoreFalse) {
-                    el2.setAttribute(attrHyphen, attrValue);
-                    el2[attr] = attrValue;
+                  if (falseNotIgnore) {
+                    if (attr == "class") {
+                      let falseClasses = _false.split(" ");
+                      if (trueNotIgnore) {
+                        let trueClasses2 = _true.split(" ");
+                        trueClasses2.forEach((cls) => {
+                          el2.classList.remove(cls);
+                        });
+                        falseClasses.forEach((cls) => {
+                          el2.classList.add(cls);
+                        });
+                      } else {
+                        trueClasses.forEach((cls) => {
+                          if (!el2.classList.contains(cls)) {
+                            el2.classList.add(cls);
+                          }
+                          ;
+                        });
+                      }
+                      ;
+                    } else {
+                      el2.setAttribute(attr, _false);
+                    }
+                    ;
                   }
                 }
+                ;
               }
               ;
             }
@@ -2783,27 +3100,39 @@
           }
           ;
         };
-        Attrib.prototype.notifier = function(prop, newValue, prevValue) {
-          let val = JSON.parse(JSON.stringify(newValue));
+        Attrib.prototype.notifier = function(prop, newValue, prevValue, component3) {
+          let val = newValue;
+          if (Utils.isObject(val)) {
+            val = JSON.parse(JSON.stringify(newValue));
+          }
+          ;
           return new Promise((res) => {
-            this._notifyFor(prop, val, prevValue);
+            this._notifyFor(prop, val, prevValue, component3);
             res();
           }).then(() => {
-            return this._notifyForUpdate(prop, val, prevValue);
+            return this._notifyForUpdate(prop, val, prevValue, component3);
           }).then(() => {
-            return this._notifySwitch(prop, val, prevValue);
+            return this._notifySwitch(prop, val, prevValue, component3);
           }).then(() => {
-            return this._notifyToggle(prop, val, prevValue);
+            return this._notifyToggle(prop, val, prevValue, component3);
           }).then(() => {
-            return this._notifyBind(prop, val, prevValue);
+            return this._notifyBind(prop, val, prevValue, component3);
           }).then(() => {
-            return this._notifyIf(prop, val, prevValue);
+            return this._notifyInput(prop, val, prevValue, component3);
           }).then(() => {
-            return this._notifyClass(prop, val, prevValue);
+            return this._notifyIf(prop, val, prevValue, component3);
+          }).then(() => {
+            return this._notifyClass(prop, val, prevValue, component3);
+          }).then(() => {
+            return this._notifyAttr(prop, val, prevValue, component3);
           });
         };
-        Attrib.prototype.registerNotifier = function(fn2) {
-          this.notify.push(fn2);
+        Attrib.prototype.registerNotifier = function(component3, fn2) {
+          if (!this.notify[component3]) {
+            this.notify[component3] = [];
+          }
+          ;
+          this.notify[component3].push(fn2);
         };
         Attrib.prototype.getEventTarget = function(component3) {
           let id2 = `${component3}`;
@@ -2848,9 +3177,9 @@
                 let tst = st[type];
                 for (let t = 0; t < tst.length; t++) {
                   let item = tst[t];
-                  let { bind } = item;
-                  if (bind) {
-                    wt.add(bind);
+                  let { bind: bind2 } = item;
+                  if (bind2) {
+                    wt.add(bind2);
                   } else {
                     continue;
                   }
@@ -2879,11 +3208,11 @@
             let wt = /* @__PURE__ */ new Set();
             for (let t = 0; t < tst.length; t++) {
               let item = tst[t];
-              let { bind } = item;
-              switch (!!bind) {
+              let { bind: bind2 } = item;
+              switch (!!bind2) {
                 case true:
                   {
-                    wt.add(bind);
+                    wt.add(bind2);
                   }
                   break;
                 default:
@@ -2925,6 +3254,8 @@
           }
           ;
           return loc[id2];
+        };
+        Attrib.prototype._activateReactive = (component3) => {
         };
         Attrib.prototype._register = function(store, f, s, obj) {
           switch (true) {
@@ -3142,10 +3473,10 @@
             for (let s = 0; s < els.length; s++) {
               let id2 = `cks${this.uiid}`;
               let el2 = els[s];
-              let bind = el2.dataset.switch, map = "def";
-              if (bind.includes(".")) {
+              let bind2 = el2.dataset.switch, map = "def";
+              if (bind2.includes(".")) {
                 var [f, ...rest] = el2.dataset.switch.split(".");
-                bind = f;
+                bind2 = f;
                 map = rest[0];
               }
               ;
@@ -3166,7 +3497,7 @@
                 ;
               }
               ;
-              this._register(this.st, component3, "switch", { bind, sel: id2, map, cases: casesId });
+              this._register(this.st, component3, "switch", { bind: bind2, sel: id2, map, cases: casesId });
               this.uiid++;
             }
             ;
@@ -3193,13 +3524,13 @@
               for (let g = 0; g < gr.length; g++) {
                 let val = gr[g].split(" ").join("");
                 if (val.includes(":")) {
-                  var [attr, bind] = val.split(":");
+                  var [attr, bind2] = val.split(":");
                 } else {
-                  var bind = val;
+                  var bind2 = val;
                   var attr = "value";
                 }
                 ;
-                this._register(this.st, component3, "bind", { attr, bind, sel: id2 });
+                this._register(this.st, component3, "bind", { attr, bind: bind2, sel: id2 });
               }
               this.uiid++;
               el2.dataset.bind = id2;
@@ -3260,19 +3591,36 @@
               res();
               return;
             }
+            const regex = new RegExp("<|>|===|==|!==|!=");
             for (let s = 0; s < els.length; s++) {
               let id2 = `ci${this.uiid}`;
               let el2 = els[s];
               let _if = el2.dataset.if;
               let gr = _if.split(",");
               for (let g = 0; g < gr.length; g++) {
-                let val = gr[g].split(" ").join("");
-                let [attr, exp] = val.split("=");
+                let val = gr[g];
+                let attr = val.substring(0, val.indexOf("="));
+                let exp = val.substring(val.indexOf("=") + 1, val.length);
                 exp = exp.split(new RegExp("[()]")).join("");
                 let [test, r] = exp.split("?");
-                let [bind, testval] = test.split(new RegExp("<|>|===|==|!==|!="));
+                let hasNegate = test[0] == "!";
+                hasRegularLog = test.match(regex);
+                let bind2, testVal, ops;
+                if (hasRegularLog) {
+                  let splitted = test.split(regex);
+                  bind2 = splitted[0].trim();
+                  testVal = splitted[1].trim();
+                  ops = hasRegularLog[0];
+                } else {
+                  bind2 = test;
+                }
+                ;
+                if (hasNegate) {
+                  bind2 = bind2.slice(1);
+                }
+                ;
                 let [_true, _false] = r.split(":");
-                this._register(this.st, component3, "if", { attr, bind, testval: testval || null, _true, _false, sel: id2 });
+                this._register(this.st, component3, "if", { hasNegate, attr, ops, bind: bind2, testval: testVal || null, _true, _false, sel: id2 });
               }
               this.uiid++;
               el2.dataset.if = id2;
@@ -3293,18 +3641,76 @@
               res();
               return;
             }
+            let regex = new RegExp("<|>|===|==|!==|!=");
             for (let s = 0; s < els.length; s++) {
-              let id2 = `cc${this.uiid}`;
-              let el2 = els[s];
-              let cl = el2.dataset.class;
+              let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal;
+              id2 = `cc${this.uiid}`;
+              el2 = els[s];
+              cl = el2.dataset.class;
               let [test, className] = cl.split("&&");
               test = test.trim();
-              let [bind, ops, testVal] = test.split(" ");
-              let hasNegate = bind.substring(0, 1);
-              hasNegate && (bind = bind.slice(1));
+              className = className.trim();
+              hasRegularLog2 = test.match(regex);
+              hasNegate = test[0] == "!";
+              if (hasRegularLog2) {
+                let splitted = test.split(regex);
+                bind = splitted[0];
+                testVal = splitted[1];
+                ops = hasRegularLog2[0];
+              } else {
+                bind = test;
+              }
+              if (hasNegate) {
+                hasNegate && (bind = bind.slice(1));
+              }
+              ;
               this._register(this.st, component3, "class", { hasNegate, bind, testVal, className, ops, sel: id2 });
               this.uiid++;
               el2.dataset.class = id2;
+            }
+            ;
+            res();
+          });
+        };
+        Attrib.prototype._compileAttr = function(attrs, component3, isStatic) {
+          return new Promise((res) => {
+            if (!attrs.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(attrs, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            let regex = new RegExp("<|>|===|==|!==|!=");
+            for (let s = 0; s < els.length; s++) {
+              let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal;
+              id2 = `cre${this.uiid}`;
+              el2 = els[s];
+              cl = el2.dataset.attr;
+              let [test, attrPair] = cl.split("&&");
+              attrPair = attrPair.trim();
+              let [attrkey, attrvalue] = attrPair.split("=");
+              test = test.trim();
+              hasRegularLog2 = test.match(regex);
+              hasNegate = test[0] == "!";
+              if (hasRegularLog2) {
+                let splitted = test.split(regex);
+                bind = splitted[0];
+                testVal = splitted[1];
+                ops = hasRegularLog2[0];
+              } else {
+                bind = test;
+              }
+              if (hasNegate) {
+                hasNegate && (bind = bind.slice(1));
+              }
+              ;
+              this._register(this.st, component3, "attr", { hasNegate, bind, testVal, attrkey, attrvalue, ops, sel: id2 });
+              this.uiid++;
+              el2.dataset.attr = id2;
             }
             ;
             res();
@@ -3334,9 +3740,46 @@
             res();
           });
         };
+        Attrib.prototype._compileInput = function(elModels, component3, isStatic) {
+          return new Promise((res) => {
+            if (!elModels.length) {
+              res();
+              return;
+            }
+            ;
+            let els = this._static(component3)(elModels, isStatic);
+            if (!els.length) {
+              res();
+              return;
+            }
+            for (let s = 0; s < els.length; s++) {
+              let id2 = `cknt${this.uiid}`;
+              let el2 = els[s];
+              let nodeType = el2.tagName;
+              let model = el2.dataset.input;
+              let gr = model.split(",");
+              for (let g = 0; g < gr.length; g++) {
+                let val = gr[g].split(" ").join("");
+                if (val.includes(":")) {
+                  var [attr, bind2] = val.split(":");
+                } else {
+                  var bind2 = val;
+                  var attr = "value";
+                }
+                ;
+                this._register(this.st, component3, "input", { attr, bind: bind2, sel: id2, nodeType });
+              }
+              ;
+              this.uiid++;
+              el2.dataset.input = id2;
+            }
+            ;
+            res();
+          });
+        };
         Attrib.prototype.inject = function(el2, component3, isStatic = false) {
           return new Promise((res) => {
-            let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class");
+            let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class", "input", "attr");
             res(query);
           }).then((query) => {
             let r = [];
@@ -3349,7 +3792,9 @@
               "event": this._compileEvents,
               "animate": this._compileAnimate,
               "if": this._compileIf,
-              "class": this._compileClass
+              "class": this._compileClass,
+              "input": this._compileInput,
+              "attr": this._compileAttr
             };
             for (let q in query) {
               if (query.hasOwnProperty(q)) {
@@ -3364,7 +3809,7 @@
             console.timeEnd(component3);
             return r.length ? Promise.all(r) : Promise.resolve();
           }).then(() => {
-            return this.store.createOrUpdate(component3, this.st[component3]);
+            return Promise.resolve();
           });
         };
         return Attrib;
@@ -3379,10 +3824,12 @@
         const Mo = dependency.Mo;
         const Templating = dependency.Templating;
         const Piece = dependency.Piece;
+        const Utils = dependency.Utils;
         const pushState = dependency.pushState;
         function Component(name, template, options) {
           this.name = name;
           this.template = template;
+          this.options = options;
           this.handlers = options.handlers;
           this.subscribe = options.subscribe;
           this.data = {};
@@ -3395,20 +3842,10 @@
           this.role = options.role;
           this.isReady = false;
           this.await = {};
-          this.utils = {
-            createFn(name2, variable) {
-              let o2 = { [name2]: function() {
-                return variable;
-              } };
-              return o2[name2];
-            }
-          };
-          options.data && options.data.bind(this.data)(this);
+          this.utils = Utils;
           (name == "app" || options.role == "app") && (() => {
             this.staticComponent = options.static || [];
           })();
-          options.trigger && options.trigger.bind(this)();
-          options.utils && options.utils.bind(this.utils)(this);
           this.container = {};
           this.compile = new Promise((res) => {
             this._bindHandlers();
@@ -3721,8 +4158,7 @@
                 return this.findTarget();
               }).then(() => {
                 return this.findContainer();
-              });
-              then(() => {
+              }).then(() => {
                 let switchItems = this.$attrib.getWatchItemsByType(this.name, "switch");
                 for (let i = 0; i < switchItems.length; i++) {
                   this.doSwitch(switchItems[i], getValue(switchItems[i]));
@@ -3734,6 +4170,13 @@
                 return this.fire.isConnected && this.fire.isConnected(payload, true);
               }).then(() => {
                 return this.$animate("render");
+              }).then(() => {
+                return new Promise((res, rej) => {
+                  setTimeout(() => {
+                    this._watchReactive();
+                    res();
+                  }, 100);
+                });
               });
             });
           });
@@ -3781,10 +4224,14 @@
           }
           ;
           let component3 = this.name;
-          function notify(event, component4, isPrevent) {
+          function notify(event, component4, isPreventDefault, isStopPropagation) {
             return function(e) {
-              if (isPrevent) {
+              if (isPreventDefault) {
                 e.preventDefault();
+              }
+              ;
+              if (isStopPropagation) {
+                e.stopPropagation();
               }
               ;
               Cake.Observer.notify(component4, event, e);
@@ -3805,8 +4252,14 @@
                 ;
                 let store = el2.Ref().get("__cake__events");
                 if (!store[cb]) {
-                  let isPrevented = !(event.substring(0, 1) == "~");
-                  el2.addEventListener(event, notify(cb, component3, isPrevented), true);
+                  let place = event.substring(0, 2);
+                  let isPreventDefault = !place.includes("~");
+                  let isStopPropagation = place.includes("^");
+                  if (!isPreventDefault || isStopPropagation) {
+                    event = event.slice(1);
+                  }
+                  ;
+                  el2.addEventListener(event, notify(cb, component3, isPreventDefault, isStopPropagation), true);
                   store[cb] = true;
                   el2.Ref().set("__cake__events", store);
                 } else {
@@ -3836,17 +4289,17 @@
         Component.prototype.toggler = function(_this) {
           let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
           let cl = class {
-            constructor(bind, bases, html, _this2) {
+            constructor(bind2, bases, html, _this2) {
               this.toggle = _this2.toggle;
-              this.bind = bind;
+              this.bind = bind2;
               this.bases = bases;
               this.cache = _this2.$cache;
               this.html = html;
             }
-            check(bind) {
-              let config = this.toggle[bind];
+            check(bind2) {
+              let config = this.toggle[bind2];
               if (!config) {
-                console.error(`${bind} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
+                console.error(`${bind2} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
               } else {
                 if (attrToggle.length) {
                   let { ns } = config;
@@ -3982,11 +4435,11 @@
               });
             }
           };
-          let fn2 = (bind, bases) => {
-            return new cl(bind, bases, this.html, this)._toggle();
+          let fn2 = (bind2, bases) => {
+            return new cl(bind2, bases, this.html, this)._toggle();
           };
-          fn2.recall = (bind) => {
-            return new cl(bind, false, this.html, this)._recall();
+          fn2.recall = (bind2) => {
+            return new cl(bind2, false, this.html, this)._recall();
           };
           return fn2;
         };
@@ -4006,9 +4459,81 @@
           });
         };
         Component.prototype._watchBindedItems = function() {
+        };
+        Component.prototype._watchReactive = function() {
           if (!this.items.length) {
             this.items = this.$attrib.getWatchItems(this.name);
-            Cake.Scope.watch(this.items);
+            let name = this.name;
+            let { input } = this.$attrib.st[name] || { input: false };
+            let notify = this.$attrib.notify[name];
+            if (input) {
+              input.forEach((item) => {
+                let { attr, bind: bind2, sel, nodeType } = item;
+                let el2 = document.querySelector(`[data-input=${sel}]`);
+                if (el2 && !el2._reactive) {
+                  if (nodeType == "INPUT" || nodeType == "TEXTAREA") {
+                    notify.forEach((n) => {
+                      n(name, { value: el2.value, bind: bind2 });
+                    });
+                    el2.addEventListener("input", (e) => {
+                      if (notify && notify.length) {
+                        notify.forEach((n) => {
+                          n(name, { value: e.target.value, bind: bind2 });
+                        });
+                      }
+                      ;
+                    });
+                    el2.addEventListener("change", (e) => {
+                      if (notify && notify.length) {
+                        notify.forEach((n) => {
+                          n(name, { value: e.target.value, bind: bind2 });
+                        });
+                      }
+                      ;
+                    });
+                  } else if (nodeType == "SELECT") {
+                    (() => {
+                      const { selectedOptions } = input;
+                      const selected = [];
+                      for (let i = 0; i < selectedOptions.length; i++) {
+                        const opt = selectedOptions[i];
+                        const text = opt.text;
+                        const value = opt.value;
+                        selected.push({ text, value });
+                      }
+                      ;
+                      if (notify && notify.length) {
+                        notify.forEach((n) => {
+                          n(name, { value: selected, bind: bind2 });
+                        });
+                      }
+                      ;
+                    })();
+                    el2.addEventListener("change", (e) => {
+                      const { selectedOptions } = e.target;
+                      const selected = [];
+                      for (let i = 0; i < selectedOptions.length; i++) {
+                        const opt = selectedOptions[i];
+                        const text = opt.text;
+                        const value = opt.value;
+                        selected.push({ text, value });
+                      }
+                      ;
+                      if (notify && notify.length) {
+                        notify.forEach((n) => {
+                          n(name, { value: selected, bind: bind2 });
+                        });
+                      }
+                      ;
+                    });
+                  }
+                  ;
+                  el2._reactive = true;
+                }
+                ;
+              });
+            }
+            ;
           }
           ;
         };
@@ -4167,20 +4692,9 @@
         Cake2.init = function(name) {
           return new Component(name);
         };
-        Cake2.Scope = new Scope(Cake2, {
-          trap(k) {
-            return Cake2.Utils.scopeTrap(k);
-          }
-        });
         Cake2.Hasher = new Hasher(Cake2.Components);
         Cake2.Hasher.listen();
-        Cake2.Router = Router(Cake2.Components);
-        Cake2.Scope.registerNotifier(function(prop, newValue, prevValue) {
-          return Cake2.Attributes.notifier(prop, newValue, prevValue);
-        });
-        Cake2.Attributes.registerNotifier(function(obj) {
-          Cake2.Scope.notifier(obj);
-        });
+        Cake2.Router = Router(Cake2.Components, Component);
         Cake2.Persistent = new Persistent();
         Cake2.Persistent.listen(Cake2.Components);
         Cake2.Cache = new StorageKit({
@@ -4233,17 +4747,6 @@
           ;
           return obj;
         };
-        Cake2.Cache.getAll().then((items) => {
-          if (items instanceof Array) {
-            for (let i = 0; i < items.length; i++) {
-              let item = items[i];
-              Cake2.Scope.watch(item);
-            }
-          } else if (typeof items == "string") {
-            Cake2.Scope.watch(items);
-          }
-          ;
-        });
         Cake2.Observer = new Observer2(Cake2.Subscribe, Cake2.Handlers);
         Cake2.prototype._defineProperty = function(component3, prop, get, set) {
           Object.defineProperty(component3, prop, {
@@ -4262,38 +4765,14 @@
         Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
           return Cake2.Observer;
         });
-        Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
-          return Cake2.Observer;
-        });
-        Cake2.prototype._defineProperty(Component.prototype, "$scope", function() {
-          Cake2.Scope.install();
-          let scope2 = Cake2.$scope;
-          let set = Cake2.Scope.set.bind(Cake2.Scope);
-          Object.defineProperty(scope2, "extend", {
-            configurable: true,
-            get() {
-              return function(target, obj) {
-                target = Cake2.Scope.temp[target];
-                if (target.toString().includes("Object")) {
-                  Object.assign(target, obj);
-                } else {
-                  console.error(`${target} is not an intance of Object`);
-                }
-                ;
-              };
-            }
-          });
-          Object.defineProperty(scope2, "set", {
-            configurable: true,
-            get() {
-              return function(key, value) {
-                const cloned = Cake2.Scope._cloneAsync;
-                return set(key, value, cloned);
-              };
-            }
-          });
+        Cake2.prototype._defineProperty(Component, "$globalScope", function() {
+          const scope2 = new Scope("globalScope");
           return scope2;
         });
+        Cake2.$universalScope = function() {
+          const scope2 = new Scope("universalScope");
+          return scope2;
+        };
         Cake2.prototype._defineProperty(Component.prototype, "$attrib", function() {
           return Cake2.Attributes;
         });
@@ -4309,6 +4788,13 @@
         Cake2.prototype.create = function(name, template, options) {
           console.time(name);
           let component3 = new Component(name, template, options);
+          const scope2 = new Scope(name);
+          scope2.registerNotifier(function(prop, newValue, prevValue, component4) {
+            return Cake2.Attributes.notifier(prop, newValue, prevValue, component4);
+          });
+          Cake2.Attributes.registerNotifier(name, function(name2, obj) {
+            scope2.notifier(name2, obj);
+          });
           component3.compile.then(() => {
             let { subscribe: subscribe2, root, html, handlers, role } = component3;
             role == "form" && function() {
@@ -4333,6 +4819,9 @@
               throw new Error(`the selector '${root}' as container of component '${component3.name}' is not found!`);
             }, function(value) {
               Object.assign(component3, { _root: value });
+            });
+            this._defineProperty(component3, "$scope", function() {
+              return scope2;
             });
           }).then(() => {
             component3.fire = function() {
@@ -4458,6 +4947,11 @@
             }
             ;
           }).then(() => {
+            component3.options.data && component3.options.data.bind(component3.data)(component3);
+            component3.options.init && component3.options.init.bind(component3)();
+            component3.options.utils && component3.options.utils.bind(component3.utils)(component3);
+            component3.options.router && Cake2.Router.subscribe(component3.options.router.bind(component3));
+          }).then(() => {
             if (component3.type == "model") {
               Cake2.Models[name] = component3;
             }
@@ -4484,16 +4978,20 @@
   var observer = require_observer();
   var templating = require_templating();
   var animate = require_animate();
-  var scope = require_scope();
   var persist = require_persist();
   var hash = require_hash();
   var router = require_router();
   var form = require_form();
+  var scope = require_scope()({
+    StorageKit: storage()
+  });
   var attributes = require_attributes()({
     StorageKit: storage(),
-    Templating: templating()
+    Templating: templating(),
+    Utils: utils
   });
   var component2 = require_component()({
+    Utils: utils,
     Mo: animate,
     Templating: templating(),
     Piece: piece(),
@@ -4501,7 +4999,7 @@
   });
   var cake = require_cake()({
     Attrib: attributes,
-    Scope: scope(),
+    Scope: scope,
     Component: component2,
     Hasher: hash,
     Router: router,
