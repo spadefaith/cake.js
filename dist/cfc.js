@@ -466,14 +466,16 @@
           ;
         },
         loopStringSplitSpace: function(string, fn2) {
-          string = string.split(" ");
-          if (TYPES.isArray(string)) {
-            for (let i = 0; i < string.length; i++) {
-              fn2(string[i]);
+          if (string) {
+            string = string.split(" ");
+            if (TYPES.isArray(string)) {
+              for (let i = 0; i < string.length; i++) {
+                fn2(string[i]);
+              }
+              ;
             }
             ;
           }
-          ;
         }
       };
       try {
@@ -1002,15 +1004,20 @@
             var has = hasItem(storage2, id2);
             return isNull(has) ? false : has;
           }
-          get(id2) {
-            return new Promise((res, rej) => {
-              setTimeout(() => {
-                var storage2 = this.storage.open();
-                res(storage2);
-              });
-            }).then((storage2) => {
+          get(id2, quick) {
+            if (quick) {
+              var storage2 = this.storage.open();
               return methods.get(storage2, id2);
-            });
+            } else {
+              return new Promise((res, rej) => {
+                setTimeout(() => {
+                  var storage3 = this.storage.open();
+                  res(storage3);
+                });
+              }).then((storage3) => {
+                return methods.get(storage3, id2);
+              });
+            }
           }
           getNot(id2) {
             var storage2 = this.storage.open();
@@ -2149,7 +2156,6 @@
               }
               ;
               const test = regex.test(path);
-              console.log(147, test, path);
               if (test) {
                 this.prev = { components: components2, state, path, name };
                 break;
@@ -2160,7 +2166,7 @@
             if (this.prev) {
               const { components: components2, state: state2, path: path2, name } = this.prev;
               try {
-                return Promise.all(ispersist ? [Promise.resolve()] : hooks.map((subscribe2) => {
+                return Promise.all(false ? [Promise.resolve()] : hooks.map((subscribe2) => {
                   return subscribe2();
                 })).then(() => {
                   if (components2.length) {
@@ -2444,7 +2450,7 @@
               return Promise.reject(`${key} is not found`);
             }
             if (quick) {
-              return this.memory.get(pkey);
+              return this.memory.get(pkey, true);
             } else {
               return this.session.get(pkey);
             }
@@ -2674,6 +2680,7 @@
                 let el2 = els[p];
                 if (attr == "class" || attr == "className") {
                   if (el2.classList.length) {
+                    console.log(prevValue);
                     Utils.loopStringSplitSpace(prevValue, function(cls) {
                       el2.classList.remove(cls);
                     });
@@ -4947,10 +4954,10 @@
             }
             ;
           }).then(() => {
+            component3.options.router && Cake2.Router.subscribe(component3.options.router.bind(component3));
             component3.options.data && component3.options.data.bind(component3.data)(component3);
             component3.options.init && component3.options.init.bind(component3)();
             component3.options.utils && component3.options.utils.bind(component3.utils)(component3);
-            component3.options.router && Cake2.Router.subscribe(component3.options.router.bind(component3));
           }).then(() => {
             if (component3.type == "model") {
               Cake2.Models[name] = component3;
