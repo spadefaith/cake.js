@@ -755,6 +755,84 @@
           ;
           return has;
         };
+        var STORAGE = class {
+          constructor(type, name, child) {
+            this.type = type;
+            this.name = name;
+            this.child = child;
+            this.cache = {};
+            if (typeOf(this.child) == "string") {
+              this.child = child == "array" ? [] : child == "object" ? {} : false;
+            }
+            ;
+          }
+          init(save) {
+            if (this[this.type]) {
+              this[this.type](save);
+              return true;
+            }
+            ;
+            return false;
+          }
+          open() {
+            if (this.type == "session") {
+              var decoded = JSON.parse(sessionStorage[this.name]);
+              return decoded[this.name];
+            } else if (this.type == "local") {
+              var decoded = JSON.parse(localStorage[this.name]);
+              return decoded[this.name];
+            } else {
+              return this.cache[this.name];
+            }
+            ;
+          }
+          close(storage2) {
+            this.child = storage2;
+            this.create();
+            return this.init(true);
+          }
+          create() {
+            this.cache[this.name] = this.child;
+          }
+          array() {
+            this.create();
+          }
+          object(issave) {
+            this.create();
+          }
+          session(save) {
+            this.create();
+            try {
+              if (!sessionStorage[this.name]) {
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else if (save) {
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else {
+                sessionStorage.removeItem(this.name);
+                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+              }
+            } catch (err) {
+              this.create();
+            }
+            ;
+          }
+          local(save) {
+            this.create();
+            try {
+              if (!localStorage[this.name]) {
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else if (save) {
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              } else {
+                localStorage.removeItem(this.name);
+                localStorage.setItem(this.name, JSON.stringify(this.cache));
+              }
+            } catch (err) {
+              this.create();
+            }
+            ;
+          }
+        };
         var methods = {
           create: function(storage2, data2) {
             if (isArray(storage2)) {
@@ -891,84 +969,6 @@
             return storage2;
           }
         };
-        var STORAGE = class {
-          constructor(type, name, child) {
-            this.type = type;
-            this.name = name;
-            this.child = child;
-            this.cache = {};
-            if (typeOf(this.child) == "string") {
-              this.child = child == "array" ? [] : child == "object" ? {} : false;
-            }
-            ;
-          }
-          init(save) {
-            if (this[this.type]) {
-              this[this.type](save);
-              return true;
-            }
-            ;
-            return false;
-          }
-          open() {
-            if (this.type == "session") {
-              var decoded = JSON.parse(sessionStorage[this.name]);
-              return decoded[this.name];
-            } else if (this.type == "local") {
-              var decoded = JSON.parse(localStorage[this.name]);
-              return decoded[this.name];
-            } else {
-              return this.cache[this.name];
-            }
-            ;
-          }
-          close(storage2) {
-            this.child = storage2;
-            this.create();
-            return this.init(true);
-          }
-          create() {
-            this.cache[this.name] = this.child;
-          }
-          array() {
-            this.create();
-          }
-          object() {
-            this.create();
-          }
-          session(save) {
-            this.create();
-            try {
-              if (!sessionStorage[this.name]) {
-                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
-              } else if (save) {
-                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
-              } else {
-                sessionStorage.removeItem(this.name);
-                sessionStorage.setItem(this.name, JSON.stringify(this.cache));
-              }
-            } catch (err) {
-              this.create();
-            }
-            ;
-          }
-          local(save) {
-            this.create();
-            try {
-              if (!localStorage[this.name]) {
-                localStorage.setItem(this.name, JSON.stringify(this.cache));
-              } else if (save) {
-                localStorage.setItem(this.name, JSON.stringify(this.cache));
-              } else {
-                localStorage.removeItem(this.name);
-                localStorage.setItem(this.name, JSON.stringify(this.cache));
-              }
-            } catch (err) {
-              this.create();
-            }
-            ;
-          }
-        };
         var USB = class {
           constructor(_obj) {
             this.name = _obj.name;
@@ -1046,7 +1046,8 @@
             ;
             var storage2 = this.storage.open();
             storage2 = methods.createOrUpdate(storage2, data2);
-            return this.storage.close(storage2);
+            const close = this.storage.close(storage2);
+            return close;
           }
           create(data2) {
             var storage2 = this.storage.open();
@@ -2054,7 +2055,10 @@
           persist() {
             if (!document.hasRouterPersist) {
               document.addEventListener("DOMContentLoaded", (e) => {
-                this.navigate(true);
+                this.parse();
+                this.notify().then(() => {
+                  return this.navigate(true);
+                });
               });
               document.hasRouterPersist = true;
             }
@@ -2063,8 +2067,11 @@
           watch() {
             if (!window.hasRouterPop) {
               window.onpopstate = (e) => {
-                this.clear().then(() => {
-                  this.navigate();
+                this.parse();
+                this.notify().then(() => {
+                  return this.clear().then(() => {
+                    this.navigate();
+                  });
                 });
               };
               window.hasRouterPop = true;
@@ -2074,9 +2081,16 @@
           compile(routes) {
             let con = {};
             for (let key in routes) {
+              key = String(key);
               const len = key.length;
-              let regex = String(key);
-              regex = regex.slice(1);
+              let regex = key;
+              if (["404"].includes(key)) {
+                const callback = routes[key];
+                routes[key] = { callback, name: key };
+              } else {
+                regex = regex.slice(1);
+              }
+              ;
               regex = regex.split("/");
               regex = regex.map((item, index) => {
                 let param = item.includes(":");
@@ -2115,7 +2129,7 @@
             con.keys = Object.keys(routes);
             return con;
           }
-          navigate(ispersist) {
+          parse() {
             let hash2 = window.location.hash, scheme;
             if (hash2) {
               scheme = hash2.includes("#!/") ? 2 : hash2.includes("#/") ? 1 : null;
@@ -2139,6 +2153,7 @@
               });
             }
             ;
+            let has = false;
             for (let i = 0; i < keys.length; i++) {
               const route = this.route[keys[i]];
               const { regex, components: components2, params, name } = route;
@@ -2157,26 +2172,59 @@
               ;
               const test = regex.test(path);
               if (test) {
-                this.prev = { components: components2, state, path, name };
+                this.prev = { components: components2, state, path, name, prev: this.prev };
+                has = true;
                 break;
               }
               ;
             }
             ;
-            if (this.prev) {
-              const { components: components2, state: state2, path: path2, name } = this.prev;
-              try {
-                return Promise.all(false ? [Promise.resolve()] : hooks.map((subscribe2) => {
-                  return subscribe2();
-                })).then(() => {
-                  if (components2.length) {
-                    return Promise.all(components2.map((item) => {
-                      return this.components[item].render({ emit: { data: this.prev } });
-                    }));
+            if (!has) {
+              if (this.route["404"]) {
+                let path2 = this.route["404"].callback();
+                const { origin, pathname } = location;
+                if (this.route[path2]) {
+                  console.log(1);
+                  if (path2 == "/") {
+                    path2 = `${origin}${pathname}`;
+                  } else {
+                    if (pathname.slice(-1) == "/") {
+                      path2 = `${origin}${pathname}#!${path2}`;
+                    } else {
+                      path2 = `${origin}${pathname}/#!${path2}`;
+                    }
+                    ;
                   }
-                });
+                  ;
+                  location.replace(path2);
+                } else if (!!path2 && !this.route[path2]) {
+                  if (origin.slice(-1) == "/") {
+                    if (path2[0] == "/") {
+                      path2 = path2.slice(1);
+                    }
+                    ;
+                  }
+                  ;
+                  path2 = `${origin}${path2}`;
+                  location.replace(path2);
+                }
+                ;
+              }
+              ;
+            }
+          }
+          navigate(ispersist) {
+            if (this.prev) {
+              const { components: components2, state, path, name } = this.prev;
+              try {
+                if (components2.length) {
+                  return Promise.all(components2.map((item) => {
+                    return this.components[item].render({ emit: { route: this.prev } });
+                  }));
+                }
               } catch (err) {
-                throw new Error(`some of the component in ${JSON.stringify(components2)} in path ${path2} of router is not found, make sure the it is created`);
+                console.log(err);
+                throw new Error(`some of the component in ${JSON.stringify(components2)} in path ${path} of router is not found, make sure the it is created`);
               }
             }
           }
@@ -2196,8 +2244,8 @@
           }
           clear() {
             let promise = Promise.resolve();
-            if (this.prev) {
-              const { components: _components, state, path, name } = this.prev;
+            if (this.prev && this.prev.prev) {
+              const { components: _components, state, path, name } = this.prev.prev;
               promise = Promise.all(_components.map((item) => {
                 if (components[item].fire.destroy) {
                   return components[item].fire.destroy();
@@ -2223,6 +2271,11 @@
               hooks.push(fn2);
             }
             ;
+          }
+          notify() {
+            return Promise.all(false ? [Promise.resolve()] : hooks.map((subscribe2) => {
+              return subscribe2();
+            }));
           }
         };
       };
@@ -2394,12 +2447,12 @@
             this.session = new StorageKit({
               child: "object",
               storage: "session",
-              name: "_cake_scope_cf"
+              name: `_cake_${this.name}_cf`
             });
             this.memory = new StorageKit({
               child: "object",
               storage: "object",
-              name: "_cake_scope_cf"
+              name: `_cake_${this.name}_cf`
             });
           }
           notifier(component3, obj) {
@@ -2413,7 +2466,6 @@
           }
           getInputData(type = "json", _component) {
             let component3 = _component || this.name;
-            console.log(this.reactiveData);
             let data2 = JSON.parse(JSON.stringify(this.reactiveData[component3]));
             for (let key in data2) {
               let value = data2[key];
@@ -2446,13 +2498,10 @@
           }
           get(key, quick = false) {
             let pkey = this.pKeys[key];
-            if (!pkey) {
-              return Promise.reject(`${key} is not found`);
-            }
             if (quick) {
-              return this.memory.get(pkey, true);
+              return this.memory.get(key, true);
             } else {
-              return this.session.get(pkey);
+              return this.session.get(key);
             }
             ;
           }
@@ -2463,14 +2512,13 @@
             let prevValue = null;
             this.pKeys[key] = pkey;
             return new Promise(async (res, rej) => {
-              prevValue = await this.get(key, true);
               if (key != "password") {
-                this.session.createOrUpdate(pkey, value);
+                this.session.createOrUpdate(key, value);
               }
               ;
               res();
-            }).then(() => {
-              this.memory.createOrUpdate(pkey, value);
+            }).then(async () => {
+              await this.memory.createOrUpdate(key, value);
               const hooks = _hooks[this.name];
               if (hooks) {
                 const callbacks = hooks[key];
@@ -3917,6 +3965,9 @@
           for (let component3 in this.subscribe) {
             if (this.subscribe.hasOwnProperty(component3)) {
               subscribe = this.subscribe[component3];
+              if (component3 == "alert") {
+                console.log(subscribe);
+              }
               let isMany = !!subscribe.components && !!subscribe.handler;
               if (isMany) {
                 let event = component3;
@@ -3947,7 +3998,10 @@
                   if (fns.hasOwnProperty(fn2)) {
                     let handler = fns[fn2];
                     let original = handler.name;
-                    handler = handler.bind(this);
+                    try {
+                      handler = handler.bind(this);
+                    } catch (err) {
+                    }
                     handler.original = original;
                     handler.binded = this.name;
                     handler.listenTo = component3;
@@ -4772,12 +4826,14 @@
         Cake2.prototype._defineProperty(Component.prototype, "$observer", function() {
           return Cake2.Observer;
         });
-        Cake2.prototype._defineProperty(Component, "$globalScope", function() {
-          const scope2 = new Scope("globalScope");
+        Cake2._globalScope = new Scope("globalScope");
+        Cake2.prototype._defineProperty(Component.prototype, "$globalScope", function() {
+          const scope2 = Cake2._globalScope;
           return scope2;
         });
+        Cake2._universalScope = new Scope("universalScope");
         Cake2.$universalScope = function() {
-          const scope2 = new Scope("universalScope");
+          const scope2 = Cake2._universalScope;
           return scope2;
         };
         Cake2.prototype._defineProperty(Component.prototype, "$attrib", function() {
@@ -4911,16 +4967,12 @@
                               const notify = new Promise((res, rej) => {
                                 setTimeout(() => {
                                   let payload = variable;
-                                  if (variable && variable.element) {
-                                    payload = { status: 0, message: "element cant be cloned" };
-                                  }
-                                  ;
-                                  Cake2.MainMessageChannel.send({ component: component3.name, event: name, payload });
-                                  Cake2.Observer.notify(component3.name, event, variable).then(() => {
+                                  Cake2.Observer.notify(component3.name, event, payload).then(() => {
                                     return Cake2.Observer.results[component3.name][event];
                                   }).then((r) => {
                                     res(r);
                                   }).catch((err) => {
+                                    console.log(448, component3.name, event, payload);
                                     console.error(err);
                                   });
                                 });
