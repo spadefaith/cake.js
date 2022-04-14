@@ -345,8 +345,8 @@ module.exports = function(dependency){
     };
     
     Component.prototype.render = function(options){
-        let payload = null;
         let {root, multiple, cleaned, emit, static, hashed, data} = options || {};
+        let payload = {emit:emit || {}};;
         const getValue = (item)=>{
             return this.data[item] || this.$scope[item] || null;
         };
@@ -357,7 +357,8 @@ module.exports = function(dependency){
             if (!this.isReady){
                 this.createElement().then(()=>{
                     (hashed === true) && this.$hash.add(this.name);
-                    (!this.template) && this.fire.isConnected && this.fire.isConnected({emit}, true);
+
+                    return (!this.template) && this.fire.isConnected && this.fire.isConnected(payload, true);
 
                 }).then(()=>{
                     this.isReady = true;
@@ -382,8 +383,15 @@ module.exports = function(dependency){
                     res(this.html);
                 }).then((element)=>{
                     payload = {element, emit};
-                    this.fire.beforeConnected && this.fire.beforeConnected(payload, true);
-                    return element;
+                    
+                    return new Promise((res, rej)=>{
+                        try {
+                            this.fire.beforeConnected && this.fire.beforeConnected(payload, true);
+                            res(element);
+                        } catch(err){
+                            rej(err);
+                        };
+                    });
                 }).then((element)=>{
                     if (this.isStatic){
                         //static component, those already attached to DOM;
@@ -427,12 +435,16 @@ module.exports = function(dependency){
                     // console.log('this containers must have el',this.name, this.container);
                     return this.addEvent(static, multiple);
                 }).then(()=>{
-                    return  this.fire.isConnected && this.fire.isConnected(payload, true);
+                    try {
+                        return  this.fire.isConnected && this.fire.isConnected(payload, true);
+                    }catch(err){
+                        console.log(440,err);
+                    }
                 }).then(()=>{
                     return this.$animate('render');
                 }).then(()=>{
                     return new Promise((res, rej)=>{
-                        setTimeout(()=>{
+                        Utils.timeOut(()=>{
                             this._watchReactive();
                             res();
                         },100);
@@ -495,49 +507,71 @@ module.exports = function(dependency){
         };
         let component = this.name;
         function notify(event, component,  isPreventDefault, isStopPropagation){
+            // console.log(509,!isPreventDefault, component)
             return function(e){ 
-                if (isPreventDefault){
+                // console.log(512,e);
+                if (!isPreventDefault){
                     e.preventDefault();
                 };
                 if (isStopPropagation){
                     e.stopPropagation();
                 };
+
                 Cake.Observer.notify(component, event, e);
             };
         };
         if (!this.targets) return;
         for (let event in this.targets){
             if (this.targets.hasOwnProperty(event)){
+                // let cf = JSON.parse(JSON.stringify(this.targets[event]));
                 let cf = this.targets[event];
+                // if(this.name == 'sidebar'){
+                //     console.log(527, cf);
+                // };
       
                 for (let item of cf){
                     let {sel, el, cb} = item;
-                    cb = cb || event;
+                    let _event = event;
+                    
+                    let place = event.substring(0,2);
+                    let isPreventDefault = place.includes('~');//default to true;
+                    let isStopPropagation = place.includes('^');//default to false;
+
+
+                    if(isPreventDefault || isStopPropagation){
+                        _event = event.slice(1);
+                        cb = cb || _event;
+                    } else {
+                        if(!cb){
+                            cb = event;
+                        }
+                    };
+
                     if (!el.Ref().get('__cake__events')){
                         el.Ref().set('__cake__events', {});
                     }; 
                     let store = el.Ref().get('__cake__events');
                     
                     if (!store[cb]){
-                        let place = event.substring(0,2);
-                        let isPreventDefault = !place.includes('~');//default to true;
-                        let isStopPropagation = place.includes('^');//default to false;
-                        // console.log(isPrevented, event);
+ 
+                        // console.log(isPreventDefault, event);
 
-                        // console.log(513);
-                        // console.log('event',event);
-                        // console.log('isPreventDefault',isPreventDefault);
-                        // console.log('isStopPropagation',isStopPropagation);
-                        // console.log('el',el);
+                        // if(this.name == 'toolbar'){
+                        //     console.log(513);
+                        //     console.log('component',this.name);
+                        //     console.log('place',place);
+                        //     console.log('event',_event);
+                        //     console.log('isPreventDefault',isPreventDefault);
+                        //     console.log('isStopPropagation',isStopPropagation);
+                        //     console.log('el',el);
+                        //     console.log('cb',cb);
+                        // }
 
 
-                        if(!isPreventDefault || isStopPropagation){
-                            event = event.slice(1);
-                        };
 
-                        // console.log(524,'event',event)
 
-                        el.addEventListener(event, notify(cb, component, isPreventDefault, isStopPropagation), true);
+
+                        el.addEventListener(_event, notify(cb, component, isPreventDefault, isStopPropagation), true);
                         store[cb] = true;
                         el.Ref().set('__cake__events', store);
                     } else {continue};
@@ -599,8 +633,6 @@ module.exports = function(dependency){
             }
             check(bind){
                 let config = this.toggle[bind];
-    
-    
                 // console.log(this.toggle)
     
                 if (!config){ 

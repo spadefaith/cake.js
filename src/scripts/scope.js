@@ -3,6 +3,7 @@ module.exports = function(dependency){
     const _hooks = {};
     class Scope {
         constructor(name){
+
             this.name = name;
 
       
@@ -35,17 +36,18 @@ module.exports = function(dependency){
         registerNotifier(fn){
             this.notify.push(fn);
         }
-        install(component){
+        install(){
             this.session = new StorageKit({
                 child:'object',
                 storage:'session',
                 name:`_cake_${this.name}_cf`,
             });
-            this.memory = new StorageKit({
-                child:'object',
-                storage:'object',
-                name:`_cake_${this.name}_cf`,
-            });
+            // console.log(this.name, this.session);
+            // this.memory = new StorageKit({
+            //     child:'object',
+            //     storage:'object',
+            //     name:`_cake_${this.name}_cf`,
+            // });
         }
         notifier(component, obj){
             //called by usually form input;
@@ -120,7 +122,7 @@ module.exports = function(dependency){
             //     }
             // }
             if (quick){
-                return this.memory.get(key, true);
+                return this.session.get(key, true);
             } else {
                 return this.session.get(key);
             };
@@ -144,7 +146,7 @@ module.exports = function(dependency){
                 };
                 res();
             }).then(async ()=>{
-                await this.memory.createOrUpdate(key, value);
+                // await this.memory.createOrUpdate(key, value);
 
 
                 // if (this.name == 'globalScope'){

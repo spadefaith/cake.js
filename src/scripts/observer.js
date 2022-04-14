@@ -46,12 +46,16 @@ module.exports = function(){
         };
     
     
+        // if(_component == 'toolbar'){
+        //     console.log(54, _event, handler);
+        // }
+
         _component = handler.binded;
     
     
         handler = ret(handler);    
     
-        // console.log(54, _component, _event, handler);
+
     
         if (!handler) {
             console.error(`no setup handler for the event ${_event} in ${_component} component`);
@@ -62,10 +66,12 @@ module.exports = function(){
         // }
         //it is able to accept a promise from handlers;
     
+
+        
         let prom = new Promise((res,rej)=>{
             let e = handler(_e);
             res(e);
-        })
+        });
     
         this.stat.handlers[handler.original] += 1;
 

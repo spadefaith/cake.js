@@ -1,8 +1,9 @@
-module.exports = function(){
+module.exports = function(dependency){
     /**
      * this class is use to unified the use of storage, in
      * object for memory and storages for sessionStorage/localStorage;
      */
+    const Utils = dependency.Utils;
 
     function typeOf(_obj){
         return (_obj).constructor.name.toLowerCase();
@@ -88,7 +89,6 @@ module.exports = function(){
             };
         }
         init(save){
-            // console.log(91, this.cache, this.child);
             if (this[this.type]){
                 this[this.type](save);
                 return true;
@@ -112,9 +112,12 @@ module.exports = function(){
         }
         close(storage){
             this.child = storage;
-            this.create();
+            this.recache();
             // console.log(94,this.name, storage);
             return this.init(true);
+        }
+        recache(){
+            this.cache[this.name] = this.child;
         }
         create(){
             // console.log(93, this.name, this.cache);
@@ -130,27 +133,44 @@ module.exports = function(){
             // console.trace();
         }
         session(save){
-            this.create();
+            if(!save){
+                this.recache();
+            };
             try{
                 // console.log(2542,this.name);
                 // console.log(2540,!sessionStorage[this.name]);
                 // console.log(2541,this.cache);
                 // console.log(2543,save);
-                if (!sessionStorage[this.name]){
-
+                // if(this.name == '_cake_globalScope_cf'){
+                //     console.log(!sessionStorage[this.name] && !save);
+                //     console.log(save);
+                //     console.log(152, this.cache);
+                    
+                //     console.trace();
+                // };
+                if (!sessionStorage[this.name] && !save){
                     sessionStorage.setItem(this.name, JSON.stringify(this.cache));
                 } else if (save){
                     sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+                    // if(this.name == '_cake_globalScope_cf'){
+                    //     console.log(156,sessionStorage[this.name]);
+                    // };
                 } else {
-                    sessionStorage.removeItem(this.name);
-                    sessionStorage.setItem(this.name, JSON.stringify(this.cache));
-                }
-                // console.log(2548,sessionStorage[this.name]);
+                    // sessionStorage.removeItem(this.name);
+                    // sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+                };
             } catch(err){
-                this.create();
+                this.recache();
+            };
+        }
+        verifyLocalStorage(){
+            if(!sessionStorage.reset){
+                sessionStorage.setItem('reset', false);
+                localStorage.clear();
             };
         }
         local(save){
+            this.verifyLocalStorage();
             this.create();
             try{
                 if (!localStorage[this.name]){
@@ -336,7 +356,7 @@ module.exports = function(){
                 return methods.get(storage, id);
             } else {
                 return new Promise((res, rej)=>{
-                    setTimeout(()=>{
+                    Utils.timeOut(()=>{
                         var storage = this.storage.open();
                         res(storage);
                     });

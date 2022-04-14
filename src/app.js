@@ -14,12 +14,16 @@ const hash = require('./scripts/hash');
 const router = require('./scripts/router');
 const form = require('./scripts/form');
 
+const storageKit = storage({
+    Utils:utils
+});
+
 const scope = require('./scripts/scope')({
-    StorageKit:storage(),
+    StorageKit:storageKit,
 });
 
 const attributes = require('./scripts/attributes')({
-    StorageKit:storage(),
+    StorageKit:storageKit,
     Templating:templating(),
     Utils:utils,
 });
@@ -41,11 +45,12 @@ const cake = require('./scripts/cake')({
     Hasher:hash,
     Router:router,
     Persistent:persist({
-        StorageKit:storage(),
+        StorageKit:storageKit,
     }),
-    StorageKit:storage(),
+    StorageKit:storageKit,
     Observer:observer(),
     Formy:form,
+    Utils:utils,
 });
 
 window.Cake = cake;

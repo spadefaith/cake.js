@@ -61,42 +61,38 @@
     String.prototype.toCamelCase = function(){
         let str = this.toLowerCase();
         let _StringCache = Object.cache;
+
         let cvt =null;
-        switch(true){
-            case !_StringCache.toCamel:{
-                _StringCache.toCamel = {};
-            }
-            case true:{
-                _StringCache = _StringCache.toCamel;
-            }
-            case _StringCache[str]:{
-                cvt = _StringCache[str];
-            }
-            break;
-            default:{
-                let split = str.split('-');
-                if (split.length == 1){
-                    return str;
-                };
-                let join = "";
-                let i = -1;
-                let length = split.length;
-                while (++i < length){
-                    let str = split[i];
-                    switch(i){
-                        case 0:{join += str};
-                        default:{
-                            let first = str.substring(0,1).toUpperCase();;
-                            let second = str.substring(1);
-                            join += (first+second);
-                        } break;
-                    }
-                };
-                _StringCache[str] = join;
-                cvt = join;
-            } break;
+
+        if(!_StringCache.toCamel){
+            _StringCache.toCamel = {};
         };
-        return cvt;
+        _StringCache = _StringCache.toCamel;
+
+        if(_StringCache[str]){
+            return _StringCache[str];
+        } else {
+            let split = str.split('-');
+            if (split.length == 1){
+                return str;
+            };
+            let join = "";
+            let i = -1;
+            let length = split.length;
+            while (++i < length){
+                let str = split[i];
+                switch(i){
+                    case 0:{join += str};break
+                    default:{
+                        let first = str.substring(0,1).toUpperCase();;
+                        let second = str.substring(1);
+                        join += (first+second);
+                    } break;
+                }
+            };
+            _StringCache[str] = join;
+            return join;
+        };
     };
     
     HTMLElement.prototype.querySelectorIncluded = function(selector, attr, val){

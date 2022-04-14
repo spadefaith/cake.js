@@ -9,6 +9,7 @@ module.exports = function(dependency){
     const StorageKit = dependency.StorageKit;
     const Observer = dependency.Observer;
     const Formy = dependency.Formy;
+    const Utils = dependency.Utils;
 
     // console.log(Component);
     
@@ -65,7 +66,7 @@ module.exports = function(dependency){
                     res(Cake.Models[name]);
                 };
             });
-            setTimeout(()=>{
+            Utils.timeOut(()=>{
                 if(!Cake.Models[name]){
                     clearInterval(mk);
                     rej(name);
@@ -407,13 +408,13 @@ module.exports = function(dependency){
                     for (let h in handlers){
                         if (handlers.hasOwnProperty(h)){
                             let handler = handlers[h];
+
                             let event = handler.original;
                             Object.defineProperty(fn, event, {
                                 get(){
                                     
                                     let fn = {
                                         [event]:function (variable, isBroadcast){
-                                            
                                             //automatic broadcast if the event is destroy;
                                             if (isBroadcast != undefined){
                                                 isBroadcast = isBroadcast;
@@ -424,24 +425,16 @@ module.exports = function(dependency){
                                             };
                                             if (isBroadcast == undefined){
                                                 isBroadcast = false;
-                                            }
-
-
-                                            // console.log(429, event);
-
+                                            };
                                             if (isBroadcast){
                                                 /**
                                                  * async
                                                  */
-                                                // console.log(component.name)
-                                                // if (event == 'destroy'){
-                                                //     console.log('start of destroying')
-                                                // }
                                                 const notify = new Promise((res, rej)=>{
                                                     //without setTimeout, there will be a problem;
                                                     //i think setTimeout, helps the promise to call resolve;
                                                     //as it commands the promise to resolve on the next clock tick;
-                                                    setTimeout(()=>{
+                                                    Utils.timeOut(()=>{
                                                         // let not = Cake.Observer.notify(component.name, event, variable);
 
                                                         // console.log(variable);
@@ -458,13 +451,15 @@ module.exports = function(dependency){
                                                         
                                                         // Cake.MainMessageChannel.send({component:component.name, event:name, payload});
 
-                                                        Cake.Observer.notify(component.name, event, payload).then(()=>{
+                                                        payload = payload || {};
 
+                                                        Cake.Observer.notify(component.name, event, payload).then(()=>{
                                                             return Cake.Observer.results[component.name][event];
                                                         }).then(r=>{
                                                             res(r);
                                                         }).catch(err=>{
                                                             console.log(448, component.name, event, payload);
+                                                            console.trace();
                                                             console.error(err);
                                                         });
                                                         

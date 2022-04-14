@@ -97,6 +97,8 @@ const OTHERS = {
         console.timeEnd('test');
     },
     logTest:function(a, ops, b){
+        try { a = JSON.parse(a)}catch(err){}
+        try { b = JSON.parse(b)}catch(err){}
         switch (ops) {
             case '==':{
                 return a == b;
@@ -174,7 +176,7 @@ const OTHERS = {
             return fd;
         };
     },
-    loopStringSplitSpace:function(string, fn){
+    splitBySpace:function(string, fn){
         if(string){
             string = string.split(" ");
             if(TYPES.isArray(string)){
@@ -184,6 +186,21 @@ const OTHERS = {
             };
         }
     },
+    toArray(arrayLike){
+        let a = [];
+        if(!arrayLike.length){
+            return a;
+        };
+        for (let i = 0; i < arrayLike.length; i++){
+            a.push(arrayLike[i]);
+        };
+        return a;
+    },
+    timeOut(fn){
+        setTimeout(()=>{
+            fn();
+        });
+    }
 }
 
 try {

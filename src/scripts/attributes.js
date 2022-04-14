@@ -10,6 +10,7 @@ function Attrib(){
 
     this.st  = { };
     this.cacheStatic = [];
+    this.logicalType = ['if', 'bind', 'switch', 'toggle', 'class', 'attr'];
 
     this.store = new StorageKit({
         child:'object',
@@ -43,11 +44,19 @@ Attrib.prototype._getConfig = function(type, prop, newValue, prevValue, componen
     if (!loc[id]){
         var st = (component) ? (()=>{
             let config = (this.st[component] && this.st[component][type]);
+
             if(config && config.length){
-                return config.filter(item=>{
-                    let {bind} = item || {bind:false};
-                    return bind == prop || false;
-                });
+                let ctx = [];
+                for (let i = 0; i < config.length; i++){
+                    let item = JSON.parse(JSON.stringify(config[i]));
+                    let test = item.bind == prop;
+                    if(test){
+                        ctx.push({...item, ...newValue});
+                        break;
+                    }
+                }
+
+                return ctx;
             } else {
                 return [];
             };
@@ -59,10 +68,11 @@ Attrib.prototype._getConfig = function(type, prop, newValue, prevValue, componen
                     if (s[type]){
                         for (let i = 0; i < s[type].length; i++){
                             let item = s[type][i];
+                            let config = JSON.parse(JSON.stringify(item));
                             // console.log(item.bind, prop, item);
                             if (item.bind == prop){
                                 // console.log(type, item);
-                                ctx.push({...item, component});
+                                ctx.push({...config, component,...newValue});
                             };
                         };
                     };
@@ -89,7 +99,7 @@ Attrib.prototype._notifyToggle = function(prop, newValue, prevValue, component, 
         let el = html.querySelector(`[data-toggle=${sel}]`);
 
 
-        //to do
+        //TODO
         if (value == prevValue){
             el && el.classList.remove('is-active');
         }  
@@ -109,7 +119,7 @@ Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, 
     let configs = this._getConfig('switch', prop, newValue, prevValue, component);
     if (!configs.length) return;
 
-    let forIf = {};
+    let attrPayload = [];
 
     for (let c = 0; c < configs.length; c++){
         let config = configs[c];
@@ -121,6 +131,7 @@ Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, 
 
         // console.log(parent);
         for (let n = 0; n < newValue.length; n++){
+            let index = n;
             let row = newValue[n];
             let slot = parent[n];//map the parentelement by newValue index;
             let prop = row[map];
@@ -142,7 +153,7 @@ Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, 
                         
                         hit = hit.cloneNode(true);
                         /**********link to data-for-auto=true**************** */
-                        //mark the for children as active;
+                        //tag the for children as active;
                         let forChildren = hit.querySelectorAll('[data-for-auto=true]');
                         for (let f = 0; f < forChildren.length; f++){
                             let ch = forChildren[f];
@@ -153,26 +164,21 @@ Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, 
                         hit.removeAttribute('data-case');
                         
                         let template = new Templating(row, hit, false).createElement();
-                        // console.log(hit, row, template);
                         // console.log(slot)
-                        if (hit.dataset.if){
-                            let sel = hit.dataset.if;
-                            let binded = template.dataset.ifBind;
-                            let component = config.component;
-                            let {bind} = this.getWatchItemsBySel(component,'if',sel);
-    
-                            if (sel){
-                                if (!forIf[bind]){
-                                    forIf[bind] = {};
+
+                        for (let lt = 0; lt < this.logicalType.length; lt++){
+                            let type = this.logicalType[lt];
+                            if (hit.dataset[type]){
+                                let sel = hit.dataset[type];
+                                let incrementedSel = `${sel}-${index}`;
+                                template.dataset[type] = incrementedSel;
+                                let {bind} = this.getWatchItemsBySel(component,type,sel);
+                                if (sel){
+                                    attrPayload.push({_type:type, ...row, incrementedSel,sel, bind, incrementId:index});
                                 };
-                                forIf[bind][binded] = row;
-                            }
-                        }
+                            };
 
-
-
-                        
-
+                        };
                         template.classList.remove('cake-template');
                         slot.replaceWith(template);
                     }
@@ -180,11 +186,12 @@ Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, 
             }
         };
     };
-    
-    for (let bind in forIf){
-        if (forIf.hasOwnProperty(bind)){
-            this._notifyIf(bind, forIf[bind]);
-        };
+    // console.log(185, attrPayload);
+    for (let payload of attrPayload){
+        const {bind, _type} = payload;
+        const name = `_notify-${_type}`.toCamelCase();
+        this[name](bind, payload);
+
     };
 
 };
@@ -194,15 +201,17 @@ Attrib.prototype._notifyBind = function(prop, newValue, prevValue, component, ht
     let configs = this._getConfig('bind', prop, newValue, prevValue, component);
     if (!configs.length) return;
 
-
-
-
     for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        let {attr, bind, sel} = config;
+        let config = configs[c], data;
+        let {attr, bind, sel, incrementedSel,incrementId} = config;
+        if(!!incrementedSel){
+            data = newValue[bind];
+        } else {
+            data = newValue;
+        };
         let attrHyphen = attr.toHyphen();
         if (prop == bind){
-            let els = html.querySelectorAll(`[data-bind=${sel}]`);
+            let els = html.querySelectorAll(`[data-bind=${incrementedSel || sel}]`);
 
             for (let p = 0; p < els.length; p++){
                 let el = els[p];
@@ -212,14 +221,14 @@ Attrib.prototype._notifyBind = function(prop, newValue, prevValue, component, ht
 
                     if (el.classList.length){
                         console.log(prevValue);
-                        Utils.loopStringSplitSpace(prevValue, function(cls){
+                        Utils.splitBySpace(prevValue, function(cls){
                             el.classList.remove(cls);
                         });
-                        Utils.loopStringSplitSpace(newValue, function(cls){
+                        Utils.splitBySpace(data, function(cls){
                             el.classList.add(cls);
                         });
                     } else {
-                        Utils.loopStringSplitSpace(newValue, function(cls){
+                        Utils.splitBySpace(data, function(cls){
                             el.classList.add(cls);
                         });
                     };
@@ -228,8 +237,8 @@ Attrib.prototype._notifyBind = function(prop, newValue, prevValue, component, ht
 
       
 
-                    el.setAttribute(attrHyphen, newValue);
-                    el[attr] = newValue;
+                    el.setAttribute(attrHyphen, data);
+                    el[attr] = data;
                 };
             };
         };
@@ -376,7 +385,7 @@ Attrib.prototype._notifyForAuto = function(obj){
             });
             cf && childCf.push(new Promise((res)=>{
                 let {bind, sel, iter, ins} = cf;
-                setTimeout(()=>{
+                Utils.timeOut(()=>{
                     // console.log(sel);
                     let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
                     for (let t = 0; t < targets.length; t++){
@@ -494,48 +503,61 @@ Attrib.prototype._notifyClass = function(prop, newValue, prevValue, component, h
     // console.log(477,newValue);
 
     for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        let {hasNegate, bind, testVal,className, ops, sel} = config;
+        let config = configs[c], data;
+        let {hasNegate, bind, testVal,className, ops, sel,  incrementedSel,incrementId} = config;
+
 
 
         bind = removeWhiteSpace(bind);
         // className = removeWhiteSpace(className);
+
+        if(!!incrementedSel){
+            data = newValue[bind];
+        } else {
+            data = newValue;
+        };
+        
         
         if (prop == bind){
             if (!cache[sel]){
-                cache[sel] = html.querySelectorAll(`[data-class=${sel}]:not(.cake-template)`);//just to convert iterable;
+                cache[sel] = html.querySelectorAll(`[data-class=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
             }
             let els = cache[sel];
-
-
-
 
             for (let p = 0; p < els.length; p++){
                 let el = els[p];
                 let test = false;
                 if (ops){
-                    test = Utils.logTest(newValue, ops, testVal);
+                    test = Utils.logTest(data, ops, testVal);
                     hasNegate && (test = !test);
                 } else if (hasNegate){
-                    test = !newValue;
+                    test = !data;
                 } else {
-                    test = !!newValue;
+                    test = !!data;
                 };
 
                 // console.log(503, prop, test, newValue);
 
                 if (test){
-                    Utils.loopStringSplitSpace(className, function(cls){
-                        if (!el.classList.contains(cls)){
-                            el.classList.add(cls);
-                        }
-                    })
+                    Utils.splitBySpace(className, function(cls){
+                        // console.log(519, data,  ops, testVal, test);
+                        const classList = Utils.toArray(el.classList);
+                        if (!classList.includes(cls)){
+                           Utils.timeOut(()=>{
+                                el.classList.add(cls);
+                           });
+                        };
+                    });
                 } else {
-                    Utils.loopStringSplitSpace(className, function(cls){
-                        if (el.classList.contains(cls)){
-                            el.classList.remove(cls);
-                        }
-                    })
+                    Utils.splitBySpace(className, function(cls){
+                        const classList = Utils.toArray(el.classList);
+
+                        if (classList.includes(cls)){
+                            Utils.timeOut(()=>{
+                                el.classList.remove(cls);
+                            });
+                        };
+                    });
 
                 };
             };
@@ -555,19 +577,18 @@ Attrib.prototype._notifyAttr = function(prop, newValue, prevValue, component, ht
 
     for (let c = 0; c < configs.length; c++){
         let config = configs[c];
-        let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue} = config;
+        let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue, incrementedSel,incrementId} = config;
 
         bind = removeWhiteSpace(bind);
         attr = removeWhiteSpace(attr);
+
+        // console.log(572, prop, bind, prop);
         
         if (prop == bind){
             if (!cache[sel]){
-                cache[sel] = html.querySelectorAll(`[data-attr=${sel}]:not(.cake-template)`);//just to convert iterable;
+                cache[sel] = html.querySelectorAll(`[data-attr=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
             }
             let els = cache[sel];
-
-
-
             for (let p = 0; p < els.length; p++){
                 let el = els[p];
                 let test = false;
@@ -580,14 +601,10 @@ Attrib.prototype._notifyAttr = function(prop, newValue, prevValue, component, ht
                     test = !!newValue;
                 };
 
-
-      
-
                 if (test){
                     el.removeAttribute(attrkey);
                 } else {
                     if(attrvalue){
-
                         el.setAttribute(attrkey, attrvalue);
                     }
                 };
@@ -596,28 +613,34 @@ Attrib.prototype._notifyAttr = function(prop, newValue, prevValue, component, ht
     };
 };
 
-
-
 Attrib.prototype._notifyIf = function(prop, newValue, prevValue, component, html){
     html = html || document;
+    // console.log(605,prop, newValue);
     let configs = this._getConfig('if', prop, newValue, prevValue, component);
+    // console.log(603, configs);
+
     if (!configs.length) return;
 
     let cache = {};
 
-
+    // console.log(610, configs);
     for (let c = 0; c < configs.length; c++){
         let config = configs[c];
-        let {attr, bind, sel, testval, _true, _false, ops, hasNegate} = config;
+        /**
+         * the incremetedSel is not null when this is called within a loop or data-for;
+         */
+        let {attr, bind, sel, testval, _true, _false, ops, hasNegate, incrementedSel,incrementId} = config;
         let attrHyphen = attr.toHyphen();
         let trueNotIgnore = _true != 'null';
         let falseNotIgnore = _false != 'null';
 
         if (prop == bind){
             if (!cache[sel]){
-                cache[sel] = html.querySelectorAll(`[data-if=${sel}]:not(.cake-template)`);//just to convert iterable;
+                // console.log(incrementedSel, sel,`[data-if=${incrementedSel || sel}]:not(.cake-template)`);
+                cache[sel] = html.querySelectorAll(`[data-if=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
             }
             let els = cache[sel];
+            // console.log(624,els, newValue);
 
             for (let p = 0; p < els.length; p++){
                 let el = els[p];
@@ -652,7 +675,9 @@ Attrib.prototype._notifyIf = function(prop, newValue, prevValue, component, html
                             };
                             
                         } else {
-                            el.setAttribute(attr, _true);
+                            if(data[_true]){
+                                el.setAttribute(attr, data[_true]);
+                            }
                         };
                     }
                 } else {
@@ -823,6 +848,7 @@ Attrib.prototype.getWatchItemsBySel = function(component, type, sel){
         loc = Object.cache.watchItemsBySel = {};
     };
     if (!loc[id]){
+        // console.log(826,this.st, component, type);
         let array = this.st[component][type];
         let find = array.find(item=>{return item.sel == sel});
         loc[id] = (find)?find:false;
@@ -888,7 +914,8 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
             let splitted = el.dataset.event.split(" ").join("").split(',');
             for (let s = 0; s < splitted.length ; s++){
                 let [event, cb] = splitted[s].split(':');
-                cb = cb || event;
+                // console.log( splitted[s].split(':'), event, cb);
+                // cb = cb || event;
                 this._register(this.st, component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;
@@ -1110,6 +1137,7 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
             let id = `ci${this.uiid}`;
             let el = els[s];
             let _if = el.dataset.if;
+            let _ifBind = el.dataset.ifBind;
             let gr = _if.split(',');
             for (let g = 0; g < gr.length; g++){
                 let val = gr[g];
@@ -1144,7 +1172,7 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
                 let [_true, _false] = r.split(':');
 
 
-                this._register(this.st, component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id});
+                this._register(this.st, component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
 
                 
             }
@@ -1205,30 +1233,21 @@ Attrib.prototype._compileClass = function(cls, component, isStatic){
 
 Attrib.prototype._compileAttr = function(attrs, component, isStatic){
     return new Promise((res)=>{
-        
         if (!attrs.length) {res();return;};
         let els = this._static(component)(attrs, isStatic);
         if (!els.length){res();return;}
-
-
-       
-
         let regex = new RegExp('<|>|===|==|!==|!=');
-
         for (let s = 0; s < els.length; s++){
-
             let id, el, cl, hasRegularLog, hasNegate, bindVal, ops, testVal;
-
             id = `cre${this.uiid}`;
             el = els[s];
             cl = el.dataset.attr;
             let [test, attrPair] = cl.split('&&');
             attrPair = attrPair.trim();
-            
+        
             let [attrkey, attrvalue] = attrPair.split('=');
             test = test.trim();
             
-
             hasRegularLog = test.match(regex);
             hasNegate = test[0] == '!';
             if(hasRegularLog){
@@ -1239,8 +1258,7 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
                 ops = hasRegularLog[0];
             } else {
                 bind = test;
-            }
-
+            };
 
             if(hasNegate){
                 hasNegate && (bind = bind.slice(1));
@@ -1315,17 +1333,17 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
     }).then((query)=>{
         let r = [];
         let map = {
-            'bind':this._compileBind,
+            'bind':this._compileBind,//logical
+            'switch':this._compileSwitch,//logical
+            'toggle':this._compileToggle,//logical
+            'if':this._compileIf,//logical
+            'class':this._compileClass,//logical
+            'attr':this._compileAttr,//logical
             'for':this._compileFor,
             'for-update':this._compileForUpdate,
-            'switch':this._compileSwitch,
-            'toggle':this._compileToggle,
             'event':this._compileEvents,
             'animate':this._compileAnimate,
-            'if':this._compileIf,
-            'class':this._compileClass,
             'input':this._compileInput,
-            'attr':this._compileAttr,
         };
 
         for (let q in query){
