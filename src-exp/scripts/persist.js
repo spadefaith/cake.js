@@ -10,8 +10,11 @@ module.exports = function(dependency){
             });
         }
         listen(components){
-            // console.log(components)
-            window.addEventListener('DOMContentLoaded', (e)=>{
+            let event = 'DOMContentLoaded';
+            if('deviceready' in document){
+                event = 'deviceready';
+            };
+            window.addEventListener(event, (e)=>{
                 setTimeout(()=>{
                     this.storage.getAll().then(result=>{
                         if (result && !result.length) return;

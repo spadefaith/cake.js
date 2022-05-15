@@ -25,43 +25,28 @@ function Attrib(){
 */
 
 Attrib.prototype._getConfig = function(type, prop, newValue, prevValue, component){
-    // console.trace();
     /*
         newValue is null, when emptying the scope;
     */
-
-    //scape;
     if (newValue == null) {return []};
     if (newValue == prevValue && type != 'bind'){ return [];};
 
-    let id = `${type}-${prop}-${component}`;
-    let loc = Object.cache._getConfig;
-    if (!loc){
-        loc = Object.cache._getConfig = {};
-    };
-    if (!loc[id]){
-        var st = (component) ? ( (this.st[component] && this.st[component][type]) || [] ) : (()=>{
-            let ctx = [];
-            for (let component in this.st){
-                if (this.st.hasOwnProperty(component)){
-                    let s = this.st[component];
-                    if (s[type]){
-                        for (let i = 0; i < s[type].length; i++){
-                            let item = s[type][i];
-                            // console.log(item.bind, prop, item);
-                            if (item.bind == prop){
-                                // console.log(type, item);
-                                ctx.push({...item, component});
-                            };
-                        };
-                    };
+    const st = (()=>{
+        let ctx = [];
+        let s = ( (this.st[component] && this.st[component][type]) || [] );
+        if (s && s.length){
+            for (let i = 0; i < s.length; i++){
+                let item = s[i];
+                // console.log(item.bind, prop, item);
+                if (item.bind == prop){
+                    // console.log(type, item);
+                    ctx.push({...item, component});
                 };
             };
-            return ctx;
-        })();
-        loc[id] = st;
-    };
-    return loc[id];
+        };
+        return ctx;
+    })();
+    return st;
 };
 
 Attrib.prototype._notifyToggle = function(prop, newValue, prevValue, component, html){
@@ -532,28 +517,34 @@ Attrib.prototype._notifyIf = function(prop, newValue, prevValue, component, html
     };
 };
 
-Attrib.prototype.notifier = function(prop, newValue, prevValue){
+Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     //get components holding that prop, as name;
     // console.trace();
     // console.log(`attrib has been notified by scope;`);
     let val = JSON.parse(JSON.stringify(newValue));
     // console.dir(newValue);
 
+    // const config = (()=>{
+    //     const configs = this.st[component];
+    //     const act = Object.keys(this.st[component]);
+        
+    // })();
+
     return new Promise((res)=>{
-        this._notifyFor(prop, val, prevValue);
+        this._notifyFor(prop, val, prevValue, component);
         res();
     }).then(()=>{
-        return this._notifyForUpdate(prop, val, prevValue);
+        return this._notifyForUpdate(prop, val, prevValue, component);
     }).then(()=>{
-        return this._notifySwitch(prop, val, prevValue);
+        return this._notifySwitch(prop, val, prevValue, component);
     }).then(()=>{
-        return this._notifyToggle(prop, val, prevValue);
+        return this._notifyToggle(prop, val, prevValue, component);
     }).then(()=>{
-        return this._notifyBind(prop, val, prevValue);
+        return this._notifyBind(prop, val, prevValue, component);
     }).then(()=>{
-        return this._notifyIf(prop, val, prevValue);
+        return this._notifyIf(prop, val, prevValue, component);
     }).then(()=>{
-        return this._notifyClass(prop, val, prevValue);
+        return this._notifyClass(prop, val, prevValue, component);
     });
 };
 

@@ -5,50 +5,77 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Implement URL Route</title>
+    <style>
+        .input{
+            padding:10px;
+            width:300px;
+            height:54px;
+        }
+    </style>
 </head>
 <body>
-    <a href='#!/home' data-router-link>Home</a>
-    <a href='#!/about' data-router-link>About</a>
-    <a href='#!/about/1' data-router-link>About 1</a>
-
-    <div id='table-container'></div>
-    <div id='tab-container'></div>
+    <div id="app"></div>
 
 
-    <template id='table'>
-        <div>This is Table</div>
-    </template>
+    <template id="table-filter1">
+        <div class="filter-form-container ">
 
-    <template id='tab'>
-        <div>This is Tab</div>
+            <form  data-event="" class="card">
+                <div class="card-header">
+                    <p class="card-header-title">
+                        Filter
+                      </p>
+                </div>
+                <div class="card-content">
+                    <div class='form-control' data-for='control of filterControls'>
+                        <div class="field ">
+                            <label class="label">{{title}}</label>
+                            <div class="control">
+                                <div data-switch='filterControls.search'>
+    
+                                    <input data-case='input' class="input" name={{field}} type={{type}} placeholder={{title}}  data-attr="is-disabled && disabled=true" >
+                                    
+                                    <select data-case='select-auto' class='input' name={{field}} type={{type}} placeholder={{title}} data-attr="is-disabled && disabled=true">
+                                        <option value="all">all</option>
+                                        <option class="dy" data-for-auto=true data-for='option of control.options' value={{value}} data-for-auto-bind="field:{{field}}" >{{display}}</option>
+                                    </select>
+
+                                    <select data-case='select-update-center_id' class='input' name={{field}} type={{type}} placeholder={{title}}>
+                                        <option value="all">all</option>
+                                        <option class="dy" data-for-update='option of filterOptions' data-for-update-bind="{{field}}" value={{value}} data-bind="textContent:control.display"></option>
+                                    </select>
+    
+                                    <select data-case='select-update' class='input' name={{field}} type={{type}} placeholder={{title}} data-attr="is-disabled && disabled=true">
+                                        <option value="all">all</option>
+                                        <option class="dy" data-for-update='option of filterOptions' data-for-update-bind="{{field}}" value={{value}} data-bind="textContent:control.display"></option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer" style="display:block">
+                    <div style="text-align:right;padding:1rem;display:block">
+                        <button type="submit" class="button is-success">Filter</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </template>
 
     <script src='/asset/cake.js'></script>
     <!-- <script src='/asset/route.js'></script> -->
-    <script src='./components/table.js'></script>
-    <script src='./components/tab.js'></script>
+    <!-- <script src='./components/table.js'></script> -->
+    <!-- <script src='./components/tab.js'></script> -->
+    <script src='./components/app.js'></script>
+    <script src='./components/form.js'></script>
 
 
 
 
 
-    <script>
 
-        const R = new Cake.Router({
-            '/home':{
-                name:'home',
-                components:['table'],
-            },
-            '/about/:id':{
-                name:'about',
-                components:['tab'],
-            },
-            '/about':{
-                name:'about',
-                components:['table'],
-            },
-        });
-
-    </script>
 </body>
 </html>

@@ -1,11 +1,16 @@
-module.exports = function(dependency){
+const Utils = require('./utils');
+module.exports = function(){
     /**
      * this class is use to unified the use of storage, in
      * object for memory and storages for sessionStorage/localStorage;
      */
-    const Utils = dependency.Utils;
+    // const Utils = dependency.Utils;
+    // const appName = deoendenvy.appName;
 
     function typeOf(_obj){
+        if(!_obj){
+            return null;
+        };
         return (_obj).constructor.name.toLowerCase();
     };
     function ObjectForEach (obj, fn){
@@ -81,7 +86,7 @@ module.exports = function(dependency){
     var STORAGE = class{
         constructor(type, name, child){
             this.type = type;
-            this.name = name;
+            this.name = `${Utils.instanceID()}-${name}`;
             this.child = child;
             this.cache = {};
             if (typeOf(this.child) == 'string'){
@@ -137,55 +142,40 @@ module.exports = function(dependency){
                 this.recache();
             };
             try{
-                // console.log(2542,this.name);
-                // console.log(2540,!sessionStorage[this.name]);
-                // console.log(2541,this.cache);
-                // console.log(2543,save);
-                // if(this.name == '_cake_globalScope_cf'){
-                //     console.log(!sessionStorage[this.name] && !save);
-                //     console.log(save);
-                //     console.log(152, this.cache);
-                    
-                //     console.trace();
-                // };
                 if (!sessionStorage[this.name] && !save){
                     sessionStorage.setItem(this.name, JSON.stringify(this.cache));
                 } else if (save){
                     sessionStorage.setItem(this.name, JSON.stringify(this.cache));
-                    // if(this.name == '_cake_globalScope_cf'){
-                    //     console.log(156,sessionStorage[this.name]);
-                    // };
                 } else {
-                    // sessionStorage.removeItem(this.name);
-                    // sessionStorage.setItem(this.name, JSON.stringify(this.cache));
+
                 };
             } catch(err){
                 this.recache();
             };
         }
-        verifyLocalStorage(){
-            if(!sessionStorage.reset){
-                sessionStorage.setItem('reset', false);
-                localStorage.clear();
-            };
-        }
         local(save){
-            this.verifyLocalStorage();
-            this.create();
+            // this.verifyLocalStorage();
+            if(!save){
+                this.recache();
+            };
             try{
-                if (!localStorage[this.name]){
-
+                if (!localStorage[this.name] && !save){
                     localStorage.setItem(this.name, JSON.stringify(this.cache));
                 } else if (save){
                     localStorage.setItem(this.name, JSON.stringify(this.cache));
                 } else {
-                    localStorage.removeItem(this.name);
-                    localStorage.setItem(this.name, JSON.stringify(this.cache));
-                }
-            }catch(err){
-                this.create();
+
+                };
+            } catch(err){
+                this.recache();
             };
         }
+        // verifyLocalStorage(){
+        //     if(!sessionStorage.reset){
+        //         sessionStorage.setItem('reset', false);
+        //         localStorage.clear();
+        //     };
+        // }
     };
     var methods = {
         create:function(storage, data){
@@ -353,10 +343,11 @@ module.exports = function(dependency){
         get(id, quick){
             if(quick){
                 var storage = this.storage.open();
+                
                 return methods.get(storage, id);
             } else {
                 return new Promise((res, rej)=>{
-                    Utils.timeOut(()=>{
+                    setTimeout(()=>{
                         var storage = this.storage.open();
                         res(storage);
                     });
@@ -410,4 +401,4 @@ module.exports = function(dependency){
         }
     };
     return USB;
-}
+};

@@ -20,6 +20,23 @@
         return b;
     };
     Object.cache = Object.create(null);
+
+    Object.caching = (name)=>{
+        const obj = Object.cache;
+        if(!obj[name]){
+            obj[name] = {};
+        };
+
+        return {
+            set(key, value){
+                obj[name][key] = value;
+                return true;
+            },
+            get(key){
+                return obj[name][key];
+            },
+        };
+    };
     
     String.prototype.toHyphen = function(){
         let _StringCache = Object.cache;
@@ -56,6 +73,20 @@
 
         
         return cvt;
+    };
+
+    String.prototype.toProper = function(){
+        let str = this;
+        let cache = Object.caching('toProper').get(str);
+        if(cache){
+            return cache;
+        } else {
+            let first = str.substring(0,1);
+            let rest = str.slice(1);
+            let proper = `${first.toUpperCase()}${rest}`;
+            Object.caching('toProper').set(str, proper);
+            return proper;
+        };
     };
     
     String.prototype.toCamelCase = function(){

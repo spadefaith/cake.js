@@ -53,16 +53,32 @@ module.exports = class {
                 let recurseCall= ()=>{
                     let kf = keyframes[index];
                     let animate = element.animate(kf, (config.options || this.duration));
-                    animate.finished.then(()=>{
-                        if (index < keyframes.length -1){
-                            index += 1;
-                            recurseCall()
-                        } else {
-                            keyframes = [];
-                            // console.log(index, keyframes.length)
-                            res();
-                        }
-                    });
+                    // console.log(animate);
+                    if(animate.finished){
+                        animate.finished.then(()=>{
+                            if (index < keyframes.length -1){
+                                index += 1;
+                                recurseCall()
+                            } else {
+                                keyframes = [];
+                                // console.log(index, keyframes.length)
+                                res();
+                            }
+                        });
+                    } else {
+                        animate.onfinish =()=>{
+                            if (index < keyframes.length -1){
+                                index += 1;
+                                recurseCall()
+                            } else {
+                                keyframes = [];
+                                // console.log(index, keyframes.length)
+                                res();
+                            }
+                        };
+                    };
+
+
                 }; recurseCall();
             };
         });
@@ -123,11 +139,13 @@ module.exports = class {
             slideOutDown:[{
                 transform: "translate3d(0,0,0)",
                 visibility: "visible",
-                opacity: "1"
+                opacity: "1",
+                easing: 'ease-out'
             },{
                 transform: "translate3d(0,-100%,0)",
                 visibility: "hidden",
-                opacity: "0"
+                opacity: "0",
+                easing: 'ease-out',
             }],
             slideInUp:[{
                 transform: "translate3d(0,100%,0)",

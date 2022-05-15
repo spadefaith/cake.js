@@ -1,5 +1,6 @@
+const StorageKit = require('./storage')();
 module.exports = function(dependency){
-    const StorageKit = dependency.StorageKit;
+    // const StorageKit = dependency.StorageKit;
     const _hooks = {};
     class Scope {
         constructor(name){
@@ -163,9 +164,9 @@ module.exports = function(dependency){
                 //custom callback for other component;
                 const hooks = _hooks[this.name];
 
+                
                 if (hooks){
                     const callbacks = hooks[key];
-
                     if (callbacks){
                         callbacks.forEach(cb=>{
                             cb(value);
@@ -174,8 +175,13 @@ module.exports = function(dependency){
                 };
 
                 //callback for html attributes;
+
+                // console.log(notify)
+
                 return Promise.all(notify.map(cb=>{
-                    return cb(key, value, prevValue, name);
+                    return cb(key, value, prevValue, name).then(()=>{
+                        console.log('finish notified in scope');
+                    });
                 }));
             });
         }

@@ -155,20 +155,36 @@ const OTHERS = {
         let o = {};
         let fd = new FormData();
         for (let [key, value] of formData.entries()){
-            if(!!value){
-                value = this.sanitize(value);
-            };
-            if(options.json){
-                if(options.trim){
-                    if(!!value){
-                        o[key] = value;
+            let type;
+            if(form[key]){
+                const element = form[key];
+                // console.log(element, element.parentElement, element.closest('.cake-template'));
+                if(element.closest && !element.closest('.cake-template')){
+                    const tag = element.tagName;
+                    if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
+                        value = element.checked;
+                    } else {
+                        if(options.sanitize == undefined || !!options.sanitize){
+                            value = this.sanitize(value);
+                        };
                     };
-                } else {
-                    o[key] = value;
-                }; 
-            } else {
-                fd.append(key, value);
-            }
+                    
+                    if(options.json){
+                        if(options.trim){
+                            if(value != ""){
+                                o[key] = value;
+                            };
+                        } else {
+                            o[key] = value;
+                        }; 
+                    } else {
+                        fd.append(key, value);
+                    }
+                };
+
+            };
+
+
         };
         if(options.json){
             return o;
@@ -196,10 +212,105 @@ const OTHERS = {
         };
         return a;
     },
-    timeOut(fn){
+    timeOut(fn, time=1){
         setTimeout(()=>{
             fn();
+        }, time);
+    },
+    instanceID(){
+        //to have unique identifier every web app using this, in sessionStorage or localStorage;
+        return location.origin;
+    },
+    removeWhiteSpace(str){
+        return String(str).split(" ").join("");
+    },
+    recurse(array, callback){
+        return new Promise((res, rej)=>{
+            try {
+                let l = array.length;
+                let index = 0;
+                const rec = (()=>{
+                    if(l > index){
+                        callback(array[index]);
+                        index += 1;
+                        rec();
+                    } else {
+                        res();
+                    };
+                });rec();
+            } catch(err){
+                rej(err.message);
+            };
         });
+    },
+    browser(){
+        // Return cached result if avalible, else get result then cache it.
+
+
+        if (window._browser)
+        return window._browser;
+        // Opera 8.0+
+        var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        // Firefox 1.0+
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+        // Safari 3.0+ "[object HTMLElementConstructor]" 
+        var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+        // Internet Explorer 6-11
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        // Edge 20+
+        var isEdge = !isIE && !!window.StyleMedia;
+        // Chrome 1+
+        var isChrome = !!window.chrome && !!window.chrome.webstore;
+        // Blink engine detection
+        var isBlink = (isChrome || isOpera) && !!window.CSS;
+        return window._browser =
+            isOpera ? 'Opera' :
+            isFirefox ? 'Firefox' :
+            isSafari ? 'Safari' :
+            isChrome ? 'Chrome' :
+            isIE ? 'IE' :
+            isEdge ? 'Edge' :
+            isBlink ? 'Blink' :
+            "Don't know";
+    },
+    isOpera(){
+        return this.browser == 'Opera';
+    },
+    isFirefox(){
+        return this.browser() == 'Firefox';
+    },
+    isSafari(){
+        return this.browser == 'Safari';
+    },
+    isChrome(){
+        return this.browser == 'Chrome';
+    },
+    isIE(){
+        return this.browser == 'IE';
+    },
+    isEdge(){
+        return this.browser == 'Edge';
+    },
+    isBlink(){
+        return this.browser == 'Blink';
+    },
+    device(){
+        if(navigator.userAgent.includes('Android')){
+            return 'android';
+        } else if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+            return 'IOS'
+        } else {
+            return 'desktop';
+        };
+    },
+    isAndroid(){
+        return this.device() == 'android';
+    },
+    isIOS(){
+        return this.device() == 'ios';
+    },
+    isDesktop(){
+        return this.device() == 'desktop';
     }
 }
 

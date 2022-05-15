@@ -1,69 +1,133 @@
-module.exports =  function (){
-    let component = this;
+module.exports =  function (component){
+    // let component = this;
     // console.log(component);
     // if (!component.await.$form){
     //     component.await.$form = {};
     // }
-    this.$form = {};
-    this.$form.options = (obj, isgroup)=>{
+
+
+    class Options{
+        constructor(type){
+            this.type = type;
+            this.storage = {};
+        }
+        store(formControl,data){
+            this.storage[formControl] = data;
+        }
+        get options(){
+            if(this.type == 'select' || this.type == 'virtual'){
+                let a = {};
+                for (let key in this.storage){
+                    let val = this.storage[key];
+                    a[key] = val.options;
+                };
+                return a;
+            };
+            return false;
+        }
+        get value(){
+            if(this.type == 'input'){
+                let a = "";
+                for (let key in this.storage){
+                    let val = this.storage[key];
+                    a = val.options[0];
+                };
+                return a;
+            };
+            return false;
+        }
+
+        get query(){
+            let a = {};
+            for (let key in this.storage){
+                let val = this.storage[key];
+                a = val.query[0] || null;
+            };
+            return a;
+        }
+
+        get has(){
+            let a = "";
+            for (let key in this.storage){
+                let val = this.storage[key];
+                a = val.query[0] || null;
+            };
+            return a;
+        }
+    };
+
+    const form = {};
+
+    form.options = (obj)=>{
+        // console.log(9, obj);
         let {options, params} = obj;
         if (!options) { options = [] };
-        // console.log(options);
-        let prom = Promise.all(options.map(item=>{
-            let {control, field, tbl, src, schema} = item;
-            // console.log(schema)
 
+        // console.log(33, params);
+        let isgroup = options.length > 1;
+
+        let prom = Promise.all(options.map(item=>{
+            let {control, field, tbl, src, schema, type} = item;
+            // console.log(schema)
+            // console.log(15, item);
+
+            // console.log(40,src, {tbl, field, params});
+            // console.trace();
             return component.fire(src, {tbl, field, params}).then((opts)=>{
+                // console.log(18, opts);
+            
+
                 opts = opts || [];
                 item.query = opts;
-
-                // console.log(opts, tbl);
-
+                // console.log(18, opts);
                 opts = opts.map(item=>{
+                    // console.log(18, item);
                     return schema(item);
                 });
 
-                /**appending empty option */
-                let scheme = schema({});
-                for (let key in scheme){
-                    if (scheme.hasOwnProperty(key)){
-                        scheme[key] = "";
+                if(type != 'input'){
+                    /**appending empty option */
+                    let scheme = schema({});
+                    for (let key in scheme){
+                        if (scheme.hasOwnProperty(key)){
+                            scheme[key] = "";
+                        };
                     };
-                };
-                opts.unshift(scheme);
+                    opts.unshift(scheme);
+                }
                 /**end */
 
                 // console.log(opts);
                 item.options = opts;
                 return item;
-            })
-        })).then((result)=>{
-            
-            if (isgroup){
-                //include config;
-                return result.reduce((accu, iter)=>{
-                    let {type, control} = iter;
-                    if (!type){
-                        type = 'select';
+            }).then((iter)=>{
+                // console.log(51, iter);
+                let {type, control} = iter;
+                if (!type){
+                    type = 'others';
+                };
+                const cls = new Options(type);
+                if (isgroup){
+                    let o = {};
+                    if (!o[control]){
+                        o[control] = cls;
+                        o[control].store(control, iter);
                     };
-
-                    if (!accu[type]){
-                        accu[type] = {};
-                    };
-
-                    if (!accu[type][control]){
-                        accu[type][control] = iter;
-                    };
-                    
-
+                    return o;
+                } else {
+                    cls.store(control, iter);
+                    return cls;
+                };
+            });
+        })).then(res=>{
+            if(isgroup){
+                return res.reduce((accu, iter)=>{
+                    Object.assign(accu, iter);
                     return accu;
-                }, {});
+                },{});
             } else {
-                return result.reduce((accu, iter)=>{
-                    accu[iter.control] = iter.options;
-                    return accu;
-                }, {});
-            };
+                return res[0];
+            }
         }).catch(err=>{
             console.error(err);
         });
@@ -71,7 +135,7 @@ module.exports =  function (){
         // component.await.$form.options = prom;
         return prom;
     };
-    this.$form.plot = (config)=>{
+    form.plot = (config)=>{
         let {data, container} = config;
         if (!data && !container) { return };
         const query = (root, selector, callback)=>{
@@ -131,5 +195,7 @@ module.exports =  function (){
 
         return Promise.resolve();
 
-    }
+    };
+
+    return form;
 };

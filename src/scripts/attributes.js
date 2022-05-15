@@ -1,23 +1,36 @@
-module.exports = function(dependency){
+const Utils = require('./utils');
 
-    const StorageKit = dependency.StorageKit;
-    const Templating = dependency.Templating;
-    const Utils = dependency.Utils;
+const notifyAttr = require('./attrib/data-attr');
+const notifyBind = require('./attrib/data-bind');
+const notifyClass = require('./attrib/data-class');
+const notifyForAuto = require('./attrib/data-for-auto');
+const notifyForUpdate = require('./attrib/data-for-update');
+const notifyFor = require('./attrib/data-for');
+const notifyIf = require('./attrib/data-if');
+const notifyInput = require('./attrib/data-input');
+const notifySwitch = require('./attrib/data-switch');
+const notifyToggle = require('./attrib/data-toggle');
+
+const st = {};
+const logicalType = ['if', 'bind', 'switch', 'toggle', 'class', 'attr'];
 
 function Attrib(){
     this.uiid = 0;
     this.notify = {};
-
-    this.st  = { };
-    this.cacheStatic = [];
-    this.logicalType = ['if', 'bind', 'switch', 'toggle', 'class', 'attr'];
-
-    this.store = new StorageKit({
-        child:'object',
-        storage:'session',
-        name:'_cake_component_cf',
-    });
 };
+
+Attrib.prototype.notifyFor = notifyFor(st);
+Attrib.prototype.notifySwitch = notifySwitch({st,logicalType});
+Attrib.prototype.notifyForAuto = notifyForAuto(st);
+
+Attrib.prototype.notifyForUpdate = notifyForUpdate({st,logicalType});
+
+Attrib.prototype.notifyClass = notifyClass(st);
+Attrib.prototype.notifyBind = notifyBind(st);
+Attrib.prototype.notifyAttr = notifyAttr(st);
+Attrib.prototype.notifyIf = notifyIf(st);
+Attrib.prototype.notifyInput = notifyInput(st);
+Attrib.prototype.notifyToggle = notifyToggle(st);
 
 /*
     watch for the (name) which is registered to the scope
@@ -26,724 +39,73 @@ function Attrib(){
     and notify them;
 */
 
-Attrib.prototype._getConfig = function(type, prop, newValue, prevValue, component){
-    // console.trace();
-    /*
-        newValue is null, when emptying the scope;
-    */
-
-    //scape;
-    if (newValue == null) {return []};
-    if (newValue == prevValue && type != 'bind'){ return [];};
-
-    let id = `${type}-${prop}-${component}`;
-    let loc = Object.cache._getConfig;
-    if (!loc){
-        loc = Object.cache._getConfig = {};
-    };
-    if (!loc[id]){
-        var st = (component) ? (()=>{
-            let config = (this.st[component] && this.st[component][type]);
-
-            if(config && config.length){
-                let ctx = [];
-                for (let i = 0; i < config.length; i++){
-                    let item = JSON.parse(JSON.stringify(config[i]));
-                    let test = item.bind == prop;
-                    if(test){
-                        ctx.push({...item, ...newValue});
-                        break;
-                    }
-                }
-
-                return ctx;
-            } else {
-                return [];
-            };
-        })() : (()=>{
-            let ctx = [];
-            for (let component in this.st){
-                if (this.st.hasOwnProperty(component)){
-                    let s = this.st[component];
-                    if (s[type]){
-                        for (let i = 0; i < s[type].length; i++){
-                            let item = s[type][i];
-                            let config = JSON.parse(JSON.stringify(item));
-                            // console.log(item.bind, prop, item);
-                            if (item.bind == prop){
-                                // console.log(type, item);
-                                ctx.push({...config, component,...newValue});
-                            };
-                        };
-                    };
-                };
-            };
-            return ctx;
-        })();
-
-        loc[id] = st;
-    };
-    return loc[id];
-};
-
-Attrib.prototype._notifyToggle = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let subscribe = this._getConfig('toggle',prop, newValue, prevValue);
-    // if (!configs.length) return;
-    if (!subscribe){return ;};
-    html = html || document;
-    for (let s = 0; s < subscribe.length; s++){
-        let sub = subscribe[s];
-        if (!sub) continue;
-        let {sel, bind, value, ops} = sub;
-        let el = html.querySelector(`[data-toggle=${sel}]`);
-
-
-        //TODO
-        if (value == prevValue){
-            el && el.classList.remove('is-active');
-        }  
-        if (value == newValue){
-            if (el){
-                if (el.classList.contains('is-active')){
-                    el.classList.remove('is-active');
-                };
-                el && el.classList.add('is-active');
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifySwitch = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('switch', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-
-    let attrPayload = [];
-
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        let {bind, sel, map, cases} = config;
-        let parent = html.querySelectorAll(`[data-switch-slot=${sel}]`);
-        // console.log(newValue);
-        //it assumes that when the switch is within data-for and it is binded on the same bind of data-for
-        //then parent and newValue has the same length;
-
-        // console.log(parent);
-        for (let n = 0; n < newValue.length; n++){
-            let index = n;
-            let row = newValue[n];
-            let slot = parent[n];//map the parentelement by newValue index;
-            let prop = row[map];
-            if (prop != undefined){
-                let _case = null;
-                for (let c = 0; c < cases.length; c++){
-                    let test = cases[c].bind.includes(prop);
-                    if (test){
-                        _case = cases[c];
-                        break;
-                    };
-                };
-                if (_case){
-                    let {_id, bind} = _case;
-                    let hit = document.querySelector(`[data-case=${sel}-${_id}]`);
-                    // console.log(hit);
-
-                    if (hit && hit.toString().includes("Element")){
-                        
-                        hit = hit.cloneNode(true);
-                        /**********link to data-for-auto=true**************** */
-                        //tag the for children as active;
-                        let forChildren = hit.querySelectorAll('[data-for-auto=true]');
-                        for (let f = 0; f < forChildren.length; f++){
-                            let ch = forChildren[f];
-                            ch.dataset.for = `${ch.dataset.for}-active`;
-                        };
-                        /************************************************* */
-                        
-                        hit.removeAttribute('data-case');
-                        
-                        let template = new Templating(row, hit, false).createElement();
-                        // console.log(slot)
-
-                        for (let lt = 0; lt < this.logicalType.length; lt++){
-                            let type = this.logicalType[lt];
-                            if (hit.dataset[type]){
-                                let sel = hit.dataset[type];
-                                let incrementedSel = `${sel}-${index}`;
-                                template.dataset[type] = incrementedSel;
-                                let {bind} = this.getWatchItemsBySel(component,type,sel);
-                                if (sel){
-                                    attrPayload.push({_type:type, ...row, incrementedSel,sel, bind, incrementId:index});
-                                };
-                            };
-
-                        };
-                        template.classList.remove('cake-template');
-                        slot.replaceWith(template);
-                    }
-                }
-            }
-        };
-    };
-    // console.log(185, attrPayload);
-    for (let payload of attrPayload){
-        const {bind, _type} = payload;
-        const name = `_notify-${_type}`.toCamelCase();
-        this[name](bind, payload);
-
-    };
-
-};
-
-Attrib.prototype._notifyBind = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('bind', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c], data;
-        let {attr, bind, sel, incrementedSel,incrementId} = config;
-        if(!!incrementedSel){
-            data = newValue[bind];
-        } else {
-            data = newValue;
-        };
-        let attrHyphen = attr.toHyphen();
-        if (prop == bind){
-            let els = html.querySelectorAll(`[data-bind=${incrementedSel || sel}]`);
-
-            for (let p = 0; p < els.length; p++){
-                let el = els[p];
-
-                
-                if (attr == 'class' || attr == 'className'){
-
-                    if (el.classList.length){
-                        console.log(prevValue);
-                        Utils.splitBySpace(prevValue, function(cls){
-                            el.classList.remove(cls);
-                        });
-                        Utils.splitBySpace(data, function(cls){
-                            el.classList.add(cls);
-                        });
-                    } else {
-                        Utils.splitBySpace(data, function(cls){
-                            el.classList.add(cls);
-                        });
-                    };
-
-                } else {
-
-      
-
-                    el.setAttribute(attrHyphen, data);
-                    el[attr] = data;
-                };
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifyInput = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('input', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        let {attr, bind, sel} = config;
-        let attrHyphen = attr.toHyphen();
-        if (prop == bind){
-            let els = html.querySelectorAll(`[data-input=${sel}]`);
-            for (let p = 0; p < els.length; p++){
-                let el = els[p];
-                if (attr == 'className'){
-                    if (prevValue){
-                        if (newValue){
-                            el.classList.replace(prevValue, newValue);
-                        } else {
-                            el.classList.remove(prevValue);
-                        };
-                    } else {
-                        el.classList.add(newValue);
-                    };
-                } else {
-                    el.setAttribute(attrHyphen, newValue);
-                    el[attr] = newValue;
-                };
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifyFor = function(prop, newValue, prevValue, component, html){
-
-    let configs = this._getConfig('for', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-    // console.trace();
-    
-
-    let vItems = [];
-    for (let c = 0; c < configs.length; c++){
-        let {bind, sel, iter, ins, component, cleaned} = configs[c];
-
-        html = html || document;
-
-        if (component){
-            html = Cake.Components[component].html
-        };
-
-        // console.log(`[data-for-template=${sel}]`);
-        let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
-
-        // console.log(target);
-
-            // console.log(target.parentElement);
-        let cloned = target.cloneNode(true);
-        /****************remove the switch******************** */
-        ;(()=>{
-            let switchs = cloned && cloned.querySelectorAll(`[data-switch]`);
-            if (switchs && switchs.length){
-                let l = switchs.length, i = -1;
-                while (++i < l){
-                    let sw = switchs[i];
-                    let parent = sw.parentElement;
-                    let div = document.createElement('div');
-                    div.dataset.switchSlot = sw.dataset.switch;
-                    parent.replaceChild(div, sw);
-                };
-                switchs = null;
-            };
-        })();
-        /*******************************************************/
-        ;(()=>{
-            let template = cloned;
-            let i = -1; l = newValue.length;
-
-            newValue = newValue.map(item=>{
-                for (let key in item){
-                    if (item.hasOwnProperty(key)){
-                        item[`${iter}.${key}`] = item[key];
-                    };
-                };
-                return item;
-            });
-
-            newValue.forEach(item=>{
-                let create = new Templating(item, template, false).createElement();
-                // create.style.display = 'block';
-                create.style.removeProperty('display');
-                create.classList.remove('cake-template');
-                create.removeAttribute('data-for-template');
-
-                //trap the create if it has data-if;
-                target.insertAdjacentElement('beforebegin', create);
-                
-                let safeSrc = create.querySelectorAll('[data-src]');
-                if (safeSrc){
-
-                    for (let s = 0; s < safeSrc.length; s++){
-                        let el = safeSrc[s];
-                        el.src = el.dataset.src;
-                        el.removeAttribute('data-src');
-
-                    };
-                };
-
-            });
-            if (cleaned){
-                target.remove()
-            };
-
-        })();
-
-    };
-    this._notifyForAuto({ configs, newValue});
-};
-
-Attrib.prototype._notifyForAuto = function(obj){
-    let {vItems, configs, newValue} = obj;
-    /**************************************************************************** */
-    /*
-    it becomes possible in switch, that it marks the children of switch parent having [data-for] attrb by [data-for=?-active];
-    */
-
-    // console.dir(newValue);
-
-    for (let o = 0; o < configs.length; o++){
-        let config = configs[o];
-        let children = config.children;
-        if (!children) continue;
-        let childCf = [];
-        for (let c = 0; c < children.length; c++){
-            let child = children[c];
-            if (!this.st[config.component]){
-                continue;
-            }
-            let cf = this.st[config.component].for.find(item=>{
-                return item.sel == child;
-            });
-            cf && childCf.push(new Promise((res)=>{
-                let {bind, sel, iter, ins} = cf;
-                Utils.timeOut(()=>{
-                    // console.log(sel);
-                    let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
-                    for (let t = 0; t < targets.length; t++){
-                        let target = targets[t];
-                        let prop = target.dataset.forBindKey;
-                        let value = target.dataset.forBindVal;
-                        // console.log(prop, newValue)
-
-                        // console.log(value, vItems, prop);
-
-                        // console.log(newValue, prop)
-
-                        let props = newValue.find(item=>{
-                            return item[prop] == value;
-                        });
-
-                        // console.log(props);
- 
-                        let pr = bind.split('.')[bind.split('.').length - 1];
-     
-                        
-                        let datas = props[pr].length && props[pr].map(item=>{
-                            
-                            if (item instanceof Object){
-                                return item;
-                            } else {
-                                return {[iter]:item};
-                            };
-                        });
-                        if (datas){
-                            for (let d = 0; d < datas.length; d++){
-                                let data = datas[d];
-                                let template = target.cloneNode(true);
-                                
-                                let create = new Templating(data, template, false).createElement();
-                                
-                                create.style.removeProperty('display');
-                                create.classList.remove('cake-template');
-                                create.removeAttribute('data-for-template');
-
-                                fragment.append(create);
-
-                                target.insertAdjacentElement('beforebegin', create);
-                            };
-                        };
-
-                        if (target.parentElement.tagName == 'SELECT'){
-                            target.parentElement.selectedIndex = 0;
-                        };
-                    };
-                })
-            }));
-        };
-    };
-    /**************************************************************************** */
-};
-
-Attrib.prototype._notifyForUpdate = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('forUpdate', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-    // console.log(configs)
-    // console.log(newValue)
-    for (let c = 0; c < configs.length; c++){
-        let {bind, sel, iter, ins, } = configs[c];
-        for (let o in newValue){
-            if (newValue.hasOwnProperty(o)){
-                let targets = document.querySelectorAll(`[data-for-bind-val=${o}]`);
-                for (let t = 0; t < targets.length; t++){
-                    let target = targets[t];
-                    let binded = target.dataset.forBindVal;
-
-                    // console.log(binded)
-
-                    if (!target.dataset.forTemplate){
-                        target.remove();
-                    } else {
-                        let template = target.cloneNode(true);
-                        template.style.removeProperty('display');
-                        template.classList.remove('cake-template');
-                        let dataForIteration = newValue[binded];
-
-                        // console.log(newValue, binded, dataForIteration)
-
-                        let i = -1; l = dataForIteration.length;
-                        while(++i < l){
-                            let item = dataForIteration[i];
-                            
-                            let create = new Templating(item, template, false).createElement();
-                            // console.log(create);
-                            create.classList.remove('cake-template');
-                            create.removeAttribute('data-for-template');
-                            target.insertAdjacentElement('beforebegin', create);
-                            if (target.parentElement.tagName == 'SELECT'){
-                                target.parentElement.selectedIndex = 0;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifyClass = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('class', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-    let removeWhiteSpace = function(str){
-        return str.split(" ").join("");
-    }
-    let cache = {};
-
-
-    // console.log(477,newValue);
-
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c], data;
-        let {hasNegate, bind, testVal,className, ops, sel,  incrementedSel,incrementId} = config;
-
-
-
-        bind = removeWhiteSpace(bind);
-        // className = removeWhiteSpace(className);
-
-        if(!!incrementedSel){
-            data = newValue[bind];
-        } else {
-            data = newValue;
-        };
-        
-        
-        if (prop == bind){
-            if (!cache[sel]){
-                cache[sel] = html.querySelectorAll(`[data-class=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
-            }
-            let els = cache[sel];
-
-            for (let p = 0; p < els.length; p++){
-                let el = els[p];
-                let test = false;
-                if (ops){
-                    test = Utils.logTest(data, ops, testVal);
-                    hasNegate && (test = !test);
-                } else if (hasNegate){
-                    test = !data;
-                } else {
-                    test = !!data;
-                };
-
-                // console.log(503, prop, test, newValue);
-
-                if (test){
-                    Utils.splitBySpace(className, function(cls){
-                        // console.log(519, data,  ops, testVal, test);
-                        const classList = Utils.toArray(el.classList);
-                        if (!classList.includes(cls)){
-                           Utils.timeOut(()=>{
-                                el.classList.add(cls);
-                           });
-                        };
-                    });
-                } else {
-                    Utils.splitBySpace(className, function(cls){
-                        const classList = Utils.toArray(el.classList);
-
-                        if (classList.includes(cls)){
-                            Utils.timeOut(()=>{
-                                el.classList.remove(cls);
-                            });
-                        };
-                    });
-
-                };
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifyAttr = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    let configs = this._getConfig('attr', prop, newValue, prevValue, component);
-    if (!configs.length) return;
-    let removeWhiteSpace = function(str){
-        
-        return !str?str:str.split(" ").join("");
-    }
-    let cache = {};
-
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue, incrementedSel,incrementId} = config;
-
-        bind = removeWhiteSpace(bind);
-        attr = removeWhiteSpace(attr);
-
-        // console.log(572, prop, bind, prop);
-        
-        if (prop == bind){
-            if (!cache[sel]){
-                cache[sel] = html.querySelectorAll(`[data-attr=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
-            }
-            let els = cache[sel];
-            for (let p = 0; p < els.length; p++){
-                let el = els[p];
-                let test = false;
-                if (ops){
-                    test = Utils.logTest(newValue, ops, testVal);
-                    hasNegate && (test = !test);
-                } else if (hasNegate){
-                    test = !newValue;
-                } else {
-                    test = !!newValue;
-                };
-
-                if (test){
-                    el.removeAttribute(attrkey);
-                } else {
-                    if(attrvalue){
-                        el.setAttribute(attrkey, attrvalue);
-                    }
-                };
-            };
-        };
-    };
-};
-
-Attrib.prototype._notifyIf = function(prop, newValue, prevValue, component, html){
-    html = html || document;
-    // console.log(605,prop, newValue);
-    let configs = this._getConfig('if', prop, newValue, prevValue, component);
-    // console.log(603, configs);
-
-    if (!configs.length) return;
-
-    let cache = {};
-
-    // console.log(610, configs);
-    for (let c = 0; c < configs.length; c++){
-        let config = configs[c];
-        /**
-         * the incremetedSel is not null when this is called within a loop or data-for;
-         */
-        let {attr, bind, sel, testval, _true, _false, ops, hasNegate, incrementedSel,incrementId} = config;
-        let attrHyphen = attr.toHyphen();
-        let trueNotIgnore = _true != 'null';
-        let falseNotIgnore = _false != 'null';
-
-        if (prop == bind){
-            if (!cache[sel]){
-                // console.log(incrementedSel, sel,`[data-if=${incrementedSel || sel}]:not(.cake-template)`);
-                cache[sel] = html.querySelectorAll(`[data-if=${incrementedSel || sel}]:not(.cake-template)`);//just to convert iterable;
-            }
-            let els = cache[sel];
-            // console.log(624,els, newValue);
-
-            for (let p = 0; p < els.length; p++){
-                let el = els[p];
-
-                let data = newValue; //it can accept, el with data-if-bind and none;
-
-                let test;
-                if(testval){
-                    test = Utils.logTest(testval, ops, data);
-                } else {
-                    test = (hasNegate)?!data:!!data;
-                };
-
-                if(test){
-                    if(trueNotIgnore){
-                        if(attr == 'class'){
-                            let trueClasses = _true.split(' ');
-                            if(falseNotIgnore){
-                                let falseClasses = _false.split(' ');
-                                falseClasses.forEach(cls=>{
-                                    el.classList.remove(cls);
-                                });
-                                trueClasses.forEach(cls=>{
-                                    el.classList.add(cls);
-                                });
-                            } else {
-                                trueClasses.forEach(cls=>{
-                                    if(!el.classList.contains(cls)){
-                                        el.classList.add(cls);
-                                    };
-                                });
-                            };
-                            
-                        } else {
-                            if(data[_true]){
-                                el.setAttribute(attr, data[_true]);
-                            }
-                        };
-                    }
-                } else {
-                    if(falseNotIgnore){
-                        if(attr == 'class'){
-                            let falseClasses = _false.split(' ');
-                            if(trueNotIgnore){
-                                let trueClasses = _true.split(' ');
-                                trueClasses.forEach(cls=>{
-                                    el.classList.remove(cls);
-                                });
-                                falseClasses.forEach(cls=>{
-                                    el.classList.add(cls);
-                                });
-                            } else {
-                                trueClasses.forEach(cls=>{
-                                    if(!el.classList.contains(cls)){
-                                        el.classList.add(cls);
-                                    };
-                                });
-                            };
-                            
-                        } else {
-                            el.setAttribute(attr, _false);
-                        };
-                    }
-                };
-            };
-        };
-    };
-};
-
 Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
-    //get components holding that prop, as name;
-    // console.trace();
-    // console.log(`attrib has been notified by scope;`);
-    // console.log(prop, newValue);
-
-    // console.log(679, newValue)
-
+    // console.time('attr');
     let val = newValue;
     if(Utils.isObject(val)){
         val = JSON.parse(JSON.stringify(newValue));
     };
+    const equiv = {
+        for:'For',
+        forUpdate:'ForUpdate',
+        switch:'Switch',
+        toggle:'Toggle',
+        bind:'Bind',
+        input:'Input',
+        if:'If',
+        class:'Class',
+        attr:'Attr',
+    };
+    let hits = Object.caching('AttribProp').get(prop) || 
+    (()=>{
+        let hits = {};
+        const actions = Object.keys(equiv);
+        const configs = st[component];
+        if(!configs){
+            return [];
+        };
+        for (let a = 0; a < actions.length; a++){
+            const action = actions[a];
+            const vals = configs[action];
+            if(vals){
+                for (let v = 0; v < vals.length; v++){
+                    const val = vals[v];
+                    const {bind} = val;
+                    if(bind == prop){
+                        hits[action] = true;
+                    };
+                };
+            };
+        };
+        hits = Object.keys(hits);
+        Object.caching('AttribProp').set(prop, hits);
+        return hits;
+    })();
 
-    
-
-    return new Promise((res)=>{
-        this._notifyFor(prop, val, prevValue, component);
-        res();
-    }).then(()=>{
-        return this._notifyForUpdate(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifySwitch(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyToggle(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyBind(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyInput(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyIf(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyClass(prop, val, prevValue, component);
-    }).then(()=>{
-        return this._notifyAttr(prop, val, prevValue, component);
+    return new Promise((res, rej)=>{
+        try {
+            let l = hits.length;
+            let index = 0;
+            const rec = (()=>{
+                if(l > index){
+                    let attr = hits[index];
+                    const name = equiv[attr];
+                    index += 1;
+                    if(name == 'For'){
+                        this[`notify${name}`](prop, val, prevValue, component);
+                        rec();
+                    } else {
+                        this[`notify${name}`](prop, val, prevValue, component).then(()=>{
+                            rec();
+                        });
+                    };
+                } else {
+                    res();
+                };
+            });rec();
+        } catch(err){
+            rej(err.message);
+        };
     });
 };
 
@@ -756,43 +118,36 @@ Attrib.prototype.registerNotifier = function(component, fn){
 };
 
 Attrib.prototype.getEventTarget = function(component){
-    let id = `${component}`
-    let loc = Object.cache.getEventTarget;
-    if (!loc){
-        loc = Object.cache.getEventTarget = {};
+    let id = `${component}`;
+    let target = Object.caching('getEventTarget').get(id);
+    if (!target){
+        let cf = st[component];
+        target = (cf && cf.evt)?cf.evt:[];
+        Object.caching('getEventTarget').set(id, target);
     };
-    if (!loc[id]){
-        let cf = this.st[component];
-        loc[id] = cf && (cf?.evt ?? []) || [];
-    };
-    return loc[id];
+    return target;
 };
 
 Attrib.prototype.getRouterTarget = function(component){
-    let id = `${component}`
-    let loc = Object.cache.getRouterTarget;
-    if (!loc){
-        loc = Object.cache.getRouterTarget = {};
+    let id = `${component}`;
+    let target =  Object.caching('getRouterTarget').get(id);
+    if(!target){
+        let cf = st[component];
+        target = (cf && cf.router)?cf.router:[];
+        Object.caching('getRouterTarget').set(id, target);
     };
-    if (!loc[id]){
-        let cf = this.st[component];
-        loc[id] = cf && (cf?.router ?? []) || [];
-    };
-    return loc[id];
+    return target;
 };
 
 Attrib.prototype.getWatchItems = function(component){ 
-    let id = `${component}`
-    let loc = Object.cache.getWatchItems;
-    if (!loc){
-        loc = Object.cache.getWatchItems = {};
-    };
-    if (!loc[id]){
-        let st = this.st[component] || {};
+    let id = `${component}`;
+    let target =  Object.caching('getWatchItems').get(id);
+    if(!target){
+        let _st = st[component] || {};
         let wt = new Set;
-        for (let type in st){
-            if (st.hasOwnProperty(type)){
-                let tst = st[type];
+        for (let type in _st){
+            if (_st.hasOwnProperty(type)){
+                let tst = _st[type];
                 for (let t = 0; t < tst.length; t++){
                     let item = tst[t];
                     let {bind} = item;
@@ -802,20 +157,20 @@ Attrib.prototype.getWatchItems = function(component){
                 };
             };
         };
-        loc[id] = [...wt];
+        target = [...wt];
+        Object.caching('getWatchItems').set(id, target);
     };
-    return loc[id];
+    return target;
 };
+
+
 
 Attrib.prototype.getWatchItemsByType = function(component, type){
     let id = `${component}-${type}`;
-    let loc = Object.cache.getWatchItemsByType;
-    if (!loc){
-        loc = Object.cache.getWatchItemsByType = {};
-    };
-    if (!loc[id]){
-        let st = this.st[component] || {};
-        let tst = st[type] || [];
+    let target =  Object.caching('getWatchItemsByType').get(id);
+    if (!target){
+        let _st = st[component] || {};
+        let tst = _st[type] || [];
         let wt = new Set();
         for (let t = 0; t < tst.length; t++){
             let item = tst[t];
@@ -836,24 +191,22 @@ Attrib.prototype.getWatchItemsByType = function(component, type){
                 };
             };
         };
-        loc[id] = [...wt];
+        target = [...wt];
+        Object.caching('getWatchItemsByType').set(id, target);
     };
-    return loc[id];
+    return target;
 };
 
 Attrib.prototype.getWatchItemsBySel = function(component, type, sel){
     let id = `${component}-${type}-${sel}`
-    let loc = Object.cache.watchItemsBySel;
-    if (!loc){
-        loc = Object.cache.watchItemsBySel = {};
-    };
-    if (!loc[id]){
-        // console.log(826,this.st, component, type);
-        let array = this.st[component][type];
+    let target =  Object.caching('watchItemsBySel').get(id);
+    if (!target){
+        let array = st[component][type];
         let find = array.find(item=>{return item.sel == sel});
-        loc[id] = (find)?find:false;
+        target = (find)?find:false;
+        Object.caching('watchItemsBySel').set(id, target);
     };
-    return loc[id];
+    return target;
 };
 
 Attrib.prototype._activateReactive = (component)=>{
@@ -916,7 +269,7 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
                 let [event, cb] = splitted[s].split(':');
                 // console.log( splitted[s].split(':'), event, cb);
                 // cb = cb || event;
-                this._register(this.st, component, 'evt', {event, sel:id, cb});
+                this._register(st, component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;
             }
@@ -940,7 +293,7 @@ Attrib.prototype._compileToggle = function(toggles, component, isStatic){
             if (c[ns]){
                 id = c[ns];
             };
-            this._register(this.st, component, 'toggle', {sel:id, name:'ns-'+ns});
+            this._register(st, component, 'toggle', {sel:id, name:'ns-'+ns});
             el.dataset.toggle = id;
             this.uiid++;
             c[ns] = id;
@@ -962,12 +315,26 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             let id = `ckf${this.uiid}`;
             let el = els[f];
             let fr = el.dataset.for;
+            let autoBind = el.dataset.forAutoBind;
             let isCleaned = el.dataset.forCleaned=="true"; 
             let [a, b, c] = fr.split(" ");
+
+            if(autoBind){
+                let split = autoBind.split(':');
+                let autoBindKey = split[0] && split[0].trim();
+                let autoBindValue = split[1] && split[1].trim();
+
+                el.dataset.forAutoBindKey = autoBindKey;
+                el.dataset.forAutoBindValue = autoBindValue;
+                el.removeAttribute('data-for-auto-bind');
+            }
+            
             el.style.display  = 'none';
             el.classList.add('cake-template');
             el.dataset.for = id;
             el.dataset.forTemplate = id;
+
+
             o[id] = {bind:c, sel:id, iter:a, ins: b, cleaned:isCleaned};
             ++this.uiid;
             if (f != 0){
@@ -988,7 +355,7 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
         };
         for (let key in o){
             if (o.hasOwnProperty(key)){
-                this._register(this.st, component, 'for', o[key]);
+                this._register(st, component, 'for', o[key]);
             };
         };
         res();
@@ -1013,7 +380,7 @@ Attrib.prototype._compileForUpdate = function(fors, component, isStatic){
             }
 
             let [a, b, c] = fr.split(" ");
-            this._register(this.st, component, 'forUpdate', {bind:c, sel:id, iter:a,ins: b});
+            this._register(st, component, 'forUpdate', {bind:c, sel:id, iter:a,ins: b});
             this.uiid++;
         };
         res();
@@ -1055,7 +422,7 @@ Attrib.prototype._compileSwitch = function(switchs, component, isStatic){
                     this.uiid++;
                 };
             };
-            this._register(this.st, component, 'switch', {bind, sel:id, map, cases:casesId});
+            this._register(st, component, 'switch', {bind, sel:id, map, cases:casesId});
             this.uiid++;
         };
         res()
@@ -1081,7 +448,7 @@ Attrib.prototype._compileBind = function(elModels, component, isStatic){
                     var bind = val;
                     var attr = 'value';
                 };
-                this._register(this.st, component, 'bind', {attr, bind, sel:id});
+                this._register(st, component, 'bind', {attr, bind, sel:id});
             }
             this.uiid++;
             el.dataset.bind = id;
@@ -1094,6 +461,7 @@ Attrib.prototype._compileAnimate = function(anims, component, isStatic){
     return new Promise((res)=>{
         if (!anims.length) {res();return;};
 
+        // console.log(1403,component);
 
         let els = this._static(component)(anims, isStatic);
         if (!els.length){res();return;}
@@ -1119,7 +487,7 @@ Attrib.prototype._compileAnimate = function(anims, component, isStatic){
                 };
             };
             o.selector = {attr:'data-animate', val:id};
-            this._register(this.st, component, 'animate', o);
+            this._register(st, component, 'animate', o);
             this.uiid++;
             el.dataset.animate = id;
         };
@@ -1172,7 +540,7 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
                 let [_true, _false] = r.split(':');
 
 
-                this._register(this.st, component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
+                this._register(st, component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
 
                 
             }
@@ -1195,7 +563,7 @@ Attrib.prototype._compileClass = function(cls, component, isStatic){
 
         for (let s = 0; s < els.length; s++){
 
-            let id, el, cl, hasRegularLog, hasNegate, bindVal, ops, testVal;
+            let id, el, cl, hasRegularLog, hasNegate, bindVal, ops, testVal, hasNegateCount;
 
             id = `cc${this.uiid}`;
             el = els[s];
@@ -1207,23 +575,38 @@ Attrib.prototype._compileClass = function(cls, component, isStatic){
             
 
             hasRegularLog = test.match(regex);
-            hasNegate = test[0] == '!';
+
+
+            if(test.substring(0,2).includes('!')){
+                hasNegate = true;
+                hasNegateCount = (test.substring(0,2) == '!!')?2:(test.substring(0,1)=='!')?1:0;
+            } else {
+                hasNegate = false;
+                hasNegateCount = 0;
+            };
+
+            
             if(hasRegularLog){
                 let splitted = test.split(regex);
             
-                bind = splitted[0];
-                testVal = splitted[1];
-                ops = hasRegularLog[0];
+                bindVal = splitted[0].trim();
+                testVal = splitted[1].trim();
+                ops = hasRegularLog[0].trim();
             } else {
-                bind = test;
-            }
-
-
-            if(hasNegate){
-                hasNegate && (bind = bind.slice(1));
+                
+                !hasNegate && (bindVal = test);
+                if(hasNegate){
+                    bindVal = test.substring(hasNegateCount);
+                    testVal = hasNegateCount == 2;
+                };
             };
 
-            this._register(this.st, component, 'class', {hasNegate, bind, testVal,className, ops, sel:id});
+            
+            // if(component == 'header1'){
+            //     console.log(1534, bindVal, test, testVal, hasNegateCount);
+            // }
+
+            this._register(st, component, 'class', {hasNegate, bind:bindVal, testVal,className, ops, sel:id});
             this.uiid++;
             el.dataset.class = id;
         };
@@ -1264,7 +647,7 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
                 hasNegate && (bind = bind.slice(1));
             };
 
-            this._register(this.st, component, 'attr', {hasNegate, bind, testVal,attrkey, attrvalue, ops, sel:id});
+            this._register(st, component, 'attr', {hasNegate, bind, testVal,attrkey, attrvalue, ops, sel:id});
             this.uiid++;
             el.dataset.attr = id;
         };
@@ -1282,7 +665,7 @@ Attrib.prototype._compileRouter = function(router, component, isStatic){
             let id = `rt${this.uiid}`;
             let el = els[s];
             let value = el.dataset.routerLink;
-            this._register(this.st, component, 'router', {value, sel:id});
+            this._register(st, component, 'router', {value, sel:id});
             this.uiid++;
             el.dataset.routerLink = id;
         };
@@ -1312,7 +695,7 @@ Attrib.prototype._compileInput = function(elModels, component, isStatic){
                     var bind = val;
                     var attr = 'value';
                 };
-                this._register(this.st, component, 'input', {attr, bind, sel:id,nodeType});
+                this._register(st, component, 'input', {attr, bind, sel:id,nodeType});
             };
             this.uiid++;
             el.dataset.input = id;
@@ -1365,6 +748,5 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
     
 };
 
-return Attrib;
 
-}
+module.exports = Attrib;
