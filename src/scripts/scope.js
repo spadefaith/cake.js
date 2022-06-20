@@ -162,17 +162,7 @@ module.exports = function(dependency){
                 // }
 
                 //custom callback for other component;
-                const hooks = _hooks[this.name];
 
-                
-                if (hooks){
-                    const callbacks = hooks[key];
-                    if (callbacks){
-                        callbacks.forEach(cb=>{
-                            cb(value);
-                        });
-                    };
-                };
 
                 //callback for html attributes;
 
@@ -180,7 +170,20 @@ module.exports = function(dependency){
 
                 return Promise.all(notify.map(cb=>{
                     return cb(key, value, prevValue, name).then(()=>{
-                        console.log('finish notified in scope');
+                        // console.log('finish notified in scope');
+
+
+                        const hooks = _hooks[this.name];
+
+                
+                        if (hooks){
+                            const callbacks = hooks[key];
+                            if (callbacks){
+                                callbacks.forEach(cb=>{
+                                    cb(value);
+                                });
+                            };
+                        };
                     });
                 }));
             });

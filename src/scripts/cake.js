@@ -1,13 +1,18 @@
 const Attrib = require('./attributes');
 const Scope = require('./scope')();
 const Component = require('./component');
-const Hasher = require('./hash');
+// const Hasher = require('./hash');
 const Router = require('./router');
 const Persistent = require('./persist');
 const StorageKit = require('./storage')();
 const Observer = require('./observer');
 const Formy = require('./form');
 const Utils = require('./utils');
+const Templating = require('./templating');
+const Plugin = require('./plugin');
+const Subscriber = require('./storage/subscriber');
+const Handler = require('./storage/handler');
+const ComponentStorage = require('./storage/components-store');
 
 
 function Cake(name){
@@ -55,8 +60,9 @@ Cake.Components = function(name){
 };
 
 Cake.Models = {};
-Cake.Subscribe = {};
-Cake.Handlers = {};
+
+Cake.plugin = Plugin;
+
 Cake.Attributes = new Attrib();
 
 Cake.Models.$loaded = function(name){
@@ -111,7 +117,6 @@ Cake.create = function(name, template, options){
     group.create(name, template, options);
 };
 
-Cake.plugin = function(){};
 
 Cake.init = function(name){
     return new Component(name);
@@ -119,8 +124,8 @@ Cake.init = function(name){
 
 
 
-Cake.Hasher = new Hasher(Cake.Components); 
-Cake.Hasher.listen();
+// Cake.Hasher = new Hasher(Cake.Components); 
+// Cake.Hasher.listen();
 
 
 Cake.Router = Router(Cake.Components, Component);
@@ -140,7 +145,8 @@ Cake.Cache = new StorageKit({
 });
 
 Cake.getSubscriber = function(component, handler){
-    let subscribe = Cake.Subscribe;
+    // let subscribe = Cake.Subscribe;
+    let subscribe = Subscriber;
     let obj = {};
     for (let c in subscribe){
         if (subscribe.hasOwnProperty(c)){
@@ -184,20 +190,7 @@ Cake.getSubscriber = function(component, handler){
     return obj;
 };
 
-// Cake.Cache.getAll()
-//     .then(items=>{
-//         //in every refresh of the app the items in the Keep will be queried and re-watch by the Scope
-//         if (items instanceof Array){
-//             for (let i = 0; i < items.length; i++){
-//                 let item = items[i];
-//                 Cake.Scope.watch(item);
-//             }
-//         } else if (typeof items == 'string'){
-//             Cake.Scope.watch(items);
-//         };
-//     });
-
-Cake.Observer = new Observer(Cake.Subscribe, Cake.Handlers);
+Cake.Observer = new Observer();
 
 Cake.prototype._defineProperty = function(component, prop, get, set){
     Object.defineProperty(component, prop, {
@@ -219,37 +212,6 @@ Cake.prototype._defineProperty(Component.prototype, '$observer', function(){
     return Cake.Observer;
 });
 
-
-//scope
-// Cake.prototype._defineProperty(Component.prototype, '$scope', function(){
-//     Cake.Scope.install(Component.name);
-//     let scope = Cake.$scope;
-//     let set = Cake.Scope.set.bind(Cake.Scope);
-//     Object.defineProperty(scope, 'extend', {
-//         configurable:true,
-//         get(){
-//             return function(target, obj){
-//                 target = Cake.Scope.temp[target];
-//                 if ((target).toString().includes('Object')){
-//                     Object.assign(target, obj);
-//                 } else {
-//                     console.error(`${target} is not an intance of Object`);
-//                 };
-//             };
-//         }
-//     });
-//     Object.defineProperty(scope, 'set', {
-//         configurable:true,
-//         get(){
-//             return function(key, value){
-//                 const cloned = Cake.Scope._cloneAsync;
-//                 return set(key, value, cloned);
-//             };
-//         }
-//     });
-//     return scope;
-// });
-
 //global scope
 Cake._globalScope = new Scope('globalScope');
 Cake.prototype._defineProperty(Component.prototype, '$globalScope', function(){
@@ -257,6 +219,7 @@ Cake.prototype._defineProperty(Component.prototype, '$globalScope', function(){
     return scope;
 });
 Cake._universalScope = new Scope('universalScope');
+
 Cake.$universalScope = (function(){
     const scope = Cake._universalScope;
     return scope;
@@ -286,6 +249,24 @@ Cake.prototype.create = function(name, template, options){
     let component = new Component(name, template, options);
     //after it has been pass to Cakem t ws assumed that the fn are binded to component holder;
     const scope = new Scope(name);
+    component.scope && (()=>{
+    
+        for (let _component in component.scope){
+
+
+            if(component.scope.hasOwnProperty(_component)){
+                const handlers = component.scope[_component];
+                for(let key in handlers){
+                    if(handlers.hasOwnProperty(key)){
+                        let handler = handlers[key];
+                        const bind = handler.name;
+                        handler = handler.bind(component);
+                        scope.hook(_component, bind, handler);
+                    };
+                };
+            };
+        };
+    })();
 
     //register a notifier;
     scope.registerNotifier(function(prop, newValue, prevValue, component){
@@ -298,18 +279,27 @@ Cake.prototype.create = function(name, template, options){
 
 
     component.compile.then(()=>{
-        let { subscribe, root, html, handlers, role} = component;
+        let { subscribe, root, html, handlers, role, state} = component;
         // console.log(role == 'form');
 
-
-        return Cake.Observer.registerSubscribe(subscribe).then(()=>{
-            return {root, handlers}
+        // console.log(284, component.name, subscribe);
+        // return Cake.Observer.registerSubscribe(subscribe).then(()=>{
+        //     return {root, handlers}
+        // });
+        return Subscriber.set(subscribe).then(()=>{
+            return {root, handlers};
         });
 
         //subscribe and handlers are binded to its componnt
         
     }).then(({handlers,root})=>{
-        Cake.Observer.registerHandlers(handlers, component.name);
+
+        // Cake.Observer.registerHandlers(handlers, component.name);
+
+ 
+        Handler.set(handlers, component.name);
+
+
         this._defineProperty(component, 'root', function(){
             // console.log(281,component);
             if (component._root){
@@ -325,7 +315,11 @@ Cake.prototype.create = function(name, template, options){
         },function(value){
             Object.assign(component, {_root:value})
         });
-        //html getter;
+
+        //scope
+        this._defineProperty(component, '$scope', function(){
+            return scope;
+        });
 
 
         component.role == 'form' && (()=>{
@@ -333,9 +327,8 @@ Cake.prototype.create = function(name, template, options){
             const methods = Formy(component);
 
             // let has = !!component.root.querySelector('FORM');
-
             const form = ()=>{
-                return component.root.querySelector('FORM');
+                return component.root.querySelector(component.formSelector || 'FORM');
             };
 
             for (let method in methods){
@@ -355,12 +348,6 @@ Cake.prototype.create = function(name, template, options){
 
         })();
 
-
-        //scope
-        this._defineProperty(component, '$scope', function(){
-            return scope;
-        });
-
     }).then(()=>{
         component.fire = (function(){
             function fire(name, variable){
@@ -371,6 +358,8 @@ Cake.prototype.create = function(name, template, options){
                  * the usage of fire is to manually run the notify, it tells notify what handler has been fired;
                  * so that the notify will make a variable from it, to be feed to subscriber to that;
                  */
+
+
 
                 variable = !variable?null:typeof variable == 'function'?variable.bind(component)():(function(){return variable}).bind(component)();
 
@@ -384,7 +373,9 @@ Cake.prototype.create = function(name, template, options){
                     fn.name = name;
                     fn.original = name;
                     fn.binded = component.name;
-                    Cake.Observer.registerHandlers({[name]: fn}, component.name);
+
+                    Handler.set({[name]: fn}, component.name);
+
                     // const awaitNotify = Cake.Observer.notify(component.name, name, {});
                     // component.await[name] = awaitNotify;
                     // return awaitNotify;
@@ -419,7 +410,7 @@ Cake.prototype.create = function(name, template, options){
 
                     // console.log(392, {component:component.name, event:name, payload});
 
-                    Cake.MainMessageChannel.send({component:component.name, event:name, payload});
+                    // Cake.MainMessageChannel.send({component:component.name, event:name, payload});
 
                     const notify = Cake.Observer.notify(component.name, name, {}).then(()=>{
                         return Cake.Observer.results[component.name][name];
@@ -430,83 +421,63 @@ Cake.prototype.create = function(name, template, options){
                 console.error(`the param in fire is not an instance of function`);
             };
             
-            function addStaticMethod(fn, handlers){
+            function addStaticMethod(fire, handlers){
                 for (let h in handlers){
                     if (handlers.hasOwnProperty(h)){
                         let handler = handlers[h];
 
                         let event = handler.original;
-                        Object.defineProperty(fn, event, {
-                            get(){
-                                
-                                let fn = {
-                                    [event]:function (variable, isBroadcast){
-                                        //automatic broadcast if the event is destroy;
-                                        if (isBroadcast != undefined){
-                                            isBroadcast = isBroadcast;
-                                        };
-                                        if (isBroadcast == undefined && event == 'destroy'){
-                                            //force to broadcast is destroy event;
-                                            isBroadcast = true;
-                                        };
-                                        if (isBroadcast == undefined){
-                                            isBroadcast = false;
-                                        };
-                                        if (isBroadcast){
-                                            /**
-                                             * async
-                                             */
-                                            const notify = new Promise((res, rej)=>{
-                                                //without setTimeout, there will be a problem;
-                                                //i think setTimeout, helps the promise to call resolve;
-                                                //as it commands the promise to resolve on the next clock tick;
-                                                setTimeout(()=>{
-                                                    // let not = Cake.Observer.notify(component.name, event, variable);
-
-                                                    // console.log(variable);
-                                                    let payload = variable;
-
-                                                    //TODO -integrate MessageChannel as notifier
-                                                    //.
-                                                    // if (variable && variable.element){
-                                                    //     payload = {status:0, message:'element cant be cloned'};
-                                                    // } else if (payload == undefined){
-                                                    //     payload = {};
-                                                    // };
-                                                    // console.log(payload);
-                                                    
-                                                    // Cake.MainMessageChannel.send({component:component.name, event:name, payload});
-
-                                                    payload = payload || {};
-
-                                                    Cake.Observer.notify(component.name, event, payload).then(()=>{
-                                                        return Cake.Observer.results[component.name][event];
-                                                    }).then(r=>{
-                                                        res(r);
-                                                    }).catch(err=>{
-                                                        console.log(448, component.name, event, payload);
-                                                        console.trace();
-                                                        console.error(err);
-                                                    });
-                                                    
-                                                });
-                                            });
-                                            component.await[event] = notify;
-                                            return component.await[event];
-                                            // console.log(variable, !!isBroadcast, handler);
-                                        } else {
-                                            return handler(variable);
-                                        };
-                                    }
+                        let fn = {
+                            [event]:function (variable, isBroadcast){
+                                //automatic broadcast if the event is destroy;
+                                if (isBroadcast != undefined){
+                                    isBroadcast = isBroadcast;
                                 };
-                                // console.log(412, event, fn);
-                                fn[event] = fn[event].bind(component);
-                                fn[event].originalName = event;
-                                fn[event].binded = component.name;
 
-                                return fn[event];
-                            },
-                        });
+                                if (isBroadcast == undefined){
+                                    isBroadcast = false;
+                                };
+                                if (isBroadcast == undefined && event == 'destroy'){
+                                    //force to broadcast is destroy event;
+                                    isBroadcast = true;
+                                };
+
+                                if (isBroadcast){
+                                    /**
+                                     * async
+                                     */
+                                    component.await[event] = new Promise((res)=>{
+                                        //without setTimeout, there will be a problem;
+                                        //i think setTimeout, helps the promise to call resolve;
+                                        //as it commands the promise to resolve on the next clock tick;
+                                        setTimeout(()=>{
+                                            let payload = variable || {};
+
+                                            Cake.Observer.notify(component.name, event, payload).then(()=>{
+                                                return Cake.Observer.results[component.name][event];
+                                            }).then(r=>{
+                                                res(r);
+                                            }).catch(err=>{
+                                                console.log(448, component.name, event, payload);
+                                                console.trace();
+                                                console.error(err);
+                                            });
+                                            
+                                        });
+                                    });
+                                    return component.await[event];
+                                } else {
+                                    return handler(variable);
+                                };
+                            }
+                        };
+                        // console.log(412, event, fn);
+                        fn[event] = fn[event].bind(component);
+                        fn[event].originalName = event;
+                        fn[event].binded = component.name;
+
+                        fire[event] = fn[event];
+                        fire.component = component.name;
                     };
                 };
             }
@@ -518,7 +489,8 @@ Cake.prototype.create = function(name, template, options){
 
         if (component.type == 'view'){
             component.toggler = component.toggler(component);
-            Cake.Components[name] = component;
+            // Cake.Components[name] = component;
+            ComponentStorage.set(name, component);
         };
     }).then(()=>{
         //update the binding of data, trigger, and utils option of component;

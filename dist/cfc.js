@@ -1,7 +1,7 @@
 (() => {
   var __getOwnPropNames = Object.getOwnPropertyNames;
-  var __commonJS = (cb, mod) => function __require() {
-    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  var __commonJS = (cb2, mod) => function __require() {
+    return mod || (0, cb2[__getOwnPropNames(cb2)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
 
   // src/scripts/env.js
@@ -45,19 +45,19 @@
           return b;
         };
         Object.cache = /* @__PURE__ */ Object.create(null);
-        Object.caching = (name) => {
+        Object.caching = (name2) => {
           const obj = Object.cache;
-          if (!obj[name]) {
-            obj[name] = {};
+          if (!obj[name2]) {
+            obj[name2] = {};
           }
           ;
           return {
-            set(key, value) {
-              obj[name][key] = value;
+            set(key, value2) {
+              obj[name2][key] = value2;
               return true;
             },
             get(key) {
-              return obj[name][key];
+              return obj[name2][key];
             }
           };
         };
@@ -111,6 +111,9 @@
             return proper;
           }
           ;
+        };
+        String.prototype.removeSpace = function() {
+          return this.split(" ").join("");
         };
         String.prototype.toCamelCase = function() {
           let str = this.toLowerCase();
@@ -221,8 +224,8 @@
         Array.prototype.toggler = function(dataName, activeClass) {
           for (let t = 0; t < this.length; t++) {
             let node = this[t];
-            let name = node.dataset.name;
-            if (name == dataName) {
+            let name2 = node.dataset.name;
+            if (name2 == dataName) {
               node.classList.toggle(activeClass);
             } else {
               if (node.classList.contains(activeClass)) {
@@ -239,8 +242,8 @@
           !this[n] && (this._cakes_storage = {});
           let storage = this[n];
           return {
-            set(key, value) {
-              storage[key] = value;
+            set(key, value2) {
+              storage[key] = value2;
             },
             get(key) {
               return storage[key];
@@ -279,99 +282,99 @@
     "src/scripts/utils.js"(exports, module) {
       var global = {};
       var TYPES = {
-        typeof: function(ctx) {
+        typeof: function(ctx2) {
           switch (true) {
-            case typeof ctx == "string":
+            case typeof ctx2 == "string":
               return "string";
-            case typeof ctx == "number":
+            case typeof ctx2 == "number":
               return "number";
-            case ctx instanceof Array:
+            case ctx2 instanceof Array:
               return "array";
-            case ctx instanceof Function:
+            case ctx2 instanceof Function:
               return "function";
-            case ctx instanceof HTMLCollection:
+            case ctx2 instanceof HTMLCollection:
               return "htmlcollection";
-            case ctx instanceof NodeList:
+            case ctx2 instanceof NodeList:
               return "htmlnodelist";
-            case ctx instanceof Element:
+            case ctx2 instanceof Element:
               return "domlement";
-            case ctx instanceof Object:
+            case ctx2 instanceof Object:
               return "object";
           }
           ;
         },
-        isArray: function(ctx) {
-          return this.typeof(ctx) == "array";
+        isArray: function(ctx2) {
+          return this.typeof(ctx2) == "array";
         },
-        isObject: function(ctx) {
-          return this.typeof(ctx) == "object";
+        isObject: function(ctx2) {
+          return this.typeof(ctx2) == "object";
         },
-        isNumber: function(ctx) {
-          return this.typeof(ctx) == "number";
+        isNumber: function(ctx2) {
+          return this.typeof(ctx2) == "number";
         },
-        isString: function(ctx) {
-          return this.typeof(ctx) == "string";
+        isString: function(ctx2) {
+          return this.typeof(ctx2) == "string";
         },
-        isHTMLCollection: function(ctx) {
-          return this.typeof(ctx) == "htmlcollection";
+        isHTMLCollection: function(ctx2) {
+          return this.typeof(ctx2) == "htmlcollection";
         },
-        isNodeList: function(ctx) {
-          return this.typeof(ctx) == "htmlnodelist";
+        isNodeList: function(ctx2) {
+          return this.typeof(ctx2) == "htmlnodelist";
         },
-        isElement: function(ctx) {
-          return this.typeof(ctx) == "domlement";
+        isElement: function(ctx2) {
+          return this.typeof(ctx2) == "domlement";
         },
-        isFunction: function(ctx) {
-          return this.typeof(ctx) == "function";
+        isFunction: function(ctx2) {
+          return this.typeof(ctx2) == "function";
         }
       };
       var LOOP = {
-        each: function(ctx, fn2, type) {
-          if (type == "object") {
+        each: function(ctx2, fn2, type2) {
+          if (type2 == "object") {
             var i = 0;
-            for (var key in ctx) {
-              if (ctx.hasOwnProperty(key)) {
-                fn2({ key, value: ctx[key] }, i);
+            for (var key in ctx2) {
+              if (ctx2.hasOwnProperty(key)) {
+                fn2({ key, value: ctx2[key] }, i);
                 i = i + 1;
               }
               ;
             }
             ;
           } else {
-            for (var a = 0; a < ctx.length; a++) {
-              fn2(ctx[a], a);
+            for (var a = 0; a < ctx2.length; a++) {
+              fn2(ctx2[a], a);
             }
           }
           ;
         },
-        map: function(ctx, fn2) {
-          var type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
-          var st = ctx.length && type == "array" ? [] : {};
-          this.each(ctx, function(obj, index) {
+        map: function(ctx2, fn2) {
+          var type2 = TYPES.isArray(ctx2) || ctx2.length ? "array" : "object";
+          var st = ctx2.length && type2 == "array" ? [] : {};
+          this.each(ctx2, function(obj, index) {
             var r = fn2(obj, index);
-            if (type == "object") {
+            if (type2 == "object") {
               st[r.key] = r.value;
             } else {
               st.push(r);
             }
             ;
-          }, type);
+          }, type2);
           return st;
         },
-        reduce: function(ctx, accu, fn2) {
-          var type = TYPES.typeof(ctx);
-          this.each(ctx, function(obj, index) {
+        reduce: function(ctx2, accu, fn2) {
+          var type2 = TYPES.typeof(ctx2);
+          this.each(ctx2, function(obj, index) {
             accu = fn2(obj, accu, index);
-          }, type);
+          }, type2);
           return accu;
         },
-        filter: function(ctx, fn2) {
-          var type = TYPES.isArray(ctx) || ctx.length ? "array" : "object";
-          var st = ctx.length && type == "array" ? [] : {};
-          this.each(ctx, function(obj, index) {
+        filter: function(ctx2, fn2) {
+          var type2 = TYPES.isArray(ctx2) || ctx2.length ? "array" : "object";
+          var st = ctx2.length && type2 == "array" ? [] : {};
+          this.each(ctx2, function(obj, index) {
             var r = fn2(obj, index);
             if (r) {
-              if (type == "object") {
+              if (type2 == "object") {
                 st[obj.key] = obj.value;
               } else {
                 st.push(obj.value);
@@ -379,8 +382,13 @@
               ;
             }
             ;
-          }, type);
+          }, type2);
           return st;
+        }
+      };
+      var STRING = {
+        removeWhiteSpace(str) {
+          return String(str).split(" ").join("");
         }
       };
       var OTHERS = {
@@ -436,6 +444,10 @@
           for (let key in obj) {
             if (obj.hasOwnProperty(key)) {
               let val = obj[key];
+              if (val.toString().includes("Object")) {
+                val = JSON.stringify(val);
+              }
+              ;
               if (istrim && val) {
                 searchParams += `${encodeURI(key)}=${encodeURI(val)}&`;
               } else {
@@ -446,14 +458,14 @@
             ;
           }
           ;
-          return searchParams;
+          return searchParams.slice(0, searchParams.length - 1);
         },
-        sanitize: function(string) {
+        sanitize: function(string, exclude = []) {
           if (typeof string != "string") {
             return string;
           }
           ;
-          const map = {
+          let map = {
             "&": "&amp;",
             "<": "&lt;",
             ">": "&gt;",
@@ -461,41 +473,65 @@
             "'": "&#x27;",
             "/": "&#x2F;"
           };
+          map = Object.keys(map).reduce((accu, key) => {
+            if (!exclude.includes(key)) {
+              accu[key] = map[key];
+            }
+            ;
+            return accu;
+          }, {});
           const reg = /[&<>"'/]/ig;
-          return string.replace(reg, (match) => map[match]);
+          return string.replace(reg, (match) => {
+            return map[match] || match;
+          });
         },
-        toFormData: function(form2, options = {}) {
-          let formData = new FormData(form2);
+        toFormData: function(form, options = {}) {
+          const controls = [];
+          const textareas = form.querySelectorAll("TEXTAREA");
+          const inputs = form.querySelectorAll("INPUT");
+          const selects = form.querySelectorAll("SELECT");
+          function loop(arr, cont) {
+            for (let i = 0; i < arr.length; i++) {
+              cont.push(arr[i]);
+            }
+            ;
+          }
+          ;
+          loop(textareas, controls);
+          loop(inputs, controls);
+          loop(selects, controls);
           let o2 = {};
-          let fd = new FormData();
-          for (let [key, value] of formData.entries()) {
-            let type;
-            if (form2[key]) {
-              const element = form2[key];
-              if (element.closest && !element.closest(".cake-template")) {
-                const tag = element.tagName;
-                if (tag == "INPUT" && element.getAttribute("type") == "checkbox") {
-                  value = element.checked;
-                } else {
-                  if (options.sanitize == void 0 || !!options.sanitize) {
-                    value = this.sanitize(value);
+          for (let i = 0; i < controls.length; i++) {
+            let control = controls[i];
+            let key = control.name || control.id;
+            if (key && ["{{", "((", "[[", "<<", "%%", "&&"].includes(key)) {
+            } else {
+              let type2;
+              const element = form[key];
+              if (element) {
+                if (element.closest && !element.closest(".cake-template")) {
+                  const tag = element.tagName;
+                  if (tag == "INPUT" && element.getAttribute("type") == "checkbox") {
+                    value = element.checked;
+                  } else {
+                    value = this.sanitize(element.value, options.sanitize);
                   }
                   ;
-                }
-                ;
-                if (options.json) {
-                  if (options.trim) {
-                    if (value != "") {
+                  if (options.json) {
+                    if (options.trim) {
+                      if (value != "") {
+                        o2[key] = value;
+                      }
+                      ;
+                    } else {
                       o2[key] = value;
                     }
                     ;
                   } else {
-                    o2[key] = value;
+                    fd.append(key, value);
                   }
-                  ;
-                } else {
-                  fd.append(key, value);
                 }
+                ;
               }
               ;
             }
@@ -505,7 +541,15 @@
           if (options.json) {
             return o2;
           } else {
-            return fd;
+            let fd2 = new FormData();
+            for (let key in o2) {
+              if (o2.hasOwnProperty(key)) {
+                fd2.append(key, o2[key]);
+              }
+              ;
+            }
+            ;
+            return fd2;
           }
           ;
         },
@@ -540,9 +584,6 @@
         },
         instanceID() {
           return location.origin;
-        },
-        removeWhiteSpace(str) {
-          return String(str).split(" ").join("");
         },
         recurse(array, callback) {
           return new Promise((res, rej) => {
@@ -619,21 +660,27 @@
         },
         isDesktop() {
           return this.device() == "desktop";
+        },
+        escapeRegExp(text) {
+          return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
         }
       };
       try {
-        global.UTILS = { ...LOOP, ...TYPES, ...OTHERS };
+        global.UTILS = { ...LOOP, ...TYPES, ...OTHERS, ...STRING };
       } catch (err) {
         global.UTILS = {};
         iter = LOOP.each;
-        iter(LOOP, function(key, value) {
-          global.UTILS[key] = value;
+        iter(LOOP, function(key, value2) {
+          global.UTILS[key] = value2;
         });
-        iter(TYPES, function(key, value) {
-          global.UTILS[key] = value;
+        iter(TYPES, function(key, value2) {
+          global.UTILS[key] = value2;
         });
-        iter(OTHERS, function(key, value) {
-          global.UTILS[key] = value;
+        iter(OTHERS, function(key, value2) {
+          global.UTILS[key] = value2;
+        });
+        iter(STRING, function(key, value2) {
+          global.UTILS[key] = value2;
         });
       }
       var iter;
@@ -724,46 +771,40 @@
         HTMLTemplateElement.prototype.parseStyle = function(style) {
           if (!style)
             return false;
-          var styles = style.textContent;
-          styles = styles.replace(/\s/g, "");
+          var styles = style.textContent.trim();
           if (!styles.length) {
             return;
           }
-          let isSelector = false;
-          let isOpen = false;
-          let isClose = false;
-          let splitted = styles.split("");
-          let selector2 = "";
-          styles = "";
-          var obj = false;
-          for (let l2 = 0; l2 < splitted.length; l2++) {
-            let cha = splitted[l2];
-            if (cha == "{") {
-              isSelector = true;
-              isOpen = true;
-            }
-            ;
-            if (cha == "}") {
-              isSelector = false;
-              isOpen = false;
-            }
-            ;
-            if (!isSelector && cha != "	" && cha != "}" && cha != " " && cha != ";") {
-              selector2 += cha;
-            }
-            ;
-            if (isOpen && cha != "	" && cha != "{" & cha != " ") {
-              styles += cha;
-            }
-            ;
-            if (cha == "}") {
-              if (!obj) {
-                obj = {};
-              }
-              ;
-              obj[selector2] = styles;
-              selector2 = "";
-              styles = "";
+          let obj = {};
+          let sel = "";
+          let splitted = styles.split("}");
+          for (let sp = 0; sp < splitted.length; sp++) {
+            let item = splitted[sp];
+            let [sel2, style2] = item.split("{");
+            if (!!sel2) {
+              obj[sel2.trim()] = (() => {
+                let n = false;
+                let s = "";
+                let splitted2 = style2.split("");
+                for (let sp2 = 0; sp2 < splitted2.length; sp2++) {
+                  let item2 = splitted2[sp2];
+                  if (item2 == "\n") {
+                    n = true;
+                  } else if (item2 == " ") {
+                    if (n) {
+                    } else {
+                      s += item2;
+                    }
+                    ;
+                  } else {
+                    n = false;
+                    s += item2;
+                  }
+                  ;
+                }
+                ;
+                return s;
+              })();
             }
             ;
           }
@@ -805,6 +846,384 @@
     }
   });
 
+  // src/scripts/plugin.js
+  var require_plugin = __commonJS({
+    "src/scripts/plugin.js"(exports, module) {
+      var Utils = require_utils();
+      module.exports = function() {
+        Object.caching("plugins").set("plugin", {});
+        return function(key, value2) {
+          if (Utils.isObject(key) && !value2) {
+            const plugins = Object.caching("plugins").get("plugin");
+            Object.caching("plugins").set("plugin", Object.assign(plugins, key));
+          } else if (Utils.isString(key) && value2 != void 0) {
+            const plugins = Object.caching("plugins").get("plugin");
+            plugins[key] = value2;
+            Object.caching("plugins").set("plugin", plugins);
+          } else if (Utils.isString(key) && value2 == void 0) {
+            return Object.caching("plugins").get("plugin")[key] || {};
+          }
+          ;
+        };
+      }();
+    }
+  });
+
+  // src/scripts/templating.js
+  var require_templating = __commonJS({
+    "src/scripts/templating.js"(exports, module) {
+      var Utils = require_utils();
+      function Templating(options) {
+        this.options = options;
+        this.tag = (this.options && this.options.tag || "{{ }}").split(" ");
+        this.lefttag = Utils.escapeRegExp(this.tag[0]);
+        this.righttag = Utils.escapeRegExp(this.tag[1]);
+      }
+      Templating.prototype._getTag = function(template) {
+        return template.match(new RegExp("(?<=<)|([^/s]+)(?=>)", "g"))[2];
+      };
+      Templating.prototype._bindReplace = function(obj, string) {
+        for (let key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            let pattern = new RegExp(`${this.lefttag}${key}${this.righttag}`, "g");
+            pattern && (string = string.replace(pattern, `${obj[key]}`));
+          }
+          ;
+        }
+        ;
+        return string;
+      };
+      Templating.prototype.replaceString = function(obj, string) {
+        return this._bindReplace(obj, string);
+      };
+      Templating.prototype._toElement = function(template, tag) {
+        let fr2 = document.createElement("template");
+        fr2.innerHTML = template;
+        return fr2.content.children[0];
+      };
+      Templating.prototype.createElement = function(data2, template, isConvert) {
+        if (data2) {
+          if (data2 instanceof Array) {
+            let isString = typeof template == "string";
+            let tag = isString ? this._getTag(template) : template.tagName;
+            template = isString ? template : template.outerHTML;
+            let els = [];
+            for (let d = 0; d < data2.length; d++) {
+              let dd = data2[d];
+              let bindData = this._bindReplace(dd, template);
+              let element = this._toElement(bindData, tag);
+              if (isConvert) {
+                element = element.outerHTML;
+              }
+              ;
+              els.push(element);
+            }
+            ;
+            return els;
+          } else if (data2 instanceof Object) {
+            let isString = typeof template == "string";
+            let tag = isString ? this._getTag(template) : template.tagName;
+            template = isString ? template : template.outerHTML;
+            let bindData = this._bindReplace(data2, template);
+            let element = this._toElement(bindData, tag);
+            if (isConvert) {
+              element = element.outerHTML;
+            }
+            ;
+            return element;
+          }
+        } else {
+          let isString = typeof template == "string";
+          let tag = isString ? this._getTag(template) : template.tagName;
+          return this._toElement(template, tag);
+        }
+        ;
+      };
+      module.exports = Templating;
+    }
+  });
+
+  // src/scripts/attrib/utils.js
+  var require_utils2 = __commonJS({
+    "src/scripts/attrib/utils.js"(exports) {
+      exports.getConfig = function(st, prop, newValue, prevValue, component2) {
+        if (newValue == null) {
+          return [];
+        }
+        ;
+        if (newValue == prevValue && type != "bind") {
+          return [];
+        }
+        ;
+        return (() => {
+          let ctx2 = [];
+          let s = st;
+          if (s && s.length) {
+            for (let i = 0; i < s.length; i++) {
+              let item = s[i];
+              if (item.bind == prop) {
+                ctx2.push({ ...item, component: component2 });
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          return ctx2;
+        })();
+      };
+      exports.updateConfig = function(st, type2, prop, newValue, prevValue, component2, update, sel) {
+        if (newValue == null) {
+          return;
+        }
+        ;
+        if (newValue == prevValue && type2 != "bind") {
+          return;
+        }
+        ;
+        var st = (() => {
+          let config = st[component2] && st[component2][type2];
+          if (config && config.length) {
+            let ctx2 = [];
+            for (let i = 0; i < config.length; i++) {
+              let item = config[i];
+              let test = item.bind == prop && (sel ? item.sel == sel : true);
+              if (test) {
+                Object.assign(item, update);
+              } else {
+              }
+              ;
+            }
+            ;
+            return ctx2;
+          } else {
+            return [];
+          }
+          ;
+        })();
+        return st;
+      };
+      exports.extendConfig = function(configs) {
+        const cloned = [];
+        for (let i = 0; i < configs.length; i++) {
+          const cl = {};
+          const item = configs[i];
+          for (let key in item) {
+            cl[key] = item[key];
+          }
+          ;
+          cloned.push(cl);
+        }
+        ;
+        return cloned.reduce((accu, iter) => {
+          let { incrementedSels } = iter;
+          if (incrementedSels && incrementedSels.length) {
+            incrementedSels.forEach((ic) => {
+              let cloned2 = { ...iter };
+              cloned2.incrementedSel = ic;
+              accu.push(cloned2);
+            });
+          } else {
+            accu.push(iter);
+          }
+          ;
+          return accu;
+        }, []);
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-attr.js
+  var require_data_attr = __commonJS({
+    "src/scripts/attrib/data-attr.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "attr");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        configs = extendConfig(configs);
+        return Promise.all(configs.map((config) => {
+          let data2;
+          let { hasNegate, bind: bind2, testVal, attr, ops, sel, attrkey, attrvalue, incrementedSel, incrementId } = config;
+          bind2 = Utils.removeWhiteSpace(bind2);
+          attr = Utils.removeWhiteSpace(attr);
+          incrementedSel = newValue.incrementedSel || incrementedSel;
+          if (!!newValue.incrementedSel) {
+            data2 = newValue[bind2];
+          } else {
+            data2 = newValue;
+          }
+          ;
+          if (prop == bind2) {
+            let els = html.querySelectorAll(`[data-attr=${incrementedSel || sel}]:not(.cake-template)`);
+            return Promise.all([...els].map((el2) => {
+              let test = false;
+              if (ops) {
+                test = Utils.logTest(data2, ops, testVal);
+                hasNegate && (test = !test);
+              } else if (hasNegate) {
+                test = !data2;
+              } else {
+                test = !!data2;
+              }
+              ;
+              if (test) {
+                if (attrvalue) {
+                  el2.setAttribute(attrkey, attrvalue);
+                } else {
+                  el2.setAttribute(attrkey);
+                }
+                ;
+              } else {
+                el2.removeAttribute(attrkey);
+              }
+              ;
+            }));
+          }
+          ;
+          newValue = null;
+        }));
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-bind.js
+  var require_data_bind = __commonJS({
+    "src/scripts/attrib/data-bind.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "bind");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        configs = extendConfig(configs);
+        for (let c = 0; c < configs.length; c++) {
+          let config = configs[c], data2;
+          let { attr, bind: bind2, sel, incrementedSel, incrementId, incrementedSels } = config;
+          incrementedSel = newValue.incrementedSel || incrementedSel;
+          if (!!newValue.incrementedSel) {
+            data2 = newValue[bind2];
+          } else {
+            data2 = newValue;
+          }
+          ;
+          let attrHyphen = attr.toHyphen();
+          if (prop == bind2) {
+            let els = html.querySelectorAll(`[data-bind=${incrementedSel || sel}]`);
+            for (let p = 0; p < els.length; p++) {
+              let el2 = els[p];
+              if (attr == "class" || attr == "className") {
+                if (el2.classList.length) {
+                  Utils.splitBySpace(prevValue, function(cls) {
+                    el2.classList.remove(cls);
+                  });
+                  Utils.splitBySpace(data2, function(cls) {
+                    el2.classList.add(cls);
+                  });
+                } else {
+                  Utils.splitBySpace(data2, function(cls) {
+                    el2.classList.add(cls);
+                  });
+                }
+                ;
+              } else {
+                if (data2 != void 0 || data2 != null) {
+                  el2.setAttribute(attrHyphen, data2);
+                  el2[attr] = data2;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-class.js
+  var require_data_class = __commonJS({
+    "src/scripts/attrib/data-class.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        let st = this.storage.get(component2, "class");
+        html = html || document;
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        let cache = {};
+        configs = extendConfig(configs);
+        for (let c = 0; c < configs.length; c++) {
+          let config = configs[c], data2;
+          let { hasNegate, bind: bind2, testVal, className, ops, sel, incrementedSel, incrementId } = config;
+          bind2 = Utils.removeWhiteSpace(bind2);
+          incrementedSel = newValue.incrementedSel || incrementedSel;
+          if (!!newValue.incrementedSel) {
+            data2 = newValue[bind2];
+          } else {
+            data2 = newValue;
+          }
+          ;
+          if (prop == bind2) {
+            if (!cache[incrementedSel || sel]) {
+              cache[incrementedSel || sel] = html.querySelectorAll(`[data-class=${incrementedSel || sel}]:not(.cake-template)`);
+            }
+            let els = cache[incrementedSel || sel];
+            for (let p = 0; p < els.length; p++) {
+              let el2 = els[p];
+              let test = false;
+              if (ops) {
+                test = Utils.logTest(data2, ops, testVal);
+                hasNegate && (test = !test);
+              } else if (hasNegate) {
+                test = data2 == testVal;
+              } else {
+                test = !!data2;
+              }
+              ;
+              if (test) {
+                Utils.splitBySpace(className, function(cls) {
+                  const classList = Utils.toArray(el2.classList);
+                  if (!classList.includes(cls)) {
+                    setTimeout(() => {
+                      el2.classList.add(cls);
+                    });
+                  }
+                  ;
+                });
+              } else {
+                Utils.splitBySpace(className, function(cls) {
+                  const classList = Utils.toArray(el2.classList);
+                  if (classList.includes(cls)) {
+                    setTimeout(() => {
+                      el2.classList.remove(cls);
+                    });
+                  }
+                  ;
+                });
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
   // src/scripts/piece.js
   var require_piece = __commonJS({
     "src/scripts/piece.js"(exports, module) {
@@ -842,7 +1261,7 @@
       Piece.prototype.getElement = function() {
         return this.el[0];
       };
-      Piece.prototype.remove = function(name) {
+      Piece.prototype.remove = function(name2) {
         let i = -1, length2 = this.el.length;
         let fg = document.createDocumentFragment();
         while (++i < length2) {
@@ -871,12 +1290,12 @@
         ;
         return new Piece(a);
       };
-      Piece.prototype.dataset = function(data2, cb) {
+      Piece.prototype.dataset = function(data2, cb2) {
         let l2 = this.el.length;
         let i = -1;
         while (++i < l2) {
           if (this.el[i].dataset[data2]) {
-            let exec = cb(this.el[i]);
+            let exec = cb2(this.el[i]);
             if (exec == "break") {
               break;
             }
@@ -1152,492 +1571,1342 @@
     }
   });
 
-  // src/scripts/observer.js
-  var require_observer = __commonJS({
-    "src/scripts/observer.js"(exports, module) {
-      function Observer2(subscribe2, handlers, logger) {
-        this.subscribe = subscribe2;
-        this.handlers = handlers;
-        this.logger = logger || false;
-        this.stat = {
-          handlers: {},
-          subscribe: {}
-        };
-        this.results = {};
-        this.wm = /* @__PURE__ */ new WeakMap();
-      }
-      Observer2.prototype.notify = function(component3, event, e, filter, ispage, appName) {
-        function engrave() {
-          return {
-            _component: component3,
-            _event: event,
-            _e: e
-          };
-        }
-        ;
-        function ret(handler2) {
-          return handler2;
-        }
-        ;
-        let { _component, _event, _e } = engrave();
-        let handler = this.handlers[_component] && this.handlers[_component][_event];
-        if (handler == void 0 && ispage) {
-          let o2 = {
-            [_event]: function() {
-              return _e;
+  // src/scripts/attrib/data-for-update.js
+  var require_data_for_update = __commonJS({
+    "src/scripts/attrib/data-for-update.js"(exports, module) {
+      var Utils = require_utils();
+      var Piece = require_piece();
+      var Templating = require_templating();
+      var Plugin = require_plugin();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "forUpdate");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        let templating = new Templating(Plugin("templating"));
+        const attrPayload = [];
+        for (let c = 0; c < configs.length; c++) {
+          let bind2 = configs[c].bind;
+          let sel = configs[c].sel;
+          let iter = configs[c].iter;
+          let ins = configs[c].ins;
+          let targets = configs[c].targets;
+          for (let o2 in newValue) {
+            if (newValue.hasOwnProperty(o2)) {
+              let targets2 = document.querySelectorAll(`[data-for-update-bind=${o2}]`);
+              for (let t = 0; t < targets2.length; t++) {
+                let target = targets2[t];
+                let binded = target.dataset.forUpdateBind;
+                if (!target.dataset.forTemplate) {
+                  target.remove();
+                } else {
+                  let template = target.cloneNode(true);
+                  template.style.removeProperty("display");
+                  template.classList.remove("cake-template");
+                  let dataForIteration = newValue[binded];
+                  let i = -1;
+                  l = dataForIteration.length;
+                  while (++i < l) {
+                    let item = dataForIteration[i];
+                    let index = i;
+                    for (let lt = 0; lt < this.logicalType.length; lt++) {
+                      let type2 = this.logicalType[lt];
+                      const logicalHtml = new Piece(target).querySelectorAllIncluded(`[data-${type2}]`);
+                      for (let l2 = 0; l2 < logicalHtml.length; l2++) {
+                        const hit = logicalHtml[l2];
+                        if (hit.dataset[type2]) {
+                          let sel2 = hit.dataset[type2];
+                          let incrementedSel = `${sel2}-${index}`;
+                          template.dataset[type2] = incrementedSel;
+                          let bind3 = this.getWatchItemsBySel(component2, type2, sel2).bind;
+                          if (bind3.includes(".")) {
+                            let split = bind3.split(".");
+                            binded = split[0];
+                            for (let key in item) {
+                              let value2 = item[key];
+                              let _key = `${binded}.${key}`;
+                              item[_key] = value2;
+                            }
+                            ;
+                          }
+                          ;
+                          if (sel2) {
+                            attrPayload.push({ _type: type2, ...item, incrementedSel, sel: sel2, bind: bind3, incrementId: index, component: component2 });
+                          }
+                          ;
+                        }
+                        ;
+                      }
+                      ;
+                    }
+                    ;
+                    let create = templating.createElement(item, template, false);
+                    create.classList.remove("cake-template");
+                    create.removeAttribute("data-for-template");
+                    target.insertAdjacentElement("beforebegin", create);
+                    if (target.parentElement.tagName == "SELECT") {
+                      target.parentElement.selectedIndex = 0;
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
             }
-          };
-          o2[_event].binded = _component;
-          o2[_event].listenTo = appName;
-          handler = o2[_event];
+            ;
+          }
+          ;
         }
         ;
-        _component = handler.binded;
-        handler = ret(handler);
-        if (!handler) {
-          console.error(`no setup handler for the event ${_event} in ${_component} component`);
+        newValue = null;
+        return Promise.all(attrPayload.map((payload) => {
+          const bind2 = payload.bind;
+          const _type = payload._type;
+          const component3 = payload.component;
+          const incrementedSel = payload.incrementedSel;
+          const sel = payload.sel;
+          const name2 = `notify${_type.toProper()}`;
+          updateConfig(_type, bind2, payload, null, component3, { incrementedSel }, sel);
+          return this[name2](bind2, payload, null, component3);
+        })).then(() => {
+        });
+      };
+    }
+  });
+
+  // src/scripts/storage/components-store.js
+  var require_components_store = __commonJS({
+    "src/scripts/storage/components-store.js"(exports, module) {
+      var storage = {};
+      function subscribeExternal() {
+        let component2 = storage[name];
+        if (component2) {
+          if (cb instanceof Function) {
+            let name2 = cb.name;
+            if (ctx) {
+              cb = cb.bind(ctx);
+            }
+            cb.binded = "external";
+            cb.original = name2;
+            cb.listenTo = component2.name;
+            component2.Subscribe(cb);
+          }
+        } else {
+        }
+        ;
+      }
+      window.ComponentStorage = storage;
+      module.exports = {
+        subscribe(cb2, ctx2) {
+          return new Promise((res, rej) => {
+            let lk = setInterval(() => {
+              if (storage[name]) {
+                subscribeExternal();
+                clearInterval(lk);
+                res();
+              }
+              ;
+            });
+          });
+        },
+        set(componentName, component2) {
+          storage[componentName] = component2;
+          return true;
+        },
+        get(componentName) {
+          return storage[componentName];
+        }
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-for.js
+  var require_data_for = __commonJS({
+    "src/scripts/attrib/data-for.js"(exports, module) {
+      var Utils = require_utils();
+      var Templating = require_templating();
+      var Plugin = require_plugin();
+      var ComponentStorage = require_components_store();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        let sts = this.storage.get(component2);
+        let templating = new Templating(Plugin("templating"));
+        return new Promise((res, rej) => {
+          try {
+            let configs = getConfig(this.storage.get(component2, "for"), prop, newValue, prevValue, component2);
+            let switchConfig = getConfig(this.storage.get(component2, "switch"), prop, newValue, prevValue, component2);
+            if (!configs.length)
+              return;
+            let data2 = newValue.reduce((accu, item) => {
+              accu.push(item);
+              return accu;
+            }, []);
+            newValue = null;
+            for (let c = 0; c < configs.length; c++) {
+              let { bind: bind2, sel, iter, ins, component: component3, cleaned } = configs[c];
+              html = ComponentStorage.get(component3).html;
+              let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
+              let cloned = target.cloneNode(true);
+              ;
+              (() => {
+                data2 = data2.map((item) => {
+                  for (let key in item) {
+                    if (item.hasOwnProperty(key)) {
+                      item[`${iter}.${key}`] = item[key];
+                    }
+                    ;
+                  }
+                  ;
+                  return item;
+                });
+              })();
+              let hasReplaced = [];
+              ;
+              (() => {
+                let increment = 0;
+                Object.keys(sts).forEach((key) => {
+                  if (!["for", "evt", "animate", "switch"].includes(key)) {
+                    let conf = sts[key];
+                    let temp = conf[0];
+                    let { bind: bind3 } = temp || {};
+                    if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
+                      data2.forEach((item, index) => {
+                        let o2 = {};
+                        o2.bind = templating.replaceString(item, bind3);
+                        o2.sel = `${temp.sel}-${increment}`;
+                        o2.rawsel = temp.sel;
+                        increment += 1;
+                        data2[index].__sel = o2.sel;
+                        for (let key2 in temp) {
+                          if (temp.hasOwnProperty(key2)) {
+                            if (!o2[key2]) {
+                              o2[key2] = temp[key2];
+                            }
+                            ;
+                          }
+                          ;
+                        }
+                        ;
+                        conf.push(o2);
+                      });
+                      hasReplaced.push(key);
+                    } else {
+                    }
+                    ;
+                  }
+                  ;
+                });
+              })();
+              ;
+              (() => {
+                if (cleaned) {
+                  let parent = target.parentElement;
+                  parent.innerHTML = "";
+                  parent.appendChild(target);
+                }
+                ;
+                let i = -1;
+                l = data2.length;
+                data2.forEach((item, index) => {
+                  let template = target.cloneNode(true);
+                  (() => {
+                    if (switchConfig && !switchConfig.length)
+                      return;
+                    const [{ bind: bind3, map, sel: sel2, cases }] = switchConfig;
+                    const mapping = item[map];
+                    const switchElement = template.querySelector(`[data-switch=${sel2}]`);
+                    let hitCase = cases.find((item2) => {
+                      let _id = item2._id;
+                      let bind4 = item2.bind;
+                      if (bind4.includes("|")) {
+                        return bind4.split("|").map((item3) => item3.trim()).some((item3) => item3 == mapping);
+                      } else {
+                        return bind4 == mapping;
+                      }
+                      ;
+                    });
+                    const find = cloned.querySelector(`[data-case=${sel2}-${hitCase._id}]`);
+                    find.classList.remove("cake-template");
+                    switchElement.innerHTML = find.outerHTML;
+                  })();
+                  let create = templating.createElement(item, template, false);
+                  ;
+                  (() => {
+                    Object.keys(sts).forEach((key) => {
+                      if (hasReplaced.includes(key)) {
+                        let conf = sts[key];
+                        let cf = conf.find((cf2) => {
+                          return cf2.sel == item.__sel;
+                        });
+                        if (cf) {
+                          let rawsel = cf.rawsel;
+                          if (rawsel) {
+                            let get = create.querySelector(`[data-${key}=${rawsel}]`);
+                            get.dataset[key] = cf.sel;
+                          }
+                          ;
+                        }
+                      }
+                      ;
+                    });
+                  })();
+                  ;
+                  (() => {
+                    create.style.removeProperty("display");
+                    create.classList.remove("cake-template");
+                    create.removeAttribute("data-for-template");
+                    target.insertAdjacentElement("beforebegin", create);
+                  })();
+                  ;
+                  (() => {
+                    const children = configs[0] && configs[0].children;
+                    if (!children)
+                      return;
+                    children.forEach((child) => {
+                      const forAutoElement = create.querySelector(`[data-for=${child}]`);
+                      if (forAutoElement) {
+                        const dataBindKey = forAutoElement.dataset.forAutoBindKey;
+                        const dataBindValue = forAutoElement.dataset.forAutoBindValue;
+                        const iteration = forAutoElement.dataset.forIter;
+                        const datas = item[iteration];
+                        if (datas) {
+                          for (let d = 0; d < datas.length; d++) {
+                            let data3 = datas[d];
+                            let template2 = forAutoElement.cloneNode(true);
+                            let create2 = templating.createElement(data3, template2, false);
+                            create2.style.removeProperty("display");
+                            create2.classList.remove("cake-template");
+                            create2.removeAttribute("data-for-template");
+                            forAutoElement.insertAdjacentElement("beforebegin", create2);
+                          }
+                          ;
+                        }
+                        ;
+                        const select = forAutoElement.closest("SELECT");
+                        if (select) {
+                          select.selectedIndex = 0;
+                        }
+                        ;
+                      }
+                      ;
+                    });
+                  })();
+                  let safeSrc = create.querySelectorAll("[data-src]");
+                  if (safeSrc) {
+                    for (let s = 0; s < safeSrc.length; s++) {
+                      let el2 = safeSrc[s];
+                      el2.src = el2.dataset.src;
+                      el2.removeAttribute("data-src");
+                    }
+                    ;
+                  }
+                  ;
+                });
+                res();
+              })();
+            }
+            ;
+            data2 = null;
+          } catch (err) {
+            rej(err);
+          }
+        });
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-if.js
+  var require_data_if = __commonJS({
+    "src/scripts/attrib/data-if.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "if");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        configs = extendConfig(configs);
+        let cache = {};
+        for (let c = 0; c < configs.length; c++) {
+          let config = configs[c];
+          let { attr, bind: bind2, sel, testval, _true, _false, ops, hasNegate, incrementedSel, incrementId } = config;
+          let attrHyphen = attr.toHyphen();
+          let trueNotIgnore = _true != "null";
+          let falseNotIgnore = _false != "null";
+          if (prop == bind2) {
+            if (!cache[sel]) {
+              cache[sel] = html.querySelectorAll(`[data-if=${incrementedSel || sel}]:not(.cake-template)`);
+            }
+            let els = cache[sel];
+            for (let p = 0; p < els.length; p++) {
+              let el2 = els[p];
+              let data2 = newValue;
+              let test;
+              if (testval) {
+                test = Utils.logTest(testval, ops, data2);
+              } else {
+                test = hasNegate ? !data2 : !!data2;
+              }
+              ;
+              if (test) {
+                if (trueNotIgnore) {
+                  if (attr == "class") {
+                    let trueClasses2 = _true.split(" ");
+                    if (falseNotIgnore) {
+                      let falseClasses = _false.split(" ");
+                      falseClasses.forEach((cls) => {
+                        el2.classList.remove(cls);
+                      });
+                      trueClasses2.forEach((cls) => {
+                        el2.classList.add(cls);
+                      });
+                    } else {
+                      trueClasses2.forEach((cls) => {
+                        if (!el2.classList.contains(cls)) {
+                          el2.classList.add(cls);
+                        }
+                        ;
+                      });
+                    }
+                    ;
+                  } else {
+                    if (data2[_true]) {
+                      el2.setAttribute(attr, data2[_true]);
+                    }
+                  }
+                  ;
+                }
+              } else {
+                if (falseNotIgnore) {
+                  if (attr == "class") {
+                    let falseClasses = _false.split(" ");
+                    if (trueNotIgnore) {
+                      let trueClasses2 = _true.split(" ");
+                      trueClasses2.forEach((cls) => {
+                        el2.classList.remove(cls);
+                      });
+                      falseClasses.forEach((cls) => {
+                        el2.classList.add(cls);
+                      });
+                    } else {
+                      trueClasses.forEach((cls) => {
+                        if (!el2.classList.contains(cls)) {
+                          el2.classList.add(cls);
+                        }
+                        ;
+                      });
+                    }
+                    ;
+                  } else {
+                    el2.setAttribute(attr, _false);
+                  }
+                  ;
+                }
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-model.js
+  var require_data_model = __commonJS({
+    "src/scripts/attrib/data-model.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "model");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        for (let c = 0; c < configs.length; c++) {
+          let config = configs[c];
+          let { attr, bind: bind2, sel } = config;
+          let attrHyphen = attr.toHyphen();
+          if (prop == bind2) {
+            let els = html.querySelectorAll(`[data-model=${sel}]`);
+            for (let p = 0; p < els.length; p++) {
+              let el2 = els[p];
+              if (attr == "className") {
+                if (prevValue) {
+                  if (newValue) {
+                    el2.classList.replace(prevValue, newValue);
+                  } else {
+                    el2.classList.remove(prevValue);
+                  }
+                  ;
+                } else {
+                  el2.classList.add(newValue);
+                }
+                ;
+              } else {
+                el2.setAttribute(attrHyphen, newValue);
+                el2[attr] = newValue;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
+  // src/scripts/attrib/data-toggle.js
+  var require_data_toggle = __commonJS({
+    "src/scripts/attrib/data-toggle.js"(exports, module) {
+      var Utils = require_utils();
+      var { getConfig, updateConfig, extendConfig } = require_utils2();
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "toggle");
+        let configs = getConfig(st, prop, newValue, prevValue);
+        if (!configs) {
           return;
         }
         ;
-        let prom = new Promise((res, rej) => {
-          let e2 = handler(_e);
-          res(e2);
-        });
-        this.stat.handlers[handler.original] += 1;
-        return prom.then((variable) => {
-          let execs = [];
-          if (!this.results[_component]) {
-            this.results[_component] = {};
+        configs = extendConfig(configs);
+        html = html || document;
+        for (let s = 0; s < configs.length; s++) {
+          let sub = configs[s];
+          if (!sub)
+            continue;
+          let { sel, bind: bind2, value: value2, ops } = sub;
+          let el2 = html.querySelector(`[data-toggle=${sel}]`);
+          if (value2 == prevValue) {
+            el2 && el2.classList.remove("is-active");
           }
-          ;
-          if (this.subscribe[_component] && this.subscribe[_component][_event]) {
-            let subscribe2 = this.subscribe[_component][_event];
-            filter = !filter ? true : (() => {
-              subscribe2 = subscribe2.filter((fn2) => {
-                let binded = fn2.binded;
-                return filter.includes(binded);
-              });
-            })();
-            for (let s = 0; s < subscribe2.length; s++) {
-              let fn2 = subscribe2[s];
-              this.stat.subscribe[fn2.original] += 1;
-              execs.push(new Promise((res, rej) => {
-                try {
-                  let exec = (() => {
-                    return fn2(variable);
-                  })();
-                  if (exec && exec.ObjectType == "Promise") {
-                    exec.then((result) => {
-                      if (!this.results[_component]) {
-                        this.results[_component] = {};
-                      }
-                      ;
-                      this.results[_component][_event] = exec;
-                      res();
-                    }).catch((err) => {
-                      rej(err);
-                    });
-                  } else {
-                    this.results[_component][_event] = exec;
-                    res();
-                  }
-                } catch (e2) {
-                  console.log(e2);
-                  rej(e2);
-                }
-                ;
-              }));
-            }
-            ;
-          } else {
-            if (this.logger) {
-              console.info(`no subscriber for (${_event}) event of (${_component}) component`);
-            }
-            ;
-            this.results[_component][_event] = variable;
-          }
-          ;
-          return Promise.all(execs).then(() => {
-            variable = null;
-          });
-        });
-      };
-      Observer2.prototype.registerSubscribe = function(subscribe2) {
-        return new Promise((res, rej) => {
-          for (component in subscribe2) {
-            if (subscribe2.hasOwnProperty(component)) {
-              if (!this.subscribe[component]) {
-                this.subscribe[component] = {};
-              } else {
-                continue;
+          if (value2 == newValue) {
+            if (el2) {
+              if (el2.classList.contains("is-active")) {
+                el2.classList.remove("is-active");
               }
               ;
+              el2 && el2.classList.add("is-active");
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
+  // src/scripts/storage/AttribConfigStorage.js
+  var require_AttribConfigStorage = __commonJS({
+    "src/scripts/storage/AttribConfigStorage.js"(exports, module) {
+      function storage() {
+        this.store = {};
+      }
+      storage.prototype.set = function(f, s, obj) {
+        let store = this.store;
+        switch (true) {
+          case !store[f]:
+            {
+              store[f] = {};
+            }
+            ;
+          case !store[f][s]:
+            {
+              store[f][s] = [];
+            }
+            ;
+          default:
+            {
+              store[f][s].push(obj);
+            }
+            ;
+            break;
+        }
+        ;
+      };
+      storage.prototype.get = function(component2, attr) {
+        let store = this.store;
+        if (component2 && attr) {
+          return store[component2] && store[component2][attr] || [];
+        }
+        ;
+        if (component2 && !attr) {
+          return store[component2] || {};
+        }
+      };
+      module.exports = storage;
+    }
+  });
+
+  // src/scripts/attributes.js
+  var require_attributes = __commonJS({
+    "src/scripts/attributes.js"(exports, module) {
+      var Utils = require_utils();
+      var Templating = require_templating();
+      var notifyAttr = require_data_attr();
+      var notifyBind = require_data_bind();
+      var notifyClass = require_data_class();
+      var notifyForUpdate = require_data_for_update();
+      var notifyFor = require_data_for();
+      var notifyIf = require_data_if();
+      var notifyModel = require_data_model();
+      var notifyToggle = require_data_toggle();
+      var AttribConfigStorage = require_AttribConfigStorage();
+      function Attrib() {
+        this.uiid = 0;
+        this.notify = {};
+        this.sts = {};
+        this.storage = new AttribConfigStorage();
+        this.logicalType = ["if", "bind", "switch", "toggle", "class", "attr"];
+      }
+      Attrib.prototype.notifyFor = notifyFor;
+      Attrib.prototype.notifyForUpdate = notifyForUpdate;
+      Attrib.prototype.notifyClass = notifyClass;
+      Attrib.prototype.notifyBind = notifyBind;
+      Attrib.prototype.notifyAttr = notifyAttr;
+      Attrib.prototype.notifyIf = notifyIf;
+      Attrib.prototype.notifyModel = notifyModel;
+      Attrib.prototype.notifyToggle = notifyToggle;
+      Attrib.prototype.notifier = function(prop, newValue, prevValue, component2) {
+        let val = JSON.parse(JSON.stringify(newValue));
+        if (Utils.isObject(val)) {
+          val = JSON.parse(JSON.stringify(newValue));
+        }
+        ;
+        const equiv = {
+          for: "For",
+          forUpdate: "ForUpdate",
+          toggle: "Toggle",
+          bind: "Bind",
+          if: "If",
+          class: "Class",
+          attr: "Attr"
+        };
+        let hits = Object.caching("AttribProp").get(prop) || (() => {
+          let hits2 = {};
+          const actions = Object.keys(equiv);
+          const configs = this.storage.get(component2);
+          if (!configs) {
+            return [];
+          }
+          ;
+          for (let a = 0; a < actions.length; a++) {
+            const action = actions[a];
+            const vals = configs[action];
+            if (vals) {
+              for (let v = 0; v < vals.length; v++) {
+                const val2 = vals[v];
+                const { bind: bind2 } = val2;
+                if (bind2 == prop) {
+                  hits2[action] = true;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          hits2 = Object.keys(hits2);
+          Object.caching("AttribProp").set(prop, hits2);
+          return hits2;
+        })();
+        return new Promise((res, rej) => {
+          try {
+            let l2 = hits.length;
+            let index = 0;
+            const rec = () => {
+              if (l2 > index) {
+                let attr = hits[index];
+                const name2 = equiv[attr];
+                index += 1;
+                this[`notify${name2}`](prop, val, prevValue, component2).then(() => {
+                  rec();
+                });
+              } else {
+                res();
+              }
+              ;
+            };
+            rec();
+          } catch (err) {
+            rej(err.message);
+          }
+          ;
+        });
+      };
+      Attrib.prototype.registerNotifier = function(component2, fn2) {
+        if (!this.notify[component2]) {
+          this.notify[component2] = [];
+        }
+        ;
+        this.notify[component2].push(fn2);
+      };
+      Attrib.prototype.getEventTarget = function(component2) {
+        let id2 = `${component2}`;
+        let target = Object.caching("getEventTarget").get(id2);
+        if (!target) {
+          let cf = this.storage.get(component2);
+          target = cf && cf.evt ? cf.evt : [];
+          Object.caching("getEventTarget").set(id2, target);
+        }
+        ;
+        return target;
+      };
+      Attrib.prototype.getRouterTarget = function(component2) {
+        let id2 = `${component2}`;
+        let target = Object.caching("getRouterTarget").get(id2);
+        if (!target) {
+          let cf = this.storage.get(component2);
+          target = cf && cf.router ? cf.router : [];
+          Object.caching("getRouterTarget").set(id2, target);
+        }
+        ;
+        return target;
+      };
+      Attrib.prototype.getWatchItems = function(component2) {
+        let id2 = `${component2}`;
+        let target = Object.caching("getWatchItems").get(id2);
+        if (!target) {
+          let _st = this.storage.get(component2);
+          let wt = /* @__PURE__ */ new Set();
+          for (let type2 in _st) {
+            if (_st.hasOwnProperty(type2)) {
+              let tst = _st[type2];
+              for (let t = 0; t < tst.length; t++) {
+                let item = tst[t];
+                let { bind: bind2 } = item;
+                if (bind2) {
+                  wt.add(bind2);
+                } else {
+                  continue;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          target = [...wt];
+          Object.caching("getWatchItems").set(id2, target);
+        }
+        ;
+        return target;
+      };
+      Attrib.prototype.getConfig = function(component2) {
+        return this.storage.get(component2);
+      };
+      Attrib.prototype.getWatchItemsByType = function(component2, type2) {
+        let id2 = `${component2}-${type2}`;
+        let target = Object.caching("getWatchItemsByType").get(id2);
+        if (!target) {
+          let _st = this.storage.get(component2);
+          ;
+          let tst = _st[type2] || [];
+          let wt = /* @__PURE__ */ new Set();
+          for (let t = 0; t < tst.length; t++) {
+            let item = tst[t];
+            let { bind: bind2 } = item;
+            switch (!!bind2) {
+              case true:
+                {
+                  wt.add(bind2);
+                }
+                break;
+              default:
+                {
+                  switch (true) {
+                    case (type2 == "animate" || type2 == "toggle"): {
+                      if (wt.constructor.name = "Set") {
+                        wt = [];
+                      }
+                      ;
+                      wt.push(item);
+                    }
+                  }
+                  ;
+                }
+                ;
+            }
+            ;
+          }
+          ;
+          target = [...wt];
+          Object.caching("getWatchItemsByType").set(id2, target);
+        }
+        ;
+        return target;
+      };
+      Attrib.prototype.getWatchItemsBySel = function(component2, type2, sel) {
+        let id2 = `${component2}-${type2}-${sel}`;
+        let target = Object.caching("watchItemsBySel").get(id2);
+        if (!target) {
+          let array = this.storage.get(component2, type2);
+          ;
+          let find = array.find((item) => {
+            return item.sel == sel;
+          });
+          target = find ? find : false;
+          Object.caching("watchItemsBySel").set(id2, target);
+        }
+        ;
+        return target;
+      };
+      Attrib.prototype._activateReactive = (component2) => {
+      };
+      Attrib.prototype._register = function(f, s, obj) {
+        return this.storage.set(f, s, obj);
+      };
+      Attrib.prototype._static = function(component2) {
+        return function(qs, isStatic) {
+          let els = [];
+          for (let t = 0; t < qs.length; t++) {
+            let el2 = qs[t];
+            switch (isStatic) {
+              case false:
+                {
+                  els.push(el2);
+                }
+                ;
+                break;
+              case true:
+                {
+                  let dComponent = el2.closest("[data-component]");
+                  dComponent = dComponent && dComponent.dataset.component;
+                  switch (dComponent == component2) {
+                    case true:
+                      {
+                        els.push(el2);
+                      }
+                      break;
+                  }
+                  ;
+                }
+                break;
+              default: {
+                continue;
+              }
+            }
+            ;
+          }
+          ;
+          return els;
+        };
+      };
+      Attrib.prototype._compileEvents = function(events, component2, isStatic) {
+        return new Promise((res) => {
+          if (!events.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(events, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let e = 0; e < els.length; e++) {
+            let id2 = `cke${this.uiid}`;
+            let el2 = els[e];
+            let splitted = el2.dataset.event.removeSpace().split(",");
+            for (let s = 0; s < splitted.length; s++) {
+              let [event, cb2] = splitted[s].split(":");
+              this._register(component2, "evt", { event, sel: id2, cb: cb2 });
+              el2.dataset.event = id2;
+              this.uiid++;
+            }
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype._compileToggle = function(toggles, component2, isStatic) {
+        return new Promise((res) => {
+          if (!toggles.length) {
+            res();
+            return;
+          }
+          let els = this._static(component2)(toggles, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          let c = {};
+          for (let t = 0; t < toggles.length; t++) {
+            let id2 = `ckt${this.uiid}`;
+            let el2 = toggles[t];
+            let ns = el2.dataset.toggle;
+            if (c[ns]) {
+              id2 = c[ns];
+            }
+            ;
+            this._register(component2, "toggle", { sel: id2, name: "ns-" + ns });
+            el2.dataset.toggle = id2;
+            this.uiid++;
+            c[ns] = id2;
+          }
+          ;
+          c = {};
+          res();
+        });
+      };
+      Attrib.prototype._compileFor = function(fors, component2, isStatic, el2) {
+        return new Promise((res) => {
+          let target = el2;
+          if (!fors.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(fors, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          let o2 = {};
+          for (let f = 0; f < els.length; f++) {
+            let id2 = `ckf${this.uiid}`;
+            o2[id2] = {};
+            let el3 = els[f];
+            let fr2 = el3.dataset.for;
+            let autoBind = el3.dataset.forAutoBind;
+            let isCleaned = el3.dataset.forCleaned == "true";
+            let [a, b, c] = fr2.split(" ");
+            if (autoBind) {
+              let iteration = el3.dataset.forIter;
+              let split = autoBind.split(":");
+              let autoBindKey = split[0] && split[0].trim();
+              let autoBindValue = split[1] && split[1].trim();
+              o2[id2] = { iteration };
+              el3.dataset.forAutoBindKey = autoBindKey;
+              el3.dataset.forAutoBindValue = autoBindValue;
+              el3.removeAttribute("data-for-auto-bind");
+            }
+            el3.style.display = "none";
+            el3.classList.add("cake-template");
+            el3.dataset.for = id2;
+            el3.dataset.forTemplate = id2;
+            o2[id2] = Object.assign(o2[id2], { bind: c, sel: id2, iter: a, ins: b, cleaned: isCleaned });
+            ++this.uiid;
+            if (f != 0) {
+              let parent = el3.parentElement && el3.parentElement.closest("[data-for]");
+              if (!parent) {
+                continue;
+              }
+              let parentIsFor = !!parent.dataset.for;
+              if (target.contains(parent) && parentIsFor) {
+                let parentId = parent.dataset.for;
+                let parentCf = o2[parentId];
+                if (parentCf && !parentCf.children) {
+                  parentCf.children = [id2];
+                } else if (parentCf) {
+                  parentCf.children.push(id2);
+                }
+                ;
+              }
+            }
+            ;
+          }
+          ;
+          for (let key in o2) {
+            if (o2.hasOwnProperty(key)) {
+              this._register(component2, "for", o2[key]);
             }
             ;
           }
           ;
           res();
-        }).then(() => {
-          let obj = {};
-          for (component in subscribe2) {
-            if (subscribe2.hasOwnProperty(component)) {
-              let events = subscribe2[component];
-              for (let name in events) {
-                if (events.hasOwnProperty(name)) {
-                  let arr = events[name];
-                  for (let f = 0; f < arr.length; f++) {
-                    let handler = arr[f];
-                    if (!obj[component]) {
-                      obj[component] = {};
-                    }
-                    ;
-                    if (!obj[component][handler.original]) {
-                      obj[component][handler.original] = [];
-                    }
-                    ;
-                    obj[component][handler.original].push(handler);
-                    this.stat.subscribe[handler.original] = 0;
-                  }
-                  ;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          return obj;
-        }).then((obj) => {
-          for (let component3 in obj) {
-            if (obj.hasOwnProperty(component3)) {
-              if (!this.subscribe[component3]) {
-                this.subscribe[component3] = {};
-              }
-              ;
-              for (let event in obj[component3]) {
-                if (obj[component3].hasOwnProperty(event)) {
-                  for (let handler of obj[component3][event]) {
-                    if (!this.subscribe[component3][handler.original]) {
-                      this.subscribe[component3][handler.original] = [];
-                    }
-                    ;
-                    this.subscribe[component3][handler.original].push(handler);
-                  }
-                  ;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          obj = {};
         });
       };
-      Observer2.prototype.registerHandlers = function(handlers, component3) {
-        if (!this.handlers[component3]) {
-          this.handlers[component3] = {};
-        }
-        ;
-        for (let fn2 in handlers) {
-          if (handlers.hasOwnProperty(fn2)) {
-            let handler = handlers[fn2];
-            this.handlers[component3][fn2] = handler;
-            this.stat.handlers[handler.original] = 0;
+      Attrib.prototype._compileForUpdate = function(fors, component2, isStatic) {
+        return new Promise((res) => {
+          if (!fors.length) {
+            res();
+            return;
           }
           ;
-        }
-        ;
-      };
-      module.exports = Observer2;
-    }
-  });
-
-  // src/scripts/templating.js
-  var require_templating = __commonJS({
-    "src/scripts/templating.js"(exports, module) {
-      function Templating(data2, template, isConvert) {
-        this.data = data2;
-        this.template = template;
-        this.isConvert = isConvert;
-      }
-      Templating.prototype._getTag = function(template) {
-        return template.match(new RegExp("(?<=<)|([^/s]+)(?=>)", "g"))[2];
-      };
-      Templating.prototype._bindReplace = function(obj, string) {
-        for (let key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            let pattern = new RegExp(`{{${key}}}`, "g");
-            pattern && (string = string.replace(pattern, `${obj[key]}`));
+          let els = this._static(component2)(fors, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let f = 0; f < els.length; f++) {
+            let id2 = `ckfu${this.uiid}`;
+            let el2 = els[f];
+            let fr2 = el2.dataset.forUpdate;
+            el2.style.display = "none";
+            el2.classList.add("cake-template");
+            el2.dataset.forUpdate = id2;
+            if (!el2.dataset.for) {
+              el2.dataset.forTemplate = id2;
+            }
+            let [a, b, c] = fr2.split(" ");
+            this._register(component2, "forUpdate", { bind: c, sel: id2, iter: a, ins: b });
+            this.uiid++;
           }
           ;
-        }
-        ;
-        return string;
+          res();
+        });
       };
-      Templating.prototype._toElement = function(template, tag) {
-        let fr2 = document.createElement("template");
-        fr2.innerHTML = template;
-        return fr2.content.children[0];
-      };
-      Templating.prototype.createElement = function() {
-        let template = this.template;
-        let data2 = this.data;
-        let isConvert = this.isConvert;
-        if (data2) {
-          if (data2 instanceof Array) {
-            let isString = typeof template == "string";
-            let tag = isString ? this._getTag(template) : template.tagName;
-            template = isString ? template : template.outerHTML;
-            let els = [];
-            for (let d = 0; d < data2.length; d++) {
-              let dd = data2[d];
-              let bindData = this._bindReplace(dd, template);
-              let element = this._toElement(bindData, tag);
-              if (isConvert) {
-                element = element.outerHTML;
+      Attrib.prototype._compileSwitch = function(switchs, component2, isStatic) {
+        return new Promise((res) => {
+          if (!switchs.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(switchs, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let s = 0; s < els.length; s++) {
+            let id2 = `cks${this.uiid}`;
+            let el2 = els[s];
+            let bind2 = el2.dataset.switch, map = "def";
+            if (bind2.includes(".")) {
+              var [f, ...rest] = el2.dataset.switch.split(".");
+              bind2 = f;
+              map = rest[0];
+            }
+            ;
+            el2.dataset.switch = id2;
+            let cases = el2.querySelectorAll("[data-case]");
+            let casesId = [];
+            for (let c = 0; c < cases.length; c++) {
+              let _case = cases[c];
+              let closest = _case.closest(`[data-switch=${id2}]`);
+              _case.classList.add("cake-template");
+              if (closest) {
+                let caseBind = _case.dataset.case;
+                let _id = `cksc${this.uiid}`;
+                _case.dataset.case = `${id2}-${_id}`;
+                casesId.push({ _id, bind: caseBind });
+                this.uiid++;
               }
               ;
-              els.push(element);
             }
             ;
-            return els;
-          } else if (data2 instanceof Object) {
-            let isString = typeof template == "string";
-            let tag = isString ? this._getTag(template) : template.tagName;
-            template = isString ? template : template.outerHTML;
-            let bindData = this._bindReplace(data2, template);
-            let element = this._toElement(bindData, tag);
-            if (isConvert) {
-              element = element.outerHTML;
-            }
-            ;
-            return element;
+            this._register(component2, "switch", { bind: bind2, sel: id2, map, cases: casesId });
+            this.uiid++;
           }
-        } else {
-          let isString = typeof template == "string";
-          let tag = isString ? this._getTag(template) : template.tagName;
-          return this._toElement(template, tag);
-        }
-        ;
+          ;
+          res();
+        });
       };
-      module.exports = Templating;
-    }
-  });
-
-  // src/scripts/animate.js
-  var require_animate = __commonJS({
-    "src/scripts/animate.js"(exports, module) {
-      module.exports = class {
-        constructor(config = [], html) {
-          this.html = html || document;
-          this.cf = config;
-          this.duration = 300;
-        }
-        animate(moment) {
-          this.config = this.parse(this.cf);
-          return new Promise((res) => {
-            for (let i = 0; i < this.config.length; i++) {
-              let cf = this.config[i];
-              let { element } = cf;
-              if (!cf[moment]) {
-                res();
+      Attrib.prototype._compileBind = function(elModels, component2, isStatic) {
+        return new Promise((res) => {
+          if (!elModels.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(elModels, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let s = 0; s < els.length; s++) {
+            let id2 = `ckm${this.uiid}`;
+            let el2 = els[s];
+            let model = el2.dataset.bind;
+            let gr = model.split(",");
+            for (let g = 0; g < gr.length; g++) {
+              let val = gr[g].split(" ").join("");
+              if (val.includes(":")) {
+                var [attr, bind2] = val.split(":");
+              } else {
+                var bind2 = val;
+                var attr = "value";
+              }
+              ;
+              this._register(component2, "bind", { attr, bind: bind2, sel: id2 });
+            }
+            this.uiid++;
+            el2.dataset.bind = id2;
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype._compileAnimate = function(anims, component2, isStatic) {
+        return new Promise((res) => {
+          if (!anims.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(anims, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let s = 0; s < els.length; s++) {
+            let id2 = `cka${this.uiid}`;
+            let el2 = els[s];
+            let anim = el2.dataset.animate;
+            anim = anim.split(" ").join("");
+            let o2 = {};
+            let split = anim.split(",");
+            for (let a = 0; a < split.length; a++) {
+              let item = split[a];
+              let [ctx2, anims2] = item.split(":");
+              if (ctx2 == "ns") {
+                o2.ns = anims2;
                 break;
+              } else {
+                o2[ctx2] = { keyframes: anims2.split("-") };
               }
               ;
-              let config = cf[moment];
-              if (!config.options && !(config.options && config.options.duration)) {
-                config.options = { duration: this.duration };
+            }
+            ;
+            o2.selector = { attr: "data-animate", val: id2 };
+            this._register(component2, "animate", o2);
+            this.uiid++;
+            el2.dataset.animate = id2;
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype._compileIf = function(ifs, component2, isStatic) {
+        return new Promise((res) => {
+          if (!ifs.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(ifs, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          const regex = new RegExp("<|>|===|==|!==|!=");
+          for (let s = 0; s < els.length; s++) {
+            let id2 = `ci${this.uiid}`;
+            let el2 = els[s];
+            let _if = el2.dataset.if;
+            let _ifBind = el2.dataset.ifBind;
+            let gr = _if.split(",");
+            for (let g = 0; g < gr.length; g++) {
+              let val = gr[g];
+              let attr = val.substring(0, val.indexOf("="));
+              let exp = val.substring(val.indexOf("=") + 1, val.length);
+              exp = exp.split(new RegExp("[()]")).join("");
+              let [test, r] = exp.split("?");
+              let hasNegate = test[0] == "!";
+              hasRegularLog = test.match(regex);
+              let bind2, testVal, ops;
+              if (hasRegularLog) {
+                let splitted = test.split(regex);
+                bind2 = splitted[0].trim();
+                testVal = splitted[1].trim();
+                ops = hasRegularLog[0];
+              } else {
+                bind2 = test;
               }
               ;
-              if (!config.keyframes && !element) {
-                continue;
+              if (hasNegate) {
+                bind2 = bind2.slice(1);
               }
-              let keyframes = config.keyframes;
-              let index = 0;
-              let fr2 = [];
-              for (let k = 0; k < keyframes.length; k++) {
-                let kk = keyframes[k];
-                switch (true) {
-                  case typeof kk == "string":
-                    {
-                      fr2.push(this.dic(kk));
-                    }
-                    break;
-                  case kk instanceof Object: {
-                    let { name, offset } = kk;
-                    if (name && offset) {
-                      let def = this.dic(name);
-                      def[def.length - 1].offset = offset;
-                      fr2.push(def);
-                    } else {
-                      fr2.push(kk);
-                    }
-                  }
+              ;
+              let [_true, _false] = r.split(":");
+              this._register(component2, "if", { hasNegate, attr, ops, bind: bind2, testval: testVal || null, _true, _false, sel: id2, ifBind: _ifBind });
+            }
+            this.uiid++;
+            el2.dataset.if = id2;
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype._compileClass = function(cls, component2, isStatic) {
+        return new Promise((res) => {
+          if (!cls.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(cls, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          let regex = new RegExp("<|>|===|==|!==|!=");
+          for (let s = 0; s < els.length; s++) {
+            let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal, hasNegateCount;
+            id2 = `cc${this.uiid}`;
+            el2 = els[s];
+            cl = el2.dataset.class;
+            let cls2 = cl.split(",");
+            for (let c = 0; c < cls2.length; c++) {
+              let clItem = cls2[c];
+              let [test, className] = clItem.split("&&");
+              test = test.trim();
+              className = className.trim();
+              hasRegularLog2 = test.match(regex);
+              if (test.substring(0, 2).includes("!")) {
+                hasNegate = true;
+                hasNegateCount = test.substring(0, 2) == "!!" ? 2 : test.substring(0, 1) == "!" ? 1 : 0;
+              } else {
+                hasNegate = false;
+                hasNegateCount = 0;
+              }
+              ;
+              if (hasRegularLog2) {
+                let splitted = test.split(regex);
+                bindVal = splitted[0].trim();
+                testVal = splitted[1].trim();
+                ops = hasRegularLog2[0].trim();
+              } else {
+                !hasNegate && (bindVal = test);
+                if (hasNegate) {
+                  bindVal = test.substring(hasNegateCount);
+                  testVal = hasNegateCount == 2;
                 }
                 ;
               }
-              keyframes = fr2;
-              fr2 = null;
-              let recurseCall = () => {
-                let kf = keyframes[index];
-                let animate2 = element.animate(kf, config.options || this.duration);
-                if (animate2.finished) {
-                  animate2.finished.then(() => {
-                    if (index < keyframes.length - 1) {
-                      index += 1;
-                      recurseCall();
-                    } else {
-                      keyframes = [];
-                      res();
-                    }
-                  });
-                } else {
-                  animate2.onfinish = () => {
-                    if (index < keyframes.length - 1) {
-                      index += 1;
-                      recurseCall();
-                    } else {
-                      keyframes = [];
-                      res();
-                    }
-                  };
-                }
-                ;
-              };
-              recurseCall();
+              ;
+              this._register(component2, "class", { hasNegate, bind: bindVal, testVal, className, ops, sel: id2 });
             }
-            ;
-          });
-        }
-        parse(config) {
-          let configs = [], length2 = config.length, i = -1;
-          while (++i < length2) {
-            let cf = config[i];
-            let selector2 = cf.selector, el2;
-            switch (true) {
-              case !!(selector2.val && selector2.attr):
-                {
-                  el2 = this.html.querySelectorIncluded(`[${selector2.attr}=${selector2.val}]`, selector2.attr, selector2.val);
-                }
-                break;
-              case !!(selector2.val && !selector2.attr):
-                {
-                  let attr = selector2.val.match(new RegExp(`^[.]`)) ? "class" : selector2.val.match(new RegExp(`^[#]`)) ? "id" : null;
-                  let val = attr ? selector2.val.slice(1) : null;
-                  el2 = this.html.querySelectorIncluded(selector2.val, attr, val);
-                }
-                break;
-            }
-            ;
-            cf.element = el2;
-            configs.push(cf);
+            this.uiid++;
+            el2.dataset.class = id2;
           }
           ;
-          return configs;
-        }
-        dic(name) {
-          let coll = {
-            slideOutUp: [{
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }, {
-              transform: "translate3d(0,100%,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }],
-            slideOutRight: [{
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }, {
-              transform: "translate3d(100%,0,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }],
-            slideOutLeft: [{
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }, {
-              transform: "translate3d(-100%,0,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }],
-            slideOutDown: [{
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1",
-              easing: "ease-out"
-            }, {
-              transform: "translate3d(0,-100%,0)",
-              visibility: "hidden",
-              opacity: "0",
-              easing: "ease-out"
-            }],
-            slideInUp: [{
-              transform: "translate3d(0,100%,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }, {
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }],
-            slideInRight: [{
-              transform: "translate3d(100%,0,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }, {
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }],
-            slideInLeft: [{
-              transform: "translate3d(-100%,0,0)",
-              visibility: "hidden",
-              opacity: "0",
-              easing: "ease-out"
-            }, {
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }],
-            slideInDown: [{
-              transform: "translate3d(0,-100%,0)",
-              visibility: "hidden",
-              opacity: "0"
-            }, {
-              transform: "translate3d(0,0,0)",
-              visibility: "visible",
-              opacity: "1"
-            }],
-            disappear: [{
-              opacity: "1"
-            }, {
-              opacity: "0"
-            }],
-            appear: [{
-              opacity: "0"
-            }, {
-              opacity: "1"
-            }],
-            flipInX: [
-              ,
-              { offset: 0, backfaceVisibility: "visible" },
-              { transform: "perspective(400px) rotate3d(1,0,0,90deg)", opacity: "0", offset: 0 },
-              { transform: "perspective(400px) rotate3d(1,0,0,-20deg)", offset: 0.4, easing: "ease-in" },
-              { offset: 0.6, opacity: "1", transform: "perspective(400px) rotate3d(1,0,0,10deg)" },
-              { transform: "perspective(400px) rotate3d(1,0,0,-5deg)", offset: 0.8 },
-              { offset: 1, backfaceVisibility: "visible", transform: "perspective(400px) rotate3d(1,0,0,0)" }
-            ]
+          res();
+        });
+      };
+      Attrib.prototype._compileAttr = function(attrs, component2, isStatic) {
+        return new Promise((res) => {
+          if (!attrs.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(attrs, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          let regex = new RegExp("<|>|===|==|!==|!=");
+          for (let s = 0; s < els.length; s++) {
+            let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal;
+            id2 = `cre${this.uiid}`;
+            el2 = els[s];
+            cl = el2.dataset.attr;
+            let [test, attrPair] = cl.split("&&");
+            attrPair = attrPair.trim();
+            let [attrkey, attrvalue] = attrPair.split("=");
+            test = test.trim();
+            hasRegularLog2 = test.match(regex);
+            hasNegate = test[0] == "!";
+            if (hasRegularLog2) {
+              let splitted = test.split(regex);
+              bind = splitted[0];
+              testVal = splitted[1];
+              ops = hasRegularLog2[0];
+            } else {
+              bind = test;
+            }
+            ;
+            if (hasNegate) {
+              hasNegate && (bind = bind.slice(1));
+            }
+            ;
+            this._register(component2, "attr", { hasNegate, bind, testVal, attrkey, attrvalue, ops, sel: id2 });
+            this.uiid++;
+            el2.dataset.attr = id2;
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype._compileModel = function(elModels, component2, isStatic) {
+        return new Promise((res) => {
+          if (!elModels.length) {
+            res();
+            return;
+          }
+          ;
+          let els = this._static(component2)(elModels, isStatic);
+          if (!els.length) {
+            res();
+            return;
+          }
+          for (let s = 0; s < els.length; s++) {
+            let id2 = `cknt${this.uiid}`;
+            let el2 = els[s];
+            let nodeType = el2.tagName;
+            let model = el2.dataset.model;
+            let gr = model.split(",");
+            for (let g = 0; g < gr.length; g++) {
+              let val = gr[g].split(" ").join("");
+              if (val.includes(":")) {
+                var [attr, bind2] = val.split(":");
+              } else {
+                var bind2 = val;
+                var attr = "value";
+              }
+              ;
+              this._register(component2, "model", { attr, bind: bind2, sel: id2, nodeType });
+            }
+            ;
+            this.uiid++;
+            el2.dataset.model = id2;
+          }
+          ;
+          res();
+        });
+      };
+      Attrib.prototype.inject = function(el2, component2, isStatic = false) {
+        return new Promise((res) => {
+          let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class", "attr");
+          res(query);
+        }).then((query) => {
+          let r = [];
+          let map = {
+            "bind": this._compileBind,
+            "switch": this._compileSwitch,
+            "toggle": this._compileToggle,
+            "if": this._compileIf,
+            "class": this._compileClass,
+            "attr": this._compileAttr,
+            "for": this._compileFor,
+            "for-update": this._compileForUpdate,
+            "event": this._compileEvents,
+            "animate": this._compileAnimate
           };
-          return coll[name.trim()] || [];
-        }
+          for (let q in query) {
+            if (query.hasOwnProperty(q)) {
+              if (query[q].length) {
+                r.push(map[q].apply(this, [query[q], component2, isStatic, el2]));
+              }
+              ;
+            }
+            ;
+          }
+          ;
+          console.timeEnd(component2);
+          return Promise.all(r.length ? r : [r]);
+        }).then(() => {
+          return Promise.resolve();
+        });
       };
+      module.exports = Attrib;
     }
   });
 
@@ -1664,8 +2933,8 @@
           ;
         }
         ;
-        function ObjectMerge(obj, value, key) {
-          obj = Object.assign(obj, { [key]: value });
+        function ObjectMerge(obj, value2, key) {
+          obj = Object.assign(obj, { [key]: value2 });
         }
         ;
         function isNull(d) {
@@ -1691,9 +2960,9 @@
             if (typeOf(id2) == "object") {
               var obj = id2;
               var key = Object.keys(id2)[0];
-              var value = obj[key];
+              var value2 = obj[key];
               if (typeOf(item) == "object") {
-                var test = item[key] == value;
+                var test = item[key] == value2;
                 if (test) {
                   has = i;
                   break;
@@ -1716,14 +2985,14 @@
         };
         var hasInObject = function(src, id2) {
           var key = null;
-          var type = typeOf(id2);
-          if (type == "object") {
+          var type2 = typeOf(id2);
+          if (type2 == "object") {
             var _key = Object.keys(id2)[0];
             if (src[key] != void 0 && src[key] == id2[_key]) {
               key = _key;
             }
             ;
-          } else if (type == "string") {
+          } else if (type2 == "string") {
             key = id2;
           }
           ;
@@ -1740,9 +3009,9 @@
           return has;
         };
         var STORAGE = class {
-          constructor(type, name, child) {
-            this.type = type;
-            this.name = `${Utils.instanceID()}-${name}`;
+          constructor(type2, name2, child) {
+            this.type = type2;
+            this.name = `${Utils.instanceID()}-${name2}`;
             this.child = child;
             this.cache = {};
             if (typeOf(this.child) == "string") {
@@ -1839,8 +3108,8 @@
               storage = Array.from(unique);
             } else if (isObject(storage)) {
               if (isObject(data2)) {
-                ObjectForEach(data2, function(value, key) {
-                  storage[key] = value;
+                ObjectForEach(data2, function(value2, key) {
+                  storage[key] = value2;
                 });
               } else {
                 storage[data2] = data2;
@@ -1861,8 +3130,8 @@
             } else if (typeOf(storage) == "object") {
               if (isNull(has)) {
                 if (isObject(data2)) {
-                  ObjectForEach(data2, function(value, key) {
-                    ObjectMerge(storage, value, key);
+                  ObjectForEach(data2, function(value2, key) {
+                    ObjectMerge(storage, value2, key);
                   });
                 } else {
                   storage[data2] = data2;
@@ -1897,12 +3166,12 @@
               ;
               return storage;
             } else if (typeOf(id2) == "object") {
-              return Object.filter(storage, function(value, key) {
-                var test = id2[key] != void 0 && id2[key] == value;
+              return Object.filter(storage, function(value2, key) {
+                var test = id2[key] != void 0 && id2[key] == value2;
                 return !test;
               });
             } else if (typeOf(id2) == "array") {
-              return Object.filter(storage, function(value, key) {
+              return Object.filter(storage, function(value2, key) {
                 var test = id2.contains(key);
                 return !test;
               });
@@ -1914,20 +3183,20 @@
             ;
           },
           get: function(storage, id2) {
-            var type = typeOf(id2);
-            if (type == "string") {
+            var type2 = typeOf(id2);
+            if (type2 == "string") {
               var has = hasItem(storage, id2);
               if (has == 0 || has) {
                 return storage[has];
               }
               ;
-            } else if (type == "object") {
-              return Object.filter(storage, function(value, key) {
-                var test = !isUndefined(id2[key]) && id2[key] == value;
+            } else if (type2 == "object") {
+              return Object.filter(storage, function(value2, key) {
+                var test = !isUndefined(id2[key]) && id2[key] == value2;
                 return test;
               });
-            } else if (type == "array") {
-              return Object.filter(storage, function(value, key) {
+            } else if (type2 == "array") {
+              return Object.filter(storage, function(value2, key) {
                 var test = id2.contains(key);
                 return test;
               });
@@ -1935,21 +3204,21 @@
             return null;
           },
           getNot: function(storage, id2) {
-            var type = typeOf(id2);
-            if (type == "string") {
-              return Object.filter(storage, function(value, key) {
+            var type2 = typeOf(id2);
+            if (type2 == "string") {
+              return Object.filter(storage, function(value2, key) {
                 var test = key != id2;
                 return test;
               });
-            } else if (type == "object") {
-              return Object.filter(storage, function(value, key) {
+            } else if (type2 == "object") {
+              return Object.filter(storage, function(value2, key) {
                 return Object.some(id2, function(_value, _key) {
-                  var test = _key == key && _value == value;
+                  var test = _key == key && _value == value2;
                   return !test;
                 });
               });
-            } else if (type == "array") {
-              return Object.filter(storage, function(value, key) {
+            } else if (type2 == "array") {
+              return Object.filter(storage, function(value2, key) {
                 var test = !id2.contains(key);
                 return test;
               });
@@ -2031,8 +3300,8 @@
           createOrUpdate(data2) {
             if (arguments.length > 1) {
               let key = arguments[0];
-              let value = arguments[1];
-              data2 = { [key]: value };
+              let value2 = arguments[1];
+              data2 = { [key]: value2 };
             }
             ;
             var storage = this.storage.open();
@@ -2056,317 +3325,6 @@
     }
   });
 
-  // src/scripts/persist.js
-  var require_persist = __commonJS({
-    "src/scripts/persist.js"(exports, module) {
-      var StorageKit = require_storage()();
-      module.exports = class {
-        constructor() {
-          this.storage = new StorageKit({
-            child: "array",
-            storage: "session",
-            name: "_cake_persistent"
-          });
-        }
-        listen(components) {
-          let event = "DOMContentLoaded";
-          if ("deviceready" in document) {
-            event = "deviceready";
-          }
-          ;
-          window.addEventListener(event, (e) => {
-            setTimeout(() => {
-              this.storage.getAll().then((result) => {
-                if (!(result && !result.length))
-                  return;
-                for (let r = 0; r < result.length; r++) {
-                  let item = result[r];
-                  let component3 = components[item];
-                  component3.isConnected = false;
-                  if (component3) {
-                    !component3.isConnected && component3.render.bind(component3)();
-                  } else {
-                    console.error(`component ${component3} is not found!`);
-                  }
-                }
-                ;
-              });
-            });
-          });
-        }
-        append(name) {
-          this.storage.create(name);
-        }
-        remove(name) {
-          this.storage.remove(name);
-        }
-      };
-    }
-  });
-
-  // src/scripts/hash.js
-  var require_hash = __commonJS({
-    "src/scripts/hash.js"(exports, module) {
-      module.exports = class {
-        constructor(Components) {
-          this.Components = Components;
-        }
-        listen() {
-          window.addEventListener("hashchange", (e) => {
-            let hit = this.compare(e);
-            this.find(hit, this.notify);
-          });
-        }
-        compare(e) {
-          let { oldURL, newURL } = e;
-          let hit = null;
-          if (oldURL.length > newURL.length) {
-            let prev = new URL(oldURL).hash.substring(1).split("/");
-            let next = new URL(newURL).hash.substring(1).split("/");
-            for (let p = 0; p < prev.length; p++) {
-              if (!next.includes(prev[p])) {
-                hit = prev[p];
-                break;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          return hit;
-        }
-        find(name, cb) {
-          if (!name)
-            return;
-          if (!this.Components[name]) {
-            let lk = setInterval(() => {
-              if (this.Components[name]) {
-                if (this.Components[name].isConnected) {
-                  cb(this.Components[name]);
-                }
-                ;
-                clearTimeout(lk);
-              }
-              ;
-            }, 50);
-            setTimeout(() => {
-              clearTimeout(lk);
-            }, 5e3);
-          } else {
-            if (this.Components[name].isConnected) {
-              cb(this.Components[name]);
-            }
-            ;
-          }
-          ;
-        }
-        notify(component3) {
-          component3.fire.destroy();
-        }
-        add(componentName) {
-          let hash2 = location.hash;
-          if (!hash2.includes(componentName)) {
-            location.hash = hash2 + "/" + componentName;
-          }
-          ;
-        }
-        remove(componentName) {
-          let hash2 = location.hash;
-          let removed = hash2.replace(componentName, "");
-          location.replace(removed);
-        }
-      };
-    }
-  });
-
-  // src/scripts/form.js
-  var require_form = __commonJS({
-    "src/scripts/form.js"(exports, module) {
-      module.exports = function(component3) {
-        class Options {
-          constructor(type) {
-            this.type = type;
-            this.storage = {};
-          }
-          store(formControl, data2) {
-            this.storage[formControl] = data2;
-          }
-          get options() {
-            if (this.type == "select" || this.type == "virtual") {
-              let a = {};
-              for (let key in this.storage) {
-                let val = this.storage[key];
-                a[key] = val.options;
-              }
-              ;
-              return a;
-            }
-            ;
-            return false;
-          }
-          get value() {
-            if (this.type == "input") {
-              let a = "";
-              for (let key in this.storage) {
-                let val = this.storage[key];
-                a = val.options[0];
-              }
-              ;
-              return a;
-            }
-            ;
-            return false;
-          }
-          get query() {
-            let a = {};
-            for (let key in this.storage) {
-              let val = this.storage[key];
-              a = val.query[0] || null;
-            }
-            ;
-            return a;
-          }
-          get has() {
-            let a = "";
-            for (let key in this.storage) {
-              let val = this.storage[key];
-              a = val.query[0] || null;
-            }
-            ;
-            return a;
-          }
-        }
-        ;
-        const form2 = {};
-        form2.options = (obj) => {
-          let { options, params } = obj;
-          if (!options) {
-            options = [];
-          }
-          ;
-          let isgroup = options.length > 1;
-          let prom = Promise.all(options.map((item) => {
-            let { control, field, tbl, src, schema, type } = item;
-            return component3.fire(src, { tbl, field, params }).then((opts) => {
-              opts = opts || [];
-              item.query = opts;
-              opts = opts.map((item2) => {
-                return schema(item2);
-              });
-              if (type != "input") {
-                let scheme = schema({});
-                for (let key in scheme) {
-                  if (scheme.hasOwnProperty(key)) {
-                    scheme[key] = "";
-                  }
-                  ;
-                }
-                ;
-                opts.unshift(scheme);
-              }
-              item.options = opts;
-              return item;
-            }).then((iter) => {
-              let { type: type2, control: control2 } = iter;
-              if (!type2) {
-                type2 = "others";
-              }
-              ;
-              const cls = new Options(type2);
-              if (isgroup) {
-                let o2 = {};
-                if (!o2[control2]) {
-                  o2[control2] = cls;
-                  o2[control2].store(control2, iter);
-                }
-                ;
-                return o2;
-              } else {
-                cls.store(control2, iter);
-                return cls;
-              }
-              ;
-            });
-          })).then((res) => {
-            if (isgroup) {
-              return res.reduce((accu, iter) => {
-                Object.assign(accu, iter);
-                return accu;
-              }, {});
-            } else {
-              return res[0];
-            }
-          }).catch((err) => {
-            console.error(err);
-          });
-          return prom;
-        };
-        form2.plot = (config) => {
-          let { data: data2, container } = config;
-          if (!data2 && !container) {
-            return;
-          }
-          ;
-          const query = (root, selector2, callback) => {
-            if (!root) {
-              console.info("root is not provided!");
-              return;
-            }
-            const els = root.querySelectorAll(`${selector2}`);
-            const len = els.length;
-            if (!len) {
-              callback(null, data2);
-              return;
-            }
-            for (let e = 0; e < len; e++) {
-              let el2 = els[e];
-              let name = el2.name;
-              let value = data2[name];
-              let r = callback(el2, value, e);
-              if (r == "break") {
-                break;
-              }
-              ;
-              if (r == "continue") {
-                continue;
-              }
-              ;
-            }
-            ;
-          };
-          query(container, "INPUT.input", function(el2, value) {
-            if (value != void 0) {
-              if (el2.type == "date") {
-                value = new Date(value) == "Invalid Date" ? "" : new Date(value).toJSON().split("T")[0];
-                el2.value = value;
-              } else {
-                el2.value = value;
-              }
-            }
-            ;
-          });
-          setTimeout(() => {
-            query(container, "SELECT.input:not(.cake-template)", function(select, value) {
-              query(select, "OPTION:not(.cake-template)", function(option, _value, index) {
-                if (option) {
-                  if (option.value == value) {
-                    select.selectedIndex = index;
-                    return "break";
-                  }
-                  ;
-                } else {
-                  console.log(option, _value, "provide schema");
-                }
-              });
-            });
-          }, 500);
-          return Promise.resolve();
-        };
-        return form2;
-      };
-    }
-  });
-
   // src/scripts/scope.js
   var require_scope = __commonJS({
     "src/scripts/scope.js"(exports, module) {
@@ -2374,8 +3332,8 @@
       module.exports = function(dependency) {
         const _hooks = {};
         class Scope {
-          constructor(name) {
-            this.name = name;
+          constructor(name2) {
+            this.name = name2;
             this.reactiveData = {};
             this.notify = [];
             this.install(this.name);
@@ -2408,46 +3366,46 @@
               name: `_cake_${this.name}_cf`
             });
           }
-          notifier(component3, obj) {
-            const { value, bind: bind2 } = obj;
-            if (!this.reactiveData[component3]) {
-              this.reactiveData[component3] = {};
+          notifier(component2, obj) {
+            const { value: value2, bind: bind2 } = obj;
+            if (!this.reactiveData[component2]) {
+              this.reactiveData[component2] = {};
             }
             ;
-            this.reactiveData[component3][bind2] = value;
-            return this.set(bind2, value);
+            this.reactiveData[component2][bind2] = value2;
+            return this.set(bind2, value2);
           }
-          getInputData(type = "json", _component) {
-            let component3 = _component || this.name;
-            let data2 = JSON.parse(JSON.stringify(this.reactiveData[component3]));
+          getInputData(type2 = "json", _component) {
+            let component2 = _component || this.name;
+            let data2 = JSON.parse(JSON.stringify(this.reactiveData[component2]));
             for (let key in data2) {
-              let value = data2[key];
-              data2[key] = this.sanitize(value);
+              let value2 = data2[key];
+              data2[key] = this.sanitize(value2);
             }
             ;
-            if (type == "json") {
+            if (type2 == "json") {
               return data2;
-            } else if (type == "formdata") {
+            } else if (type2 == "formdata") {
               const formData = new FormData();
               for (let key in data2) {
-                let value = data2[key];
-                formData.append(key, value);
+                let value2 = data2[key];
+                formData.append(key, value2);
               }
               ;
               return formData;
             }
             ;
           }
-          hook(component3, bind2, callback) {
-            if (!_hooks[component3]) {
-              _hooks[component3] = {};
+          hook(component2, bind2, callback) {
+            if (!_hooks[component2]) {
+              _hooks[component2] = {};
             }
             ;
-            if (!_hooks[component3][bind2]) {
-              _hooks[component3][bind2] = [];
+            if (!_hooks[component2][bind2]) {
+              _hooks[component2][bind2] = [];
             }
             ;
-            _hooks[component3][bind2].push(callback);
+            _hooks[component2][bind2].push(callback);
           }
           get(key, quick = false) {
             let pkey = this.pKeys[key];
@@ -2458,33 +3416,32 @@
             }
             ;
           }
-          set(key, value) {
+          set(key, value2) {
             let pkey = `${this.name}-${key}`;
             let notify = this.notify;
-            let name = this.name;
+            let name2 = this.name;
             let prevValue = null;
             this.pKeys[key] = pkey;
             return new Promise(async (res, rej) => {
               if (key != "password") {
-                this.session.createOrUpdate(key, value);
+                this.session.createOrUpdate(key, value2);
               }
               ;
               res();
             }).then(async () => {
-              const hooks = _hooks[this.name];
-              if (hooks) {
-                const callbacks = hooks[key];
-                if (callbacks) {
-                  callbacks.forEach((cb) => {
-                    cb(value);
-                  });
-                }
-                ;
-              }
-              ;
-              return Promise.all(notify.map((cb) => {
-                return cb(key, value, prevValue, name).then(() => {
-                  console.log("finish notified in scope");
+              return Promise.all(notify.map((cb2) => {
+                return cb2(key, value2, prevValue, name2).then(() => {
+                  const hooks = _hooks[this.name];
+                  if (hooks) {
+                    const callbacks = hooks[key];
+                    if (callbacks) {
+                      callbacks.forEach((cb3) => {
+                        cb3(value2);
+                      });
+                    }
+                    ;
+                  }
+                  ;
                 });
               }));
             });
@@ -2495,17 +3452,1049 @@
     }
   });
 
+  // src/scripts/animate.js
+  var require_animate = __commonJS({
+    "src/scripts/animate.js"(exports, module) {
+      module.exports = class {
+        constructor(config = [], html) {
+          this.html = html || document;
+          this.cf = config;
+          this.duration = 300;
+        }
+        animate(moment) {
+          this.config = this.parse(this.cf);
+          return new Promise((res) => {
+            for (let i = 0; i < this.config.length; i++) {
+              let cf = this.config[i];
+              let element = cf.element;
+              if (!cf[moment]) {
+                res();
+                break;
+              }
+              ;
+              let config = cf[moment];
+              if (!config.options && !(config.options && config.options.duration)) {
+                config.options = { duration: this.duration };
+              }
+              ;
+              if (!config.keyframes && !element) {
+                continue;
+              }
+              let keyframes = config.keyframes;
+              let index = 0;
+              let fr2 = [];
+              for (let k = 0; k < keyframes.length; k++) {
+                let kk = keyframes[k];
+                switch (true) {
+                  case typeof kk == "string":
+                    {
+                      fr2.push(this.dic(kk));
+                    }
+                    break;
+                  case kk instanceof Object: {
+                    let name2 = kk.name;
+                    let offset = kk.offset;
+                    if (name2 && offset) {
+                      let def = this.dic(name2);
+                      def[def.length - 1].offset = offset;
+                      fr2.push(def);
+                    } else {
+                      fr2.push(kk);
+                    }
+                  }
+                }
+                ;
+              }
+              keyframes = fr2;
+              fr2 = null;
+              let recurseCall = () => {
+                let kf = keyframes[index];
+                let animate = element.animate(kf, config.options || this.duration);
+                if (animate.finished) {
+                  animate.finished.then(() => {
+                    if (index < keyframes.length - 1) {
+                      index += 1;
+                      recurseCall();
+                    } else {
+                      keyframes = [];
+                      res();
+                    }
+                  });
+                } else {
+                  animate.onfinish = () => {
+                    if (index < keyframes.length - 1) {
+                      index += 1;
+                      recurseCall();
+                    } else {
+                      keyframes = [];
+                      res();
+                    }
+                  };
+                }
+                ;
+              };
+              recurseCall();
+            }
+            ;
+          });
+        }
+        parse(config) {
+          let configs = [], length2 = config.length, i = -1;
+          while (++i < length2) {
+            let cf = config[i];
+            let selector2 = cf.selector, el2;
+            switch (true) {
+              case !!(selector2.val && selector2.attr):
+                {
+                  el2 = this.html.querySelectorIncluded(`[${selector2.attr}=${selector2.val}]`, selector2.attr, selector2.val);
+                }
+                break;
+              case !!(selector2.val && !selector2.attr):
+                {
+                  let attr = selector2.val.match(new RegExp(`^[.]`)) ? "class" : selector2.val.match(new RegExp(`^[#]`)) ? "id" : null;
+                  let val = attr ? selector2.val.slice(1) : null;
+                  el2 = this.html.querySelectorIncluded(selector2.val, attr, val);
+                }
+                break;
+            }
+            ;
+            cf.element = el2;
+            configs.push(cf);
+          }
+          ;
+          return configs;
+        }
+        dic(name2) {
+          let coll = {
+            slideOutUp: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1",
+              easing: "ease-out"
+            }, {
+              transform: "translate3d(0,100%,0)",
+              visibility: "hidden",
+              opacity: "0",
+              easing: "ease-out"
+            }],
+            slideOutRight: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideOutLeft: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }, {
+              transform: "translate3d(-100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }],
+            slideOutDown: [{
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1",
+              easing: "ease-out"
+            }, {
+              transform: "translate3d(0,-100%,0)",
+              visibility: "hidden",
+              opacity: "0",
+              easing: "ease-out"
+            }],
+            slideInUp: [
+              {
+                transform: "translate3d(0,100%,0)",
+                visibility: "hidden",
+                opacity: "0",
+                easing: "ease-out"
+              },
+              {
+                transform: "translate3d(0,0,0)",
+                visibility: "visible",
+                opacity: "1",
+                easing: "ease"
+              }
+            ],
+            slideInRight: [{
+              transform: "translate3d(100%,0,0)",
+              visibility: "hidden",
+              opacity: "0"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            slideInLeft: [{
+              transform: "translate3d(-100%,0,0)",
+              visibility: "hidden",
+              opacity: "0",
+              easing: "ease-out"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1"
+            }],
+            slideInDown: [{
+              transform: "translate3d(0,-100%,0)",
+              visibility: "hidden",
+              opacity: "0",
+              easing: "ease-out"
+            }, {
+              transform: "translate3d(0,0,0)",
+              visibility: "visible",
+              opacity: "1",
+              easing: "ease-out"
+            }],
+            disappear: [{
+              opacity: "1"
+            }, {
+              opacity: "0"
+            }],
+            appear: [{
+              opacity: "0"
+            }, {
+              opacity: "1"
+            }],
+            flipInX: [
+              ,
+              { offset: 0, backfaceVisibility: "visible" },
+              { transform: "perspective(400px) rotate3d(1,0,0,90deg)", opacity: "0", offset: 0 },
+              { transform: "perspective(400px) rotate3d(1,0,0,-20deg)", offset: 0.4, easing: "ease-in" },
+              { offset: 0.6, opacity: "1", transform: "perspective(400px) rotate3d(1,0,0,10deg)" },
+              { transform: "perspective(400px) rotate3d(1,0,0,-5deg)", offset: 0.8 },
+              { offset: 1, backfaceVisibility: "visible", transform: "perspective(400px) rotate3d(1,0,0,0)" }
+            ]
+          };
+          return coll[name2.trim()] || [];
+        }
+      };
+    }
+  });
+
+  // src/scripts/component.js
+  var require_component = __commonJS({
+    "src/scripts/component.js"(exports, module) {
+      var Mo = require_animate();
+      var Piece = require_piece();
+      var Utils = require_utils();
+      var Templating = require_templating();
+      var Plugin = require_plugin();
+      function Component(name2, template, options) {
+        this.name = name2;
+        this.template = template;
+        this.options = options;
+        this.handlers = options.handlers;
+        this.subscribe = options.subscribe;
+        this.data = {};
+        this.root = options.root;
+        this.items = false;
+        this.type = options.type || "view";
+        this.toggle = options.toggle;
+        this.targets = {};
+        this.animateOptions = options.animate;
+        this.role = options.role;
+        this.isReady = false;
+        this.scope = options.scope;
+        this.formSelector = options.form;
+        this.await = {};
+        this.state = options.state;
+        this.originalState = {};
+        this.utils = Utils;
+        (name2 == "app" || options.role == "app") && (() => {
+          this.staticComponent = options.static || [];
+        })();
+        this.container = {};
+        this.compile = new Promise((res) => {
+          this._bindHandlers();
+          res();
+        }).then(() => {
+          return this._bindSubscribe();
+        }).then(() => {
+          return this.cloneState();
+        }).then(() => {
+          switch (this.type == "view" && !!this.template) {
+            case true:
+              return this.createElementAsync();
+            default:
+              this.isStatic = false;
+              break;
+          }
+          ;
+        });
+      }
+      Component.prototype.isStatic = false;
+      Component.prototype.hasEvent = false;
+      Component.prototype.isConnected = false;
+      Component.prototype.destroyed = false;
+      Component.prototype.isCreated = false;
+      Component.prototype.cloneState = function() {
+        if (!this.state) {
+          return;
+        }
+        ;
+        for (let key in this.state) {
+          if (this.state.hasOwnProperty(key)) {
+            this.originalState[key] = this.state[key];
+          }
+          ;
+        }
+        ;
+        this.$state = (() => {
+          return this.state;
+        })();
+      };
+      Component.prototype.clearState = function() {
+        if (!this.state) {
+          return;
+        }
+        ;
+        this.state = JSON.parse(JSON.stringify(this.originalState));
+        this.$state = (() => {
+          return this.state;
+        })();
+      };
+      Component.prototype.Subscribe = function(handler) {
+        this.$observer.registerSubscribe({
+          [handler.listenTo]: {
+            [handler.original]: [handler]
+          }
+        });
+      };
+      Component.prototype.Node = function(el2) {
+        const piece = new Piece(el2);
+        ;
+        return piece;
+      };
+      Component.prototype._bindHandlers = function() {
+        for (let key in this.handlers) {
+          if (this.handlers.hasOwnProperty(key)) {
+            let fn2 = this.handlers[key];
+            let originalName = fn2.name;
+            fn2 = fn2.bind(this);
+            fn2.original = originalName;
+            fn2.binded = this.name;
+            this.handlers[originalName] = fn2;
+            this.initAwaitHandlers(key);
+          }
+          ;
+        }
+        ;
+        if (!this.await.destroy) {
+          this.await.destroy = Promise.resolve();
+        }
+        if (!this.await.animateRemove) {
+          this.await.animateRemove = Promise.resolve();
+        }
+      };
+      Component.prototype.initAwaitHandlers = function(handlerName) {
+        this.await[handlerName] = Promise.resolve();
+      };
+      Component.prototype._bindSubscribe = function() {
+        let flattened = {};
+        for (let component2 in this.subscribe) {
+          if (this.subscribe.hasOwnProperty(component2)) {
+            subscribe = this.subscribe[component2];
+            if (!!subscribe.components && !subscribe.handler) {
+              throw new Error(`there is no handler in format many of subscribe in event ${component2}`);
+            } else if (!subscribe.components && !!subscribe.handler) {
+              throw new Error(`there is no components in format many of subscribe in event ${component2}`);
+            }
+            ;
+            let isMany = !!subscribe.components && !!subscribe.handler;
+            if (isMany) {
+              let event = component2;
+              let { components, handler } = subscribe;
+              handler = handler.bind(this);
+              handler.binded = this.name;
+              handler.original = event;
+              for (let c = 0; c < components.length; c++) {
+                let component3 = components[c];
+                if (!flattened[component3]) {
+                  flattened[component3] = {};
+                }
+                ;
+                if (!flattened[component3][event]) {
+                  flattened[component3][event] = {};
+                }
+                handler.listenTo = component3;
+                flattened[component3][event] = handler;
+              }
+              ;
+            } else {
+              if (!flattened[component2]) {
+                flattened[component2] = {};
+              }
+              ;
+              let fns = subscribe;
+              for (let fn2 in fns) {
+                if (fns.hasOwnProperty(fn2)) {
+                  let handler = fns[fn2];
+                  let original = handler.name;
+                  try {
+                    handler = handler.bind(this);
+                  } catch (err) {
+                  }
+                  handler.original = original;
+                  handler.binded = this.name;
+                  handler.listenTo = component2;
+                  if (!flattened[component2][original]) {
+                    flattened[component2][original] = {};
+                  }
+                  ;
+                  flattened[component2][original] = handler;
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+        this.subscribe = flattened;
+      };
+      Component.prototype.doFor = function(prop, newValue) {
+        const getHTML = () => {
+          return this.html;
+        };
+        if (newValue == null)
+          return;
+        return this.$attrib.notifyFor(prop, newValue, null, this.name, getHTML());
+      };
+      Component.prototype.doToggle = function(prop, newValue) {
+        this.$attrib.notifyToggle(prop, newValue, null, this.name, this.html);
+      };
+      Component.prototype.doSwitch = function(prop, newValue) {
+        this.$attrib.notifySwitch(prop, newValue, null, this.name, this.html);
+      };
+      Component.prototype.doIf = function(prop, newValue) {
+        this.$attrib.notifyIf(prop, newValue, null, this.name, this.html);
+      };
+      Component.prototype.$animate = function(moment) {
+        let ata = this.$attrib.getWatchItemsByType(this.name, "animate");
+        let da = this.animateOptions;
+        let arr = [];
+        ;
+        (() => {
+          if (!ata.length && !(ata instanceof Array) || !da) {
+            return;
+          }
+          for (let a = 0; a < ata.length; a++) {
+            let at = ata[a];
+            let { ns: name2, selector: selector2 } = at;
+            if (at.ns) {
+              if (da[name2]) {
+                let ns = da[name2];
+                Object.assign(at, da[name2]);
+                delete da[name2];
+              }
+              ;
+            } else {
+              arr.push(ata);
+            }
+            ;
+          }
+          ;
+        })();
+        if (!ata.length) {
+          return false;
+        }
+        ;
+        (() => {
+          let obj = {};
+          let selector2 = {};
+          for (let key in da) {
+            if (da.hasOwnProperty(key)) {
+              selector2.val = key;
+              obj.selector = selector2;
+              Object.assign(obj, da[key]);
+              ata.push(obj);
+              obj = {};
+              selector2 = {};
+            }
+            ;
+          }
+          ;
+        })();
+        return new Mo(ata, this.html).animate(moment);
+      };
+      Component.prototype.$templating = function(data2, t, isConvert) {
+        let template = t || this.template;
+        return new Templating(Plugin("templating")).createElement(data2, template, isConvert);
+      };
+      Component.prototype.createElement = function() {
+        let isSelector = this.template.substring(0, 1) == "#";
+        if (!isSelector)
+          return;
+        let selector2 = this.template.substr(1);
+        let query = document.getElementById(selector2);
+        let isTemplate = this.isTemplate = query && query.toString().includes("Template");
+        if (!query) {
+          throw new Error(`the template for ${this.name} is not found with.`);
+        }
+        ;
+        return new Promise((res) => {
+          switch (isTemplate) {
+            case true:
+              {
+                let element = query.getContent(true);
+                if (!element) {
+                  throw new Error(`it might be theres no template in component - ${this.name}`);
+                }
+                element.cake_component = this.name;
+                this.html = this.Node(element);
+                this._parseHTML(this.isStatic).then(() => {
+                  this._watchBindedItems();
+                  res();
+                });
+              }
+              break;
+            case null:
+              {
+                res();
+              }
+              break;
+            default:
+              {
+                let element = query;
+                if (!element) {
+                  throw new Error(`it might be theres no template in component - ${this.name}`);
+                }
+                element.cake_component = this.name;
+                this.html = this.Node(element);
+                this.isStatic = true;
+                this._parseHTML(this.isStatic).then(() => {
+                  res();
+                });
+              }
+              ;
+          }
+          ;
+        });
+      };
+      Component.prototype.createElementAsync = function() {
+        return new Promise((res) => {
+          this.createElement().then(() => {
+            res();
+          });
+        }).then(() => {
+          this.isReady = true;
+        });
+      };
+      Component.prototype._isParsed = false;
+      Component.prototype._parseHTML = function(isStatic = false) {
+        return this.$attrib.inject(this.html, this.name, isStatic).then(() => {
+          this.original = this.html.cloneNode();
+          this._isParsed = true;
+        });
+      };
+      Component.prototype.render = function(options) {
+        if (this.isConnected) {
+          console.error(`${this.name} is already rendered and connected to the DOM`);
+          return Promise.resolve();
+        }
+        ;
+        let { root, cleaned, emit = {}, data: data2 = {} } = options || {};
+        let multiple = this.options.multiple;
+        let state = this.state || {};
+        let payload = { emit };
+        const getValue = (item) => {
+          return { ...state, ...data2 }[item] || null;
+        };
+        return new Promise((res, rej) => {
+          !!root && (this.root = root);
+          if (!this.isReady) {
+            this.createElement().then(() => {
+              return !this.template && this.fire.isConnected && this.fire.isConnected(payload, true);
+            }).then(() => {
+              this.isReady = true;
+              res();
+            });
+          } else {
+            res();
+          }
+          ;
+        }).then(() => {
+          return this.await.destroy.then(() => {
+            return this.await.animateRemove;
+          }).then(() => {
+            return new Promise((res, rej) => {
+              let forItems = this.$attrib.getWatchItemsByType(this.name, "for");
+              Promise.all(forItems.map((item) => {
+                return this.doFor(item, getValue(item));
+              })).then(() => {
+                res(this.html);
+              });
+            }).then((element) => {
+              payload = { element, emit };
+              return new Promise((res, rej) => {
+                try {
+                  this.fire.beforeConnected && this.fire.beforeConnected(payload, true);
+                  res(element);
+                } catch (err) {
+                  rej(err);
+                }
+                ;
+              });
+            }).then((element) => {
+              if (this.isStatic) {
+              } else {
+                let prom = !data2 ? Promise.resolve() : (() => {
+                  return new Promise((res) => {
+                    let el2 = element.getElement();
+                    el2 = this.$templating(data2, el2);
+                    this.html = element = this.Node(el2);
+                    this.html.replaceDataSrc();
+                    data2 = null;
+                    res();
+                  });
+                })();
+                return prom.then(() => {
+                  element.appendTo(this.root, cleaned);
+                  this.isConnected = true;
+                });
+              }
+            }).then(() => {
+            }).then(() => {
+              return this.findContainer();
+            }).then(() => {
+              try {
+                return this.fire.isConnected && this.fire.isConnected(payload, true);
+              } catch (err) {
+                console.log(440, err);
+              }
+            }).then(() => {
+              return this.findTarget();
+            }).then(() => {
+              return this.addEvent();
+            }).then(() => {
+              return this.$animate("render");
+            }).then(() => {
+              multiple && this._smoothReset();
+              return new Promise((res, rej) => {
+                setTimeout(() => {
+                  this._watchReactive();
+                  res();
+                }, 100);
+              });
+            });
+          });
+        });
+      };
+      Component.prototype.renderAsync = function(options) {
+        this.render(options).then(() => {
+          this.$persist.append(this.name);
+        });
+      };
+      Component.prototype._smoothReset = function() {
+        this.isConnected = false;
+        this.html = this.original.cloneNode();
+      };
+      Component.prototype._hardReset = function(name2) {
+        this.isConnected = false;
+        this.$persist.remove(name2);
+        this.html = this.original.cloneNode();
+        return true;
+      };
+      Component.prototype.reset = function() {
+        let animate = this.$animate("remove");
+        if (animate instanceof Promise) {
+          return this.await.animateRemove = new Promise((res) => {
+            animate.then(() => {
+              return this.html.remove();
+            }).then(() => {
+              this.container = {};
+            }).then(() => {
+              return this.clearState();
+            }).then(() => {
+              return this._hardReset(this.name);
+            }).then(() => {
+              res();
+            });
+          });
+        } else {
+          return new Promise((res) => {
+            this.html.remove(this.name);
+            this.clearState();
+            this.container = {};
+            this._hardReset(this.name);
+            res();
+          });
+        }
+      };
+      Component.prototype.addEvent = function(static2, multiple) {
+        let component2 = this.name;
+        function notify(event, component3, isPreventDefault, isStopPropagation) {
+          return function(e) {
+            if (!isPreventDefault) {
+              e.preventDefault();
+            }
+            ;
+            if (isStopPropagation) {
+              e.stopPropagation();
+            }
+            ;
+            Cake.Observer.notify(component3, event, e);
+          };
+        }
+        ;
+        if (!this.targets)
+          return;
+        for (let event in this.targets) {
+          if (this.targets.hasOwnProperty(event)) {
+            let cf = this.targets[event];
+            for (let item of cf) {
+              let { sel, el: el2, cb: cb2 } = item;
+              let _event = event;
+              let place = event.substring(0, 2);
+              let isPreventDefault = place.includes("~");
+              let isStopPropagation = place.includes("^");
+              if (isPreventDefault || isStopPropagation) {
+                _event = event.slice(1);
+                cb2 = cb2 || _event;
+              } else {
+                if (!cb2) {
+                  cb2 = event;
+                }
+              }
+              ;
+              if (!el2.Ref().get("__cake__events")) {
+                el2.Ref().set("__cake__events", {});
+              }
+              ;
+              let store = el2.Ref().get("__cake__events");
+              if (!store[cb2]) {
+                el2.addEventListener(_event, notify(cb2, component2, isPreventDefault, isStopPropagation), true);
+                store[cb2] = true;
+                el2.Ref().set("__cake__events", store);
+              } else {
+                continue;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        }
+        ;
+      };
+      Component.prototype.findTarget = function() {
+        let q = this.$attrib.getEventTarget(this.name);
+        return new Promise((res) => {
+          for (let item of q) {
+            let els = this.html.querySelectorAllIncluded(`[data-event=${item.sel}]`);
+            for (let e = 0; e < els.length; e++) {
+              if (!this.targets[item.event]) {
+                this.targets[item.event] = [];
+              }
+              ;
+              this.targets[item.event].push({ el: els[e], ...item });
+            }
+            ;
+          }
+          ;
+          res();
+        });
+      };
+      Component.prototype.toggler = function(_this) {
+        let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
+        let cl = class {
+          constructor(bind2, bases, html, _this2) {
+            this.toggle = _this2.toggle;
+            this.bind = bind2;
+            this.bases = bases;
+            this.cache = _this2.$cache;
+            this.html = html;
+          }
+          check(bind2) {
+            let config = this.toggle[bind2];
+            if (!config) {
+              console.error(`${bind2} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
+            } else {
+              if (attrToggle.length) {
+                let { ns } = config;
+                let f = attrToggle.find((item) => {
+                  return item.name == `ns-${ns}`;
+                });
+                f && (config.sel = `[data-toggle=${f.sel}]`);
+              }
+              ;
+              return config;
+            }
+            ;
+          }
+          _toggle() {
+            let config = this.check(this.bind);
+            if (!config) {
+              return;
+            }
+            let { basis = "data-name", cls = "is-active", mode = "radio", sel, persist = true } = config;
+            let targets = this.html.querySelectorAll(sel);
+            if (!targets.length) {
+              return;
+            }
+            ;
+            let prev, next;
+            if (targets.length == 1) {
+              let isbool = typeof this.bases == "boolean";
+              let isforce = !!this.bases;
+              let el2 = targets[0];
+              if (persist) {
+                const _forceState = function(el3, cls2, isforce2) {
+                  if (isforce2) {
+                    if (el3.classList.contains(cls2)) {
+                      el3.classList.remove(cls2);
+                    }
+                    ;
+                  } else {
+                    if (!el3.classList.contains(cls2)) {
+                      el3.classList.add(cls2);
+                    }
+                    ;
+                  }
+                };
+                if (isbool) {
+                  if (isforce) {
+                    this.cache.createOrUpdate(this.bind, true);
+                    _forceState(el2, cls, true);
+                  } else {
+                    this.cache.createOrUpdate(this.bind, false);
+                    _forceState(el2, cls, false);
+                  }
+                  el2.classList.toggle(cls);
+                } else {
+                  this.cache.createOrUpdate(this.bind, !el2.classList.contains(cls));
+                  el2.classList.toggle(cls);
+                }
+                ;
+              }
+              ;
+            } else {
+              for (let t = 0; t < targets.length; t++) {
+                let el2 = targets[t];
+                let has = el2.classList.contains(cls);
+                let attr = el2.getAttribute(basis);
+                if (attr == this.bases) {
+                  if (mode == "switch") {
+                    el2.classList.toggle(cls);
+                  } else {
+                    if (!has) {
+                      el2.classList.add(cls);
+                    }
+                    ;
+                  }
+                  ;
+                  if (persist) {
+                    this.cache.createOrUpdate(this.bind, attr);
+                  }
+                  ;
+                  next = attr;
+                } else {
+                  if (has) {
+                    el2.classList.remove(cls);
+                    prev = el2.getAttribute(basis);
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            return { prev, next };
+          }
+          _recall() {
+            let config = this.check(this.bind);
+            if (!config) {
+              return;
+            }
+            let { basis = "data-name", cls = "is-active", sel } = config;
+            return this.cache.get(this.bind).then((result) => {
+              if (!result) {
+                return result;
+              }
+              ;
+              let bases = result;
+              let targets = this.html.querySelectorAll(sel);
+              if (!targets.length) {
+                return;
+              }
+              ;
+              if (targets.length == 1) {
+                let el2 = targets[0];
+                if (bases) {
+                  el2.classList.add(cls);
+                }
+                ;
+              } else {
+                for (let t = 0; t < targets.length; t++) {
+                  let el2 = targets[t];
+                  let has = el2.classList.contains(cls);
+                  let attr = el2.getAttribute(basis);
+                  if (attr == bases) {
+                    if (!has) {
+                      el2.classList.add(cls);
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+              return bases;
+            });
+          }
+        };
+        let fn2 = (bind2, bases) => {
+          return new cl(bind2, bases, this.html, this)._toggle();
+        };
+        fn2.recall = (bind2) => {
+          return new cl(bind2, false, this.html, this)._recall();
+        };
+        return fn2;
+      };
+      Component.prototype.findContainer = function() {
+        return new Promise((res) => {
+          let containers = this.html.getContainers();
+          for (let c = 0; c < containers.length; c++) {
+            let el2 = containers[c];
+            let name2 = el2.dataset.container;
+            if (name2) {
+              this.container[name2] = el2;
+            }
+            ;
+          }
+          ;
+          res();
+        });
+      };
+      Component.prototype._watchBindedItems = function() {
+      };
+      Component.prototype._validator = function(name2, value2) {
+        if (this.options.validate) {
+          this.validate = this.options.validate;
+          const handler = this.validate[name2];
+          if (handler) {
+          }
+          ;
+        }
+        ;
+      };
+      Component.prototype._watchReactive = function() {
+        if (this.role == "form" && this.options.watch === true) {
+          const validator = this.options.validate;
+          const form = this.$form();
+          if (form._reactive) {
+            return;
+          }
+          ;
+          if (this.state && !this.state.formData) {
+            this.state.formData = {};
+          }
+          ;
+          const component2 = this;
+          const handler = (e) => {
+            const target = e.target;
+            const name2 = target.name || target.id;
+            const value2 = target.value;
+            let handler2 = validator[name2];
+            if (handler2) {
+              handler2 = handler2.bind(component2);
+              if (handler2) {
+                let validated = handler2(e);
+                if (validated) {
+                  this.state && (this.state.formData[name2] = value2);
+                  this.$scope.set(name2, value2);
+                }
+                ;
+              }
+              ;
+            } else {
+              this.state && (this.state.formData[name2] = value2);
+              this.$scope.set(name2, value2);
+            }
+            ;
+          };
+          form.addEventListener("change", (e) => {
+            if (!(e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA")) {
+              handler(e);
+            }
+            ;
+          });
+          form.addEventListener("input", (e) => {
+            if (e.target.tagName == "INPUT" || e.target.tagName == "TEXTAREA") {
+              handler(e);
+            }
+            ;
+          });
+          form._reactive = true;
+        }
+        ;
+      };
+      Component.prototype.observer = function(subscribe2) {
+        function callback(name2) {
+          return this.handler[name2];
+        }
+        this.observer = new Observer(this, subscribe2, callback.bind(this));
+      };
+      Component.prototype.variable = function(obj) {
+        let vary = Object.keys(obj);
+        let validate = {};
+        let values = [];
+        function invalid(name2, test, type2) {
+          if (!test) {
+            validate[name2] = `value is not '${type2}'`;
+          }
+          ;
+        }
+        ;
+        for (let key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            let config = obj[key];
+            let type2 = config.type;
+            let value2 = config.value;
+            let test;
+            if (["string", "number"].includes(type2)) {
+              test = typeof value2 == type2;
+            } else if (value2 instanceof Array) {
+              test = type2 == "array";
+            } else {
+              test = type2 == "object";
+            }
+            values.push(value2);
+            invalid(key, test, type2);
+          }
+          ;
+        }
+        ;
+        if (Object.keys(validate).length) {
+          throw new Error(JSON.stringify(validate));
+        } else {
+          return values;
+        }
+      };
+      module.exports = Component;
+    }
+  });
+
   // src/scripts/router.js
   var require_router = __commonJS({
     "src/scripts/router.js"(exports, module) {
       var Utils = require_utils();
       var StorageKit = require_storage()();
+      var ComponentStorage = require_components_store();
       var authCredential = new StorageKit({
         child: "object",
         storage: "local",
         name: `_cake_router_cf`
       });
-      module.exports = function(components, component3) {
+      module.exports = function(components, component2) {
         const hooks = [];
         return class {
           constructor(routes, options) {
@@ -2513,10 +4502,10 @@
             this.authRoute = {};
             this.route = this.compile(routes);
             this.prev = null;
-            this.components = components;
+            this.components = ComponentStorage;
             this.watch();
             this.persist();
-            Object.defineProperty(component3.prototype, "$router", {
+            Object.defineProperty(component2.prototype, "$router", {
               configurable: true,
               get: () => {
                 return {
@@ -2527,7 +4516,7 @@
                   ...this.prev
                 };
               },
-              set(value) {
+              set(value2) {
                 return;
               }
             });
@@ -2541,8 +4530,8 @@
                     const { role, data: data2 } = config;
                     const route = this.authRoute[role];
                     if (route) {
-                      const { name } = route;
-                      this.goTo(name);
+                      const { name: name2 } = route;
+                      this.goTo(name2);
                     }
                     ;
                   } else {
@@ -2603,23 +4592,23 @@
             try {
               let routes = this.route;
               let { params = {}, replace: isreplace } = config || {};
-              let hash2 = null;
+              let hash = null;
               const raw = Object.entries(routes);
               for (let i = 0; i < raw.length; i++) {
                 const [route, config2] = raw[i];
-                const { name } = config2;
-                if (name == routeName) {
-                  hash2 = route;
+                const { name: name2 } = config2;
+                if (name2 == routeName) {
+                  hash = route;
                   break;
                 }
                 ;
               }
               ;
-              if (!hash2) {
+              if (!hash) {
                 throw new Error(`${routeName} is not found in routes`);
               }
               ;
-              if (hash2 == "/") {
+              if (hash == "/") {
                 if (isreplace) {
                   location.replace(`${location.origin}${location.pathname}`);
                 } else {
@@ -2629,7 +4618,7 @@
               }
               ;
               let path;
-              hash2 = hash2.slice(1);
+              hash = hash.slice(1);
               if (params.toString().includes("Object")) {
                 let p = "";
                 for (let key in params) {
@@ -2637,11 +4626,11 @@
                 }
                 ;
                 params = p;
-                path = `!/${hash2}?${params}`;
+                path = `!/${hash}?${params}`;
               } else {
-                path = `!/${hash2}`;
+                path = `!/${hash}`;
               }
-              if (hash2 == "/") {
+              if (hash == "/") {
                 path = "";
               }
               ;
@@ -2687,8 +4676,11 @@
               window.addEventListener("popstate", (e) => {
                 this.parse();
                 this.notify().then(() => {
+                  console.log("notified");
                   return this.clear().then(() => {
+                    console.log("cleared");
                     return this.navigate().then(() => {
+                      console.log("navigated");
                     });
                   });
                 });
@@ -2763,12 +4755,12 @@
             return con;
           }
           parse() {
-            let hash2 = window.location.hash, scheme, routeName;
-            if (hash2) {
-              scheme = hash2.includes("#!/") ? 2 : hash2.includes("#/") ? 1 : null;
-              hash2 = hash2.slice(scheme);
+            let hash = window.location.hash, scheme, routeName;
+            if (hash) {
+              scheme = hash.includes("#!/") ? 2 : hash.includes("#/") ? 1 : null;
+              hash = hash.slice(scheme);
             } else {
-              hash2 = "/";
+              hash = "/";
               scheme = true;
             }
             ;
@@ -2776,28 +4768,28 @@
               return;
             }
             ;
-            const url = new URL(`http://localhost${hash2}`);
+            const url = new URL(`http://localhost${hash}`);
             const { search, pathname: path } = url;
             const keys = this.route.keys;
             const state = {};
             if (search) {
-              new URLSearchParams(search).forEach((value, key) => {
-                state[key] = value;
+              new URLSearchParams(search).forEach((value2, key) => {
+                state[key] = value2;
               });
             }
             ;
             let has = false;
             for (let i = 0; i < keys.length; i++) {
               const route = this.route[keys[i]];
-              const { regex, components: components2, params, name, overlay, display } = route;
+              const { regex, components: components2, params, name: name2, overlay, display, onrender } = route;
               if (params) {
                 let _path = String(path);
                 _path = _path.slice(1);
                 _path = _path.split("/");
                 Object.entries(params).forEach((param) => {
-                  const [key, value] = param;
-                  if (_path[value]) {
-                    state[key] = _path[value];
+                  const [key, value2] = param;
+                  if (_path[value2]) {
+                    state[key] = _path[value2];
                   }
                   ;
                 });
@@ -2805,14 +4797,14 @@
               ;
               const test = regex.test(path);
               if (test) {
-                routeName = name;
-                if (this.unauthRoute != name) {
+                routeName = name2;
+                if (this.unauthRoute != name2) {
                   this.authenticate();
                 } else {
                   this.authenticate(true);
                 }
                 ;
-                this.prev = { components: components2, state, path, name, prev: this.prev, overlay, display };
+                this.prev = { components: components2, state, path, name: name2, prev: this.prev, overlay, display, onrender };
                 has = true;
                 break;
               }
@@ -2855,7 +4847,7 @@
           }
           navigate(ispersist) {
             if (this.prev) {
-              const { components: components2, state, path, name, overlay } = this.prev;
+              const { components: components2, state, path, name: name2, overlay, onrender = {} } = this.prev;
               try {
                 if (components2.length) {
                   return new Promise((res, rej) => {
@@ -2863,12 +4855,13 @@
                     let i = 0;
                     if (l2) {
                       const recur = () => {
-                        let component4 = components2[i];
+                        let component3 = components2[i];
                         if (components2.length > i) {
-                          component4 = this.components[component4];
-                          component4.render({ emit: { route: this.prev } }).then(() => {
-                            if (component4.await.isConnected) {
-                              component4.await.isConnected && component4.await.isConnected.then(() => {
+                          let componentName = component3;
+                          component3 = this.components.get(component3);
+                          component3.render({ emit: { route: this.prev }, ...onrender[componentName] || {} }).then(() => {
+                            if (component3.await.isConnected) {
+                              component3.await.isConnected && component3.await.isConnected.then(() => {
                                 recur();
                               });
                             } else {
@@ -2900,17 +4893,17 @@
             window.history.pushState(data2, notused, path);
             let promise = Promise.resolve();
             if (this.prev) {
-              const { components: _components, state, path: path2, name } = this.prev;
+              const { components: _components, state, path: path2, name: name2 } = this.prev;
               promise = new Promise((res, rej) => {
                 const l2 = components.length;
                 let i = 0;
                 if (l2) {
                   const recur = () => {
-                    let component4 = components[i];
+                    let component3 = components[i];
                     if (components.length > i) {
-                      component4 = this.components[component4];
-                      component4.fire.destroy();
-                      component4.await.destroy.then(() => {
+                      component3 = this.components.get(component3);
+                      component3.fire.destroy();
+                      component3.await.destroy.then(() => {
                         recur();
                       });
                     } else {
@@ -2933,38 +4926,69 @@
           }
           clear() {
             let promise = Promise.resolve();
-            const { overlay } = this.prev || {};
+            const overlay = this.prev && this.prev.overlay || void 0;
             if (overlay) {
               return promise;
             }
             ;
+            const recur = function(index, componentNames, sourceComponents, callback) {
+              let component3 = componentNames[index];
+              let componentName = component3;
+              let self = recur;
+              try {
+                if (componentNames.length > index) {
+                  component3 = sourceComponents.get(component3);
+                  if (!component3.fire.destroy) {
+                    throw new Error(`${componentName} has no destroy handler!`);
+                  }
+                  ;
+                  component3.fire.destroy();
+                  component3.await.destroy.then(() => {
+                    self(index, componentNames, sourceComponents, callback);
+                  });
+                } else {
+                  callback();
+                }
+                ;
+                index += 1;
+              } catch (err) {
+                throw err;
+              }
+            };
             if (this.prev && this.prev.prev) {
-              const { components: components2, state, path, name } = this.prev.prev;
+              let component3 = this.prev.prev.component;
+              let state = this.prev.prev.state;
+              let path = this.prev.prev.path;
+              let name2 = this.prev.prev.name;
+              let overlay2 = this.prev.prev.overlay;
+              let destroyPromise = Promise.resolve();
+              if (overlay2) {
+                destroyPromise = new Promise((res, rej) => {
+                  const components2 = this.prev.components;
+                  const l2 = components2.length;
+                  let i = 0;
+                  if (l2) {
+                    recur(i, components2, this.components, res);
+                  } else {
+                    res();
+                  }
+                  ;
+                });
+              }
+              ;
               promise = new Promise((res, rej) => {
-                const l2 = components2.length;
+                const l2 = components.length;
                 let i = 0;
                 if (l2) {
-                  const recur = () => {
-                    let component4 = components2[i];
-                    if (components2.length > i) {
-                      component4 = this.components[component4];
-                      component4.fire.destroy();
-                      component4.await.destroy.then(() => {
-                        recur();
-                      });
-                    } else {
-                      res();
-                    }
-                    ;
-                    i += 1;
-                  };
-                  recur();
+                  recur(i, components, this.components, res);
                 } else {
                   res();
                 }
                 ;
               });
-              return promise;
+              return destroyPromise.then(() => {
+                return promise;
+              });
             }
             ;
             return promise;
@@ -2993,2436 +5017,452 @@
     }
   });
 
-  // src/scripts/attrib/utils.js
-  var require_utils2 = __commonJS({
-    "src/scripts/attrib/utils.js"(exports) {
-      exports.getConfig = function(st, type, prop, newValue, prevValue, component3) {
-        if (newValue == null) {
-          return [];
+  // src/scripts/persist.js
+  var require_persist = __commonJS({
+    "src/scripts/persist.js"(exports, module) {
+      var StorageKit = require_storage()();
+      var ComponentStorage = require_components_store();
+      module.exports = class {
+        constructor() {
+          this.storage = new StorageKit({
+            child: "array",
+            storage: "session",
+            name: "_cake_persistent"
+          });
         }
-        ;
-        if (newValue == prevValue && type != "bind") {
-          return [];
-        }
-        ;
-        return (() => {
-          let ctx = [];
-          let s = st[component3] && st[component3][type] || [];
-          if (s && s.length) {
-            for (let i = 0; i < s.length; i++) {
-              let item = s[i];
-              if (item.bind == prop) {
-                ctx.push({ ...item, component: component3 });
-              }
-              ;
-            }
-            ;
+        listen(components) {
+          components = ComponentStorage;
+          let event = "DOMContentLoaded";
+          if ("deviceready" in document) {
+            event = "deviceready";
           }
           ;
-          return ctx;
-        })();
-      };
-      exports.updateConfig = function(st, type, prop, newValue, prevValue, component3, update, sel) {
-        if (newValue == null) {
-          return;
-        }
-        ;
-        if (newValue == prevValue && type != "bind") {
-          return;
-        }
-        ;
-        var st = (() => {
-          let config = st[component3] && st[component3][type];
-          if (config && config.length) {
-            let ctx = [];
-            for (let i = 0; i < config.length; i++) {
-              let item = config[i];
-              let test = item.bind == prop && (sel ? item.sel == sel : true);
-              if (test) {
-                Object.assign(item, update);
-              } else {
-              }
-              ;
-            }
-            ;
-            return ctx;
-          } else {
-            return [];
-          }
-          ;
-        })();
-        return st;
-      };
-      exports.extendConfig = function(configs) {
-        const cloned = [];
-        for (let i = 0; i < configs.length; i++) {
-          const cl = {};
-          const item = configs[i];
-          for (let key in item) {
-            cl[key] = item[key];
-          }
-          ;
-          cloned.push(cl);
-        }
-        ;
-        return cloned.reduce((accu, iter) => {
-          let { incrementedSels } = iter;
-          if (incrementedSels && incrementedSels.length) {
-            incrementedSels.forEach((ic) => {
-              let cloned2 = { ...iter };
-              cloned2.incrementedSel = ic;
-              accu.push(cloned2);
-            });
-          } else {
-            accu.push(iter);
-          }
-          ;
-          return accu;
-        }, []);
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-attr.js
-  var require_data_attr = __commonJS({
-    "src/scripts/attrib/data-attr.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "attr", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          configs = extendConfig(configs);
-          return Promise.all(configs.map((config) => {
-            let data2;
-            let { hasNegate, bind: bind2, testVal, attr, ops, sel, attrkey, attrvalue, incrementedSel, incrementId } = config;
-            bind2 = Utils.removeWhiteSpace(bind2);
-            attr = Utils.removeWhiteSpace(attr);
-            incrementedSel = newValue.incrementedSel || incrementedSel;
-            if (!!newValue.incrementedSel) {
-              data2 = newValue[bind2];
-            } else {
-              data2 = newValue;
-            }
-            ;
-            if (prop == bind2) {
-              let els = html.querySelectorAll(`[data-attr=${incrementedSel || sel}]:not(.cake-template)`);
-              return Promise.all([...els].map((el2) => {
-                let test = false;
-                if (ops) {
-                  test = Utils.logTest(data2, ops, testVal);
-                  hasNegate && (test = !test);
-                } else if (hasNegate) {
-                  test = !data2;
-                } else {
-                  test = !!data2;
-                }
-                ;
-                if (test) {
-                  return new Promise((res, rej) => {
-                    Utils.timeOut(() => {
-                      if (attrvalue) {
-                        el2.setAttribute(attrkey, true);
-                      } else {
-                        el2.setAttribute(attrkey);
-                      }
-                      ;
-                      res();
-                    }, 100);
-                  });
-                } else {
-                  return new Promise((res, rej) => {
-                    if (el2.hasAttribute(attrkey)) {
-                      Utils.timeOut(() => {
-                        el2.removeAttribute(attrkey);
-                        res();
-                      }, 100);
-                    } else {
-                      res();
-                    }
-                    ;
-                  });
-                }
-                ;
-              }));
-            }
-            ;
-          }));
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-bind.js
-  var require_data_bind = __commonJS({
-    "src/scripts/attrib/data-bind.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "bind", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          configs = extendConfig(configs);
-          for (let c = 0; c < configs.length; c++) {
-            let config = configs[c], data2;
-            let { attr, bind: bind2, sel, incrementedSel, incrementId, incrementedSels } = config;
-            incrementedSel = newValue.incrementedSel || incrementedSel;
-            if (!!newValue.incrementedSel) {
-              data2 = newValue[bind2];
-            } else {
-              data2 = newValue;
-            }
-            ;
-            let attrHyphen = attr.toHyphen();
-            if (prop == bind2) {
-              let els = html.querySelectorAll(`[data-bind=${incrementedSel || sel}]`);
-              for (let p = 0; p < els.length; p++) {
-                let el2 = els[p];
-                if (attr == "class" || attr == "className") {
-                  if (el2.classList.length) {
-                    Utils.splitBySpace(prevValue, function(cls) {
-                      el2.classList.remove(cls);
-                    });
-                    Utils.splitBySpace(data2, function(cls) {
-                      el2.classList.add(cls);
-                    });
+          window.addEventListener(event, (e) => {
+            setTimeout(() => {
+              this.storage.getAll().then((result) => {
+                if (!(result && !result.length))
+                  return;
+                for (let r = 0; r < result.length; r++) {
+                  let item = result[r];
+                  let component2 = components.get(item);
+                  component2.isConnected = false;
+                  if (component2) {
+                    !component2.isConnected && component2.render.bind(component2)();
                   } else {
-                    Utils.splitBySpace(data2, function(cls) {
-                      el2.classList.add(cls);
-                    });
-                  }
-                  ;
-                } else {
-                  if (data2 != void 0 || data2 != null) {
-                    el2.setAttribute(attrHyphen, data2);
-                    el2[attr] = data2;
-                  }
-                  ;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-class.js
-  var require_data_class = __commonJS({
-    "src/scripts/attrib/data-class.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "class", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          let cache = {};
-          configs = extendConfig(configs);
-          for (let c = 0; c < configs.length; c++) {
-            let config = configs[c], data2;
-            let { hasNegate, bind: bind2, testVal, className, ops, sel, incrementedSel, incrementId } = config;
-            bind2 = Utils.removeWhiteSpace(bind2);
-            incrementedSel = newValue.incrementedSel || incrementedSel;
-            if (!!newValue.incrementedSel) {
-              data2 = newValue[bind2];
-            } else {
-              data2 = newValue;
-            }
-            ;
-            if (prop == bind2) {
-              if (!cache[incrementedSel || sel]) {
-                cache[incrementedSel || sel] = html.querySelectorAll(`[data-class=${incrementedSel || sel}]:not(.cake-template)`);
-              }
-              let els = cache[incrementedSel || sel];
-              for (let p = 0; p < els.length; p++) {
-                let el2 = els[p];
-                let test = false;
-                if (ops) {
-                  test = Utils.logTest(data2, ops, testVal);
-                  hasNegate && (test = !test);
-                } else if (hasNegate) {
-                  test = data2 == testVal;
-                } else {
-                  test = !!data2;
-                }
-                ;
-                if (test) {
-                  Utils.splitBySpace(className, function(cls) {
-                    const classList = Utils.toArray(el2.classList);
-                    if (!classList.includes(cls)) {
-                      setTimeout(() => {
-                        el2.classList.add(cls);
-                      });
-                    }
-                    ;
-                  });
-                } else {
-                  Utils.splitBySpace(className, function(cls) {
-                    const classList = Utils.toArray(el2.classList);
-                    if (classList.includes(cls)) {
-                      setTimeout(() => {
-                        el2.classList.remove(cls);
-                      });
-                    }
-                    ;
-                  });
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-for-auto.js
-  var require_data_for_auto = __commonJS({
-    "src/scripts/attrib/data-for-auto.js"(exports, module) {
-      var Templating = require_templating();
-      module.exports = function(st) {
-        return async function(obj) {
-          let { vItems, configs, newValue } = obj;
-          let childCf = [];
-          for (let o2 = 0; o2 < configs.length; o2++) {
-            let config = configs[o2];
-            let children = config.children;
-            if (!children)
-              continue;
-            for (let c = 0; c < children.length; c++) {
-              let child = children[c];
-              if (!st[config.component]) {
-                continue;
-              }
-              let cf = st[config.component].for.find((item) => {
-                return item.sel == child;
-              });
-              cf && childCf.push(new Promise((res) => {
-                let { bind: bind2, sel, iter, ins } = cf;
-                setTimeout(() => {
-                  let targets = document.querySelectorAll(`[data-for=${sel}-active]`);
-                  for (let t = 0; t < targets.length; t++) {
-                    let target = targets[t];
-                    let prop = target.dataset.forAutoBindKey;
-                    let value = target.dataset.forAutoBindValue;
-                    let props = newValue.find((item) => {
-                      return item[prop] == value;
-                    });
-                    let pr = bind2.split(".")[bind2.split(".").length - 1];
-                    let datas = props[pr].length && props[pr].map((item) => {
-                      if (item instanceof Object) {
-                        return item;
-                      } else {
-                        return { [iter]: item };
-                      }
-                      ;
-                    });
-                    if (datas) {
-                      for (let d = 0; d < datas.length; d++) {
-                        let data2 = datas[d];
-                        let template = target.cloneNode(true);
-                        let create = new Templating(data2, template, false).createElement();
-                        create.style.removeProperty("display");
-                        create.classList.remove("cake-template");
-                        create.removeAttribute("data-for-template");
-                        target.insertAdjacentElement("beforebegin", create);
-                      }
-                      ;
-                    }
-                    ;
-                    if (target.parentElement.tagName == "SELECT") {
-                      target.parentElement.selectedIndex = 0;
-                    }
-                    ;
-                  }
-                  ;
-                  res();
-                });
-              }));
-            }
-            ;
-          }
-          ;
-          return Promise.all(childCf);
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-for-update.js
-  var require_data_for_update = __commonJS({
-    "src/scripts/attrib/data-for-update.js"(exports, module) {
-      var Utils = require_utils();
-      var Piece = require_piece();
-      var Templating = require_templating();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function({ st, logicalType }) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "forUpdate", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          const attrPayload = [];
-          for (let c = 0; c < configs.length; c++) {
-            let { bind: bind2, sel, iter, ins, targets } = configs[c];
-            for (let o2 in newValue) {
-              if (newValue.hasOwnProperty(o2)) {
-                let targets2 = document.querySelectorAll(`[data-for-update-bind=${o2}]`);
-                for (let t = 0; t < targets2.length; t++) {
-                  let target = targets2[t];
-                  let binded = target.dataset.forUpdateBind;
-                  if (!target.dataset.forTemplate) {
-                    target.remove();
-                  } else {
-                    let template = target.cloneNode(true);
-                    template.style.removeProperty("display");
-                    template.classList.remove("cake-template");
-                    let dataForIteration = newValue[binded];
-                    let i = -1;
-                    l = dataForIteration.length;
-                    while (++i < l) {
-                      let item = dataForIteration[i];
-                      let index = i;
-                      for (let lt = 0; lt < logicalType.length; lt++) {
-                        let type = logicalType[lt];
-                        const logicalHtml = new Piece(target).querySelectorAllIncluded(`[data-${type}]`);
-                        for (let l2 = 0; l2 < logicalHtml.length; l2++) {
-                          const hit = logicalHtml[l2];
-                          if (hit.dataset[type]) {
-                            let sel2 = hit.dataset[type];
-                            let incrementedSel = `${sel2}-${index}`;
-                            template.dataset[type] = incrementedSel;
-                            let { bind: bind3 } = this.getWatchItemsBySel(component3, type, sel2);
-                            if (bind3.includes(".")) {
-                              let split = bind3.split(".");
-                              binded = split[0];
-                              for (let key in item) {
-                                let value = item[key];
-                                let _key = `${binded}.${key}`;
-                                item[_key] = value;
-                              }
-                              ;
-                            }
-                            ;
-                            if (sel2) {
-                              attrPayload.push({ _type: type, ...item, incrementedSel, sel: sel2, bind: bind3, incrementId: index, component: component3 });
-                            }
-                            ;
-                          }
-                          ;
-                        }
-                        ;
-                      }
-                      ;
-                      let create = new Templating(item, template, false).createElement();
-                      create.classList.remove("cake-template");
-                      create.removeAttribute("data-for-template");
-                      target.insertAdjacentElement("beforebegin", create);
-                      if (target.parentElement.tagName == "SELECT") {
-                        target.parentElement.selectedIndex = 0;
-                      }
-                      ;
-                    }
-                    ;
-                  }
-                  ;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          return Promise.all(attrPayload.map((payload) => {
-            const { bind: bind2, _type, component: component4, incrementedSel, sel } = payload;
-            const name = `notify${_type.toProper()}`;
-            updateConfig(_type, bind2, payload, null, component4, { incrementedSel }, sel);
-            return this[name](bind2, payload, null, component4);
-          })).then(() => {
-          });
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-for.js
-  var require_data_for = __commonJS({
-    "src/scripts/attrib/data-for.js"(exports, module) {
-      var Utils = require_utils();
-      var Templating = require_templating();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          return new Promise((res, rej) => {
-            try {
-              let configs = getConfig(st, "for", prop, newValue, prevValue, component3);
-              if (!configs.length)
-                return;
-              let vItems = [];
-              for (let c = 0; c < configs.length; c++) {
-                let { bind: bind2, sel, iter, ins, component: component4, cleaned } = configs[c];
-                html = Cake.Components[component4].html;
-                let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
-                let cloned = target.cloneNode(true);
-                console.log(35, cloned.innerHTML);
-                ;
-                (() => {
-                  let switchs = cloned && cloned.querySelectorAll(`[data-switch]`);
-                  if (switchs && switchs.length) {
-                    let l2 = switchs.length, i = -1;
-                    while (++i < l2) {
-                      let sw = switchs[i];
-                      let parent = sw.parentElement;
-                      let div = document.createElement("div");
-                      div.dataset.switchSlot = sw.dataset.switch;
-                      parent.replaceChild(div, sw);
-                    }
-                    ;
-                    switchs = null;
-                  }
-                  ;
-                })();
-                ;
-                (() => {
-                  let template = cloned;
-                  let i = -1;
-                  l = newValue.length;
-                  newValue = newValue.map((item) => {
-                    for (let key in item) {
-                      if (item.hasOwnProperty(key)) {
-                        item[`${iter}.${key}`] = item[key];
-                      }
-                      ;
-                    }
-                    ;
-                    return item;
-                  });
-                  newValue.forEach((item, index) => {
-                    let create = new Templating(item, template, false).createElement();
-                    create.style.removeProperty("display");
-                    create.classList.remove("cake-template");
-                    create.removeAttribute("data-for-template");
-                    target.insertAdjacentElement("beforebegin", create);
-                    let safeSrc = create.querySelectorAll("[data-src]");
-                    if (safeSrc) {
-                      for (let s = 0; s < safeSrc.length; s++) {
-                        let el2 = safeSrc[s];
-                        el2.src = el2.dataset.src;
-                        el2.removeAttribute("data-src");
-                      }
-                      ;
-                    }
-                    ;
-                  });
-                  if (cleaned) {
-                    target.remove();
-                  }
-                  ;
-                })();
-              }
-              ;
-              console.log("actual for is finished");
-              return this.notifyForAuto({ configs, newValue }).then(() => {
-                console.log("for and forauto is finished");
-                res();
-              }).catch((err) => {
-                rej(err);
-              });
-            } catch (err) {
-              rej(err);
-            }
-          });
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-if.js
-  var require_data_if = __commonJS({
-    "src/scripts/attrib/data-if.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "if", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          configs = extendConfig(configs);
-          let cache = {};
-          for (let c = 0; c < configs.length; c++) {
-            let config = configs[c];
-            let { attr, bind: bind2, sel, testval, _true, _false, ops, hasNegate, incrementedSel, incrementId } = config;
-            let attrHyphen = attr.toHyphen();
-            let trueNotIgnore = _true != "null";
-            let falseNotIgnore = _false != "null";
-            if (prop == bind2) {
-              if (!cache[sel]) {
-                cache[sel] = html.querySelectorAll(`[data-if=${incrementedSel || sel}]:not(.cake-template)`);
-              }
-              let els = cache[sel];
-              for (let p = 0; p < els.length; p++) {
-                let el2 = els[p];
-                let data2 = newValue;
-                let test;
-                if (testval) {
-                  test = Utils.logTest(testval, ops, data2);
-                } else {
-                  test = hasNegate ? !data2 : !!data2;
-                }
-                ;
-                if (test) {
-                  if (trueNotIgnore) {
-                    if (attr == "class") {
-                      let trueClasses2 = _true.split(" ");
-                      if (falseNotIgnore) {
-                        let falseClasses = _false.split(" ");
-                        falseClasses.forEach((cls) => {
-                          el2.classList.remove(cls);
-                        });
-                        trueClasses2.forEach((cls) => {
-                          el2.classList.add(cls);
-                        });
-                      } else {
-                        trueClasses2.forEach((cls) => {
-                          if (!el2.classList.contains(cls)) {
-                            el2.classList.add(cls);
-                          }
-                          ;
-                        });
-                      }
-                      ;
-                    } else {
-                      if (data2[_true]) {
-                        el2.setAttribute(attr, data2[_true]);
-                      }
-                    }
-                    ;
-                  }
-                } else {
-                  if (falseNotIgnore) {
-                    if (attr == "class") {
-                      let falseClasses = _false.split(" ");
-                      if (trueNotIgnore) {
-                        let trueClasses2 = _true.split(" ");
-                        trueClasses2.forEach((cls) => {
-                          el2.classList.remove(cls);
-                        });
-                        falseClasses.forEach((cls) => {
-                          el2.classList.add(cls);
-                        });
-                      } else {
-                        trueClasses.forEach((cls) => {
-                          if (!el2.classList.contains(cls)) {
-                            el2.classList.add(cls);
-                          }
-                          ;
-                        });
-                      }
-                      ;
-                    } else {
-                      el2.setAttribute(attr, _false);
-                    }
-                    ;
+                    console.error(`component ${component2} is not found!`);
                   }
                 }
                 ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-input.js
-  var require_data_input = __commonJS({
-    "src/scripts/attrib/data-input.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "input", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          for (let c = 0; c < configs.length; c++) {
-            let config = configs[c];
-            let { attr, bind: bind2, sel } = config;
-            let attrHyphen = attr.toHyphen();
-            if (prop == bind2) {
-              let els = html.querySelectorAll(`[data-input=${sel}]`);
-              for (let p = 0; p < els.length; p++) {
-                let el2 = els[p];
-                if (attr == "className") {
-                  if (prevValue) {
-                    if (newValue) {
-                      el2.classList.replace(prevValue, newValue);
-                    } else {
-                      el2.classList.remove(prevValue);
-                    }
-                    ;
-                  } else {
-                    el2.classList.add(newValue);
-                  }
-                  ;
-                } else {
-                  el2.setAttribute(attrHyphen, newValue);
-                  el2[attr] = newValue;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-switch.js
-  var require_data_switch = __commonJS({
-    "src/scripts/attrib/data-switch.js"(exports, module) {
-      var Utils = require_utils();
-      var Templating = require_templating();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function({ st, logicalType }) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "switch", prop, newValue, prevValue, component3);
-          if (!configs.length)
-            return;
-          let attrPayload = [];
-          for (let c = 0; c < configs.length; c++) {
-            let config = configs[c];
-            let { bind: bind2, sel, map, cases } = config;
-            let parent = html.querySelectorAll(`[data-switch-slot=${sel}]`);
-            for (let n = 0; n < newValue.length; n++) {
-              let index = n;
-              let row = newValue[n];
-              let slot = parent[n];
-              let slotIndex = slot.dataset.index;
-              let prop2 = row[map];
-              if (prop2 != void 0) {
-                let _case = null;
-                for (let c2 = 0; c2 < cases.length; c2++) {
-                  let test = cases[c2].bind.split("|").includes(prop2);
-                  if (test) {
-                    _case = cases[c2];
-                    break;
-                  }
-                  ;
-                }
-                ;
-                if (_case) {
-                  let { _id, bind: bind3 } = _case;
-                  let hit = document.querySelector(`[data-case=${sel}-${_id}]`);
-                  if (hit && hit.toString().includes("Element")) {
-                    hit = hit.cloneNode(true);
-                    let forChildren = hit.querySelectorAll("[data-for-auto=true]");
-                    for (let f = 0; f < forChildren.length; f++) {
-                      let ch = forChildren[f];
-                      ch.dataset.for = `${ch.dataset.for}-active`;
-                    }
-                    ;
-                    hit.removeAttribute("data-case");
-                    let template = new Templating(row, hit, false).createElement();
-                    for (let lt = 0; lt < logicalType.length; lt++) {
-                      let type = logicalType[lt];
-                      if (hit.dataset[type]) {
-                        let sel2 = hit.dataset[type];
-                        let incrementedSel = `${sel2}-${index}`;
-                        template.dataset[type] = incrementedSel;
-                        let { bind: bind4 } = this.getWatchItemsBySel(component3, type, sel2);
-                        if (sel2) {
-                          attrPayload.push({ _type: type, ...row, incrementedSel, sel: sel2, component: component3, bind: bind4, incrementId: index });
-                        }
-                        ;
-                      }
-                      ;
-                    }
-                    ;
-                    template.classList.remove("cake-template");
-                    slot.replaceWith(template);
-                  }
-                }
-              }
-            }
-            ;
-          }
-          ;
-          return Promise.all(attrPayload.map((payload) => {
-            const { bind: bind2, _type, component: component4, incrementedSel, sel } = payload;
-            const name = `notify${_type.toProper()}`;
-            updateConfig(st, _type, bind2, payload, null, component4, { incrementedSel }, sel);
-            return this[name](bind2, payload);
-          })).then(() => {
-            let incrementedSels = attrPayload.reduce((accu, iter) => {
-              let { sel, incrementedSel, bind: bind2 } = iter;
-              if (!accu[sel]) {
-                accu[sel] = { data: iter, incrementedSels: [] };
-              }
-              ;
-              accu[sel].incrementedSels.push(incrementedSel);
-              return accu;
-            }, {});
-            for (let key in incrementedSels) {
-              if (incrementedSels.hasOwnProperty(key)) {
-                let val = incrementedSels[key];
-                let { data: data2, incrementedSels: ic } = val;
-                let { _type, bind: bind2, component: component4, sel } = data2;
-                updateConfig(st, _type, bind2, data2, null, component4, { incrementedSels: ic }, sel);
-              }
-              ;
-            }
-            ;
-          });
-        };
-      };
-    }
-  });
-
-  // src/scripts/attrib/data-toggle.js
-  var require_data_toggle = __commonJS({
-    "src/scripts/attrib/data-toggle.js"(exports, module) {
-      var Utils = require_utils();
-      var { getConfig, updateConfig, extendConfig } = require_utils2();
-      module.exports = function(st) {
-        return async function(prop, newValue, prevValue, component3, html) {
-          html = html || document;
-          let configs = getConfig(st, "toggle", prop, newValue, prevValue);
-          if (!configs) {
-            return;
-          }
-          ;
-          configs = extendConfig(configs);
-          html = html || document;
-          for (let s = 0; s < configs.length; s++) {
-            let sub = configs[s];
-            if (!sub)
-              continue;
-            let { sel, bind: bind2, value, ops } = sub;
-            let el2 = html.querySelector(`[data-toggle=${sel}]`);
-            if (value == prevValue) {
-              el2 && el2.classList.remove("is-active");
-            }
-            if (value == newValue) {
-              if (el2) {
-                if (el2.classList.contains("is-active")) {
-                  el2.classList.remove("is-active");
-                }
-                ;
-                el2 && el2.classList.add("is-active");
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        };
-      };
-    }
-  });
-
-  // src/scripts/attributes.js
-  var require_attributes = __commonJS({
-    "src/scripts/attributes.js"(exports, module) {
-      var Utils = require_utils();
-      var notifyAttr = require_data_attr();
-      var notifyBind = require_data_bind();
-      var notifyClass = require_data_class();
-      var notifyForAuto = require_data_for_auto();
-      var notifyForUpdate = require_data_for_update();
-      var notifyFor = require_data_for();
-      var notifyIf = require_data_if();
-      var notifyInput = require_data_input();
-      var notifySwitch = require_data_switch();
-      var notifyToggle = require_data_toggle();
-      var st = {};
-      var logicalType = ["if", "bind", "switch", "toggle", "class", "attr"];
-      function Attrib() {
-        this.uiid = 0;
-        this.notify = {};
-      }
-      Attrib.prototype.notifyFor = notifyFor(st);
-      Attrib.prototype.notifySwitch = notifySwitch({ st, logicalType });
-      Attrib.prototype.notifyForAuto = notifyForAuto(st);
-      Attrib.prototype.notifyForUpdate = notifyForUpdate({ st, logicalType });
-      Attrib.prototype.notifyClass = notifyClass(st);
-      Attrib.prototype.notifyBind = notifyBind(st);
-      Attrib.prototype.notifyAttr = notifyAttr(st);
-      Attrib.prototype.notifyIf = notifyIf(st);
-      Attrib.prototype.notifyInput = notifyInput(st);
-      Attrib.prototype.notifyToggle = notifyToggle(st);
-      Attrib.prototype.notifier = function(prop, newValue, prevValue, component3) {
-        let val = newValue;
-        if (Utils.isObject(val)) {
-          val = JSON.parse(JSON.stringify(newValue));
-        }
-        ;
-        const equiv = {
-          for: "For",
-          forUpdate: "ForUpdate",
-          switch: "Switch",
-          toggle: "Toggle",
-          bind: "Bind",
-          input: "Input",
-          if: "If",
-          class: "Class",
-          attr: "Attr"
-        };
-        let hits = Object.caching("AttribProp").get(prop) || (() => {
-          let hits2 = {};
-          const actions = Object.keys(equiv);
-          const configs = st[component3];
-          if (!configs) {
-            return [];
-          }
-          ;
-          for (let a = 0; a < actions.length; a++) {
-            const action = actions[a];
-            const vals = configs[action];
-            if (vals) {
-              for (let v = 0; v < vals.length; v++) {
-                const val2 = vals[v];
-                const { bind: bind2 } = val2;
-                if (bind2 == prop) {
-                  hits2[action] = true;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          hits2 = Object.keys(hits2);
-          Object.caching("AttribProp").set(prop, hits2);
-          return hits2;
-        })();
-        return new Promise((res, rej) => {
-          try {
-            let l2 = hits.length;
-            let index = 0;
-            const rec = () => {
-              if (l2 > index) {
-                let attr = hits[index];
-                const name = equiv[attr];
-                index += 1;
-                if (name == "For") {
-                  this[`notify${name}`](prop, val, prevValue, component3);
-                  rec();
-                } else {
-                  this[`notify${name}`](prop, val, prevValue, component3).then(() => {
-                    rec();
-                  });
-                }
-                ;
-              } else {
-                res();
-              }
-              ;
-            };
-            rec();
-          } catch (err) {
-            rej(err.message);
-          }
-          ;
-        });
-      };
-      Attrib.prototype.registerNotifier = function(component3, fn2) {
-        if (!this.notify[component3]) {
-          this.notify[component3] = [];
-        }
-        ;
-        this.notify[component3].push(fn2);
-      };
-      Attrib.prototype.getEventTarget = function(component3) {
-        let id2 = `${component3}`;
-        let target = Object.caching("getEventTarget").get(id2);
-        if (!target) {
-          let cf = st[component3];
-          target = cf && cf.evt ? cf.evt : [];
-          Object.caching("getEventTarget").set(id2, target);
-        }
-        ;
-        return target;
-      };
-      Attrib.prototype.getRouterTarget = function(component3) {
-        let id2 = `${component3}`;
-        let target = Object.caching("getRouterTarget").get(id2);
-        if (!target) {
-          let cf = st[component3];
-          target = cf && cf.router ? cf.router : [];
-          Object.caching("getRouterTarget").set(id2, target);
-        }
-        ;
-        return target;
-      };
-      Attrib.prototype.getWatchItems = function(component3) {
-        let id2 = `${component3}`;
-        let target = Object.caching("getWatchItems").get(id2);
-        if (!target) {
-          let _st = st[component3] || {};
-          let wt = /* @__PURE__ */ new Set();
-          for (let type in _st) {
-            if (_st.hasOwnProperty(type)) {
-              let tst = _st[type];
-              for (let t = 0; t < tst.length; t++) {
-                let item = tst[t];
-                let { bind: bind2 } = item;
-                if (bind2) {
-                  wt.add(bind2);
-                } else {
-                  continue;
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          target = [...wt];
-          Object.caching("getWatchItems").set(id2, target);
-        }
-        ;
-        return target;
-      };
-      Attrib.prototype.getWatchItemsByType = function(component3, type) {
-        let id2 = `${component3}-${type}`;
-        let target = Object.caching("getWatchItemsByType").get(id2);
-        if (!target) {
-          let _st = st[component3] || {};
-          let tst = _st[type] || [];
-          let wt = /* @__PURE__ */ new Set();
-          for (let t = 0; t < tst.length; t++) {
-            let item = tst[t];
-            let { bind: bind2 } = item;
-            switch (!!bind2) {
-              case true:
-                {
-                  wt.add(bind2);
-                }
-                break;
-              default:
-                {
-                  switch (true) {
-                    case (type == "animate" || type == "toggle"): {
-                      if (wt.constructor.name = "Set") {
-                        wt = [];
-                      }
-                      ;
-                      wt.push(item);
-                    }
-                  }
-                  ;
-                }
-                ;
-            }
-            ;
-          }
-          ;
-          target = [...wt];
-          Object.caching("getWatchItemsByType").set(id2, target);
-        }
-        ;
-        return target;
-      };
-      Attrib.prototype.getWatchItemsBySel = function(component3, type, sel) {
-        let id2 = `${component3}-${type}-${sel}`;
-        let target = Object.caching("watchItemsBySel").get(id2);
-        if (!target) {
-          let array = st[component3][type];
-          let find = array.find((item) => {
-            return item.sel == sel;
-          });
-          target = find ? find : false;
-          Object.caching("watchItemsBySel").set(id2, target);
-        }
-        ;
-        return target;
-      };
-      Attrib.prototype._activateReactive = (component3) => {
-      };
-      Attrib.prototype._register = function(store, f, s, obj) {
-        switch (true) {
-          case !store[f]:
-            {
-              store[f] = {};
-            }
-            ;
-          case !store[f][s]:
-            {
-              store[f][s] = [];
-            }
-            ;
-          default:
-            {
-              store[f][s].push(obj);
-            }
-            ;
-            break;
-        }
-        ;
-      };
-      Attrib.prototype._static = function(component3) {
-        return function(qs, isStatic) {
-          let els = [];
-          for (let t = 0; t < qs.length; t++) {
-            let el2 = qs[t];
-            switch (isStatic) {
-              case false:
-                {
-                  els.push(el2);
-                }
-                ;
-                break;
-              case true:
-                {
-                  let dComponent = el2.closest("[data-component]");
-                  dComponent = dComponent && dComponent.dataset.component;
-                  switch (dComponent == component3) {
-                    case true:
-                      {
-                        els.push(el2);
-                      }
-                      break;
-                  }
-                  ;
-                }
-                break;
-              default: {
-                continue;
-              }
-            }
-            ;
-          }
-          ;
-          return els;
-        };
-      };
-      Attrib.prototype._compileEvents = function(events, component3, isStatic) {
-        return new Promise((res) => {
-          if (!events.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(events, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let e = 0; e < els.length; e++) {
-            let id2 = `cke${this.uiid}`;
-            let el2 = els[e];
-            let splitted = el2.dataset.event.split(" ").join("").split(",");
-            for (let s = 0; s < splitted.length; s++) {
-              let [event, cb] = splitted[s].split(":");
-              this._register(st, component3, "evt", { event, sel: id2, cb });
-              el2.dataset.event = id2;
-              this.uiid++;
-            }
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileToggle = function(toggles, component3, isStatic) {
-        return new Promise((res) => {
-          if (!toggles.length) {
-            res();
-            return;
-          }
-          let els = this._static(component3)(toggles, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          let c = {};
-          for (let t = 0; t < toggles.length; t++) {
-            let id2 = `ckt${this.uiid}`;
-            let el2 = toggles[t];
-            let ns = el2.dataset.toggle;
-            if (c[ns]) {
-              id2 = c[ns];
-            }
-            ;
-            this._register(st, component3, "toggle", { sel: id2, name: "ns-" + ns });
-            el2.dataset.toggle = id2;
-            this.uiid++;
-            c[ns] = id2;
-          }
-          ;
-          c = {};
-          res();
-        });
-      };
-      Attrib.prototype._compileFor = function(fors, component3, isStatic, el2) {
-        return new Promise((res) => {
-          let target = el2;
-          if (!fors.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(fors, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          let o2 = {};
-          for (let f = 0; f < els.length; f++) {
-            let id2 = `ckf${this.uiid}`;
-            let el3 = els[f];
-            let fr2 = el3.dataset.for;
-            let autoBind = el3.dataset.forAutoBind;
-            let isCleaned = el3.dataset.forCleaned == "true";
-            let [a, b, c] = fr2.split(" ");
-            if (autoBind) {
-              let split = autoBind.split(":");
-              let autoBindKey = split[0] && split[0].trim();
-              let autoBindValue = split[1] && split[1].trim();
-              el3.dataset.forAutoBindKey = autoBindKey;
-              el3.dataset.forAutoBindValue = autoBindValue;
-              el3.removeAttribute("data-for-auto-bind");
-            }
-            el3.style.display = "none";
-            el3.classList.add("cake-template");
-            el3.dataset.for = id2;
-            el3.dataset.forTemplate = id2;
-            o2[id2] = { bind: c, sel: id2, iter: a, ins: b, cleaned: isCleaned };
-            ++this.uiid;
-            if (f != 0) {
-              let parent = el3.parentElement && el3.parentElement.closest("[data-for]");
-              if (!parent) {
-                continue;
-              }
-              let parentIsFor = !!parent.dataset.for;
-              if (target.contains(parent) && parentIsFor) {
-                let parentId = parent.dataset.for;
-                let parentCf = o2[parentId];
-                if (parentCf && !parentCf.children) {
-                  parentCf.children = [id2];
-                } else if (parentCf) {
-                  parentCf.children.push(id2);
-                }
-                ;
-              }
-            }
-            ;
-          }
-          ;
-          for (let key in o2) {
-            if (o2.hasOwnProperty(key)) {
-              this._register(st, component3, "for", o2[key]);
-            }
-            ;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileForUpdate = function(fors, component3, isStatic) {
-        return new Promise((res) => {
-          if (!fors.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(fors, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let f = 0; f < els.length; f++) {
-            let id2 = `ckfu${this.uiid}`;
-            let el2 = els[f];
-            let fr2 = el2.dataset.forUpdate;
-            el2.style.display = "none";
-            el2.classList.add("cake-template");
-            el2.dataset.forUpdate = id2;
-            if (!el2.dataset.for) {
-              el2.dataset.forTemplate = id2;
-            }
-            let [a, b, c] = fr2.split(" ");
-            this._register(st, component3, "forUpdate", { bind: c, sel: id2, iter: a, ins: b });
-            this.uiid++;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileSwitch = function(switchs, component3, isStatic) {
-        return new Promise((res) => {
-          if (!switchs.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(switchs, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `cks${this.uiid}`;
-            let el2 = els[s];
-            let bind2 = el2.dataset.switch, map = "def";
-            if (bind2.includes(".")) {
-              var [f, ...rest] = el2.dataset.switch.split(".");
-              bind2 = f;
-              map = rest[0];
-            }
-            ;
-            el2.dataset.switch = id2;
-            let cases = el2.querySelectorAll("[data-case]");
-            let casesId = [];
-            for (let c = 0; c < cases.length; c++) {
-              let _case = cases[c];
-              let closest = _case.closest(`[data-switch=${id2}]`);
-              _case.classList.add("cake-template");
-              if (closest) {
-                let caseBind = _case.dataset.case;
-                let _id = `cksc${this.uiid}`;
-                _case.dataset.case = `${id2}-${_id}`;
-                casesId.push({ _id, bind: caseBind });
-                this.uiid++;
-              }
-              ;
-            }
-            ;
-            this._register(st, component3, "switch", { bind: bind2, sel: id2, map, cases: casesId });
-            this.uiid++;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileBind = function(elModels, component3, isStatic) {
-        return new Promise((res) => {
-          if (!elModels.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(elModels, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `ckm${this.uiid}`;
-            let el2 = els[s];
-            let model = el2.dataset.bind;
-            let gr = model.split(",");
-            for (let g = 0; g < gr.length; g++) {
-              let val = gr[g].split(" ").join("");
-              if (val.includes(":")) {
-                var [attr, bind2] = val.split(":");
-              } else {
-                var bind2 = val;
-                var attr = "value";
-              }
-              ;
-              this._register(st, component3, "bind", { attr, bind: bind2, sel: id2 });
-            }
-            this.uiid++;
-            el2.dataset.bind = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileAnimate = function(anims, component3, isStatic) {
-        return new Promise((res) => {
-          if (!anims.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(anims, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `cka${this.uiid}`;
-            let el2 = els[s];
-            let anim = el2.dataset.animate;
-            anim = anim.split(" ").join("");
-            let o2 = {};
-            let split = anim.split(",");
-            for (let a = 0; a < split.length; a++) {
-              let item = split[a];
-              let [ctx, anims2] = item.split(":");
-              if (ctx == "ns") {
-                o2.ns = anims2;
-                break;
-              } else {
-                o2[ctx] = { keyframes: anims2.split("-") };
-              }
-              ;
-            }
-            ;
-            o2.selector = { attr: "data-animate", val: id2 };
-            this._register(st, component3, "animate", o2);
-            this.uiid++;
-            el2.dataset.animate = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileIf = function(ifs, component3, isStatic) {
-        return new Promise((res) => {
-          if (!ifs.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(ifs, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          const regex = new RegExp("<|>|===|==|!==|!=");
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `ci${this.uiid}`;
-            let el2 = els[s];
-            let _if = el2.dataset.if;
-            let _ifBind = el2.dataset.ifBind;
-            let gr = _if.split(",");
-            for (let g = 0; g < gr.length; g++) {
-              let val = gr[g];
-              let attr = val.substring(0, val.indexOf("="));
-              let exp = val.substring(val.indexOf("=") + 1, val.length);
-              exp = exp.split(new RegExp("[()]")).join("");
-              let [test, r] = exp.split("?");
-              let hasNegate = test[0] == "!";
-              hasRegularLog = test.match(regex);
-              let bind2, testVal, ops;
-              if (hasRegularLog) {
-                let splitted = test.split(regex);
-                bind2 = splitted[0].trim();
-                testVal = splitted[1].trim();
-                ops = hasRegularLog[0];
-              } else {
-                bind2 = test;
-              }
-              ;
-              if (hasNegate) {
-                bind2 = bind2.slice(1);
-              }
-              ;
-              let [_true, _false] = r.split(":");
-              this._register(st, component3, "if", { hasNegate, attr, ops, bind: bind2, testval: testVal || null, _true, _false, sel: id2, ifBind: _ifBind });
-            }
-            this.uiid++;
-            el2.dataset.if = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileClass = function(cls, component3, isStatic) {
-        return new Promise((res) => {
-          if (!cls.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(cls, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          let regex = new RegExp("<|>|===|==|!==|!=");
-          for (let s = 0; s < els.length; s++) {
-            let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal, hasNegateCount;
-            id2 = `cc${this.uiid}`;
-            el2 = els[s];
-            cl = el2.dataset.class;
-            let [test, className] = cl.split("&&");
-            test = test.trim();
-            className = className.trim();
-            hasRegularLog2 = test.match(regex);
-            if (test.substring(0, 2).includes("!")) {
-              hasNegate = true;
-              hasNegateCount = test.substring(0, 2) == "!!" ? 2 : test.substring(0, 1) == "!" ? 1 : 0;
-            } else {
-              hasNegate = false;
-              hasNegateCount = 0;
-            }
-            ;
-            if (hasRegularLog2) {
-              let splitted = test.split(regex);
-              bindVal = splitted[0].trim();
-              testVal = splitted[1].trim();
-              ops = hasRegularLog2[0].trim();
-            } else {
-              !hasNegate && (bindVal = test);
-              if (hasNegate) {
-                bindVal = test.substring(hasNegateCount);
-                testVal = hasNegateCount == 2;
-              }
-              ;
-            }
-            ;
-            this._register(st, component3, "class", { hasNegate, bind: bindVal, testVal, className, ops, sel: id2 });
-            this.uiid++;
-            el2.dataset.class = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileAttr = function(attrs, component3, isStatic) {
-        return new Promise((res) => {
-          if (!attrs.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(attrs, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          let regex = new RegExp("<|>|===|==|!==|!=");
-          for (let s = 0; s < els.length; s++) {
-            let id2, el2, cl, hasRegularLog2, hasNegate, bindVal, ops, testVal;
-            id2 = `cre${this.uiid}`;
-            el2 = els[s];
-            cl = el2.dataset.attr;
-            let [test, attrPair] = cl.split("&&");
-            attrPair = attrPair.trim();
-            let [attrkey, attrvalue] = attrPair.split("=");
-            test = test.trim();
-            hasRegularLog2 = test.match(regex);
-            hasNegate = test[0] == "!";
-            if (hasRegularLog2) {
-              let splitted = test.split(regex);
-              bind = splitted[0];
-              testVal = splitted[1];
-              ops = hasRegularLog2[0];
-            } else {
-              bind = test;
-            }
-            ;
-            if (hasNegate) {
-              hasNegate && (bind = bind.slice(1));
-            }
-            ;
-            this._register(st, component3, "attr", { hasNegate, bind, testVal, attrkey, attrvalue, ops, sel: id2 });
-            this.uiid++;
-            el2.dataset.attr = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileRouter = function(router2, component3, isStatic) {
-        return new Promise((res) => {
-          if (!router2.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(router2, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `rt${this.uiid}`;
-            let el2 = els[s];
-            let value = el2.dataset.routerLink;
-            this._register(st, component3, "router", { value, sel: id2 });
-            this.uiid++;
-            el2.dataset.routerLink = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype._compileInput = function(elModels, component3, isStatic) {
-        return new Promise((res) => {
-          if (!elModels.length) {
-            res();
-            return;
-          }
-          ;
-          let els = this._static(component3)(elModels, isStatic);
-          if (!els.length) {
-            res();
-            return;
-          }
-          for (let s = 0; s < els.length; s++) {
-            let id2 = `cknt${this.uiid}`;
-            let el2 = els[s];
-            let nodeType = el2.tagName;
-            let model = el2.dataset.input;
-            let gr = model.split(",");
-            for (let g = 0; g < gr.length; g++) {
-              let val = gr[g].split(" ").join("");
-              if (val.includes(":")) {
-                var [attr, bind2] = val.split(":");
-              } else {
-                var bind2 = val;
-                var attr = "value";
-              }
-              ;
-              this._register(st, component3, "input", { attr, bind: bind2, sel: id2, nodeType });
-            }
-            ;
-            this.uiid++;
-            el2.dataset.input = id2;
-          }
-          ;
-          res();
-        });
-      };
-      Attrib.prototype.inject = function(el2, component3, isStatic = false) {
-        return new Promise((res) => {
-          let query = el2.getElementsByDataset("bind", "for", "for-update", "switch", "toggle", "event", "animate", "if", "class", "input", "attr");
-          res(query);
-        }).then((query) => {
-          let r = [];
-          let map = {
-            "bind": this._compileBind,
-            "switch": this._compileSwitch,
-            "toggle": this._compileToggle,
-            "if": this._compileIf,
-            "class": this._compileClass,
-            "attr": this._compileAttr,
-            "for": this._compileFor,
-            "for-update": this._compileForUpdate,
-            "event": this._compileEvents,
-            "animate": this._compileAnimate,
-            "input": this._compileInput
-          };
-          for (let q in query) {
-            if (query.hasOwnProperty(q)) {
-              if (query[q].length) {
-                r.push(map[q].apply(this, [query[q], component3, isStatic, el2]));
-              }
-              ;
-            }
-            ;
-          }
-          ;
-          console.timeEnd(component3);
-          return r.length ? Promise.all(r) : Promise.resolve();
-        }).then(() => {
-          return Promise.resolve();
-        });
-      };
-      module.exports = Attrib;
-    }
-  });
-
-  // src/scripts/component.js
-  var require_component = __commonJS({
-    "src/scripts/component.js"(exports, module) {
-      var Mo = require_animate();
-      var Templating = require_templating();
-      var Piece = require_piece();
-      var Utils = require_utils();
-      function Component(name, template, options) {
-        this.name = name;
-        this.template = template;
-        this.options = options;
-        this.handlers = options.handlers;
-        this.subscribe = options.subscribe;
-        this.data = {};
-        this.root = options.root;
-        this.items = false;
-        this.type = options.type || "view";
-        this.toggle = options.toggle;
-        this.targets = {};
-        this.animateOptions = options.animate;
-        this.role = options.role;
-        this.isReady = false;
-        this.await = {};
-        this.utils = Utils;
-        (name == "app" || options.role == "app") && (() => {
-          this.staticComponent = options.static || [];
-        })();
-        this.container = {};
-        this.compile = new Promise((res) => {
-          this._bindHandlers();
-          res();
-        }).then(() => {
-          this._bindSubscribe();
-        }).then(() => {
-          switch (this.type == "view" && !!this.template) {
-            case true:
-              return this.createElementAsync();
-            default:
-              this.isStatic = false;
-              break;
-          }
-          ;
-        });
-      }
-      Component.prototype.isStatic = false;
-      Component.prototype.hasEvent = false;
-      Component.prototype.isConnected = false;
-      Component.prototype.destroyed = false;
-      Component.prototype.isCreated = false;
-      Component.prototype.Subscribe = function(handler) {
-        this.$observer.registerSubscribe({
-          [handler.listenTo]: {
-            [handler.original]: [handler]
-          }
-        });
-      };
-      Component.prototype.Node = function(el2) {
-        const piece2 = new Piece(el2);
-        ;
-        return piece2;
-      };
-      Component.prototype._bindHandlers = function() {
-        for (let key in this.handlers) {
-          if (this.handlers.hasOwnProperty(key)) {
-            let fn2 = this.handlers[key];
-            let originalName = fn2.name;
-            fn2 = fn2.bind(this);
-            fn2.original = originalName;
-            fn2.binded = this.name;
-            this.handlers[originalName] = fn2;
-            this.initAwaitHandlers(key);
-          }
-          ;
-        }
-        ;
-        if (!this.await.destroy) {
-          this.await.destroy = Promise.resolve();
-        }
-        if (!this.await.animateRemove) {
-          this.await.animateRemove = Promise.resolve();
-        }
-      };
-      Component.prototype.initAwaitHandlers = function(handlerName) {
-        this.await[handlerName] = Promise.resolve();
-      };
-      Component.prototype._bindSubscribe = function() {
-        let flattened = {};
-        for (let component3 in this.subscribe) {
-          if (this.subscribe.hasOwnProperty(component3)) {
-            subscribe = this.subscribe[component3];
-            let isMany = !!subscribe.components && !!subscribe.handler;
-            if (isMany) {
-              let event = component3;
-              let { components, handler } = subscribe;
-              handler = handler.bind(this);
-              handler.binded = this.name;
-              handler.original = event;
-              for (let c = 0; c < components.length; c++) {
-                let component4 = components[c];
-                if (!flattened[component4]) {
-                  flattened[component4] = {};
-                }
-                ;
-                if (!flattened[component4][event]) {
-                  flattened[component4][event] = [];
-                }
-                handler.listenTo = component4;
-                flattened[component4][event].push(handler);
-              }
-              ;
-            } else {
-              if (!flattened[component3]) {
-                flattened[component3] = {};
-              }
-              ;
-              let fns = subscribe;
-              for (let fn2 in fns) {
-                if (fns.hasOwnProperty(fn2)) {
-                  let handler = fns[fn2];
-                  let original = handler.name;
-                  try {
-                    handler = handler.bind(this);
-                  } catch (err) {
-                  }
-                  handler.original = original;
-                  handler.binded = this.name;
-                  handler.listenTo = component3;
-                  if (!flattened[component3][original]) {
-                    flattened[component3][original] = [];
-                  }
-                  ;
-                  flattened[component3][original].push(handler);
-                }
-                ;
-              }
-              ;
-            }
-            ;
-          }
-          ;
-        }
-        ;
-        this.subscribe = flattened;
-      };
-      Component.prototype.notifyStaticComponent = function(page, event, data2) {
-        Cake.Observer.notify(page, event, data2, this.staticComponent[page], true, this.name);
-      };
-      Component.prototype.doFor = function(prop, newValue) {
-        const getHTML = () => {
-          return this.html;
-        };
-        if (newValue == null)
-          return;
-        this.$attrib.notifyFor(prop, newValue, null, this.name, getHTML());
-      };
-      Component.prototype.doToggle = function(prop, newValue) {
-        this.$attrib.notifyToggle(prop, newValue, null, this.name, this.html);
-      };
-      Component.prototype.doSwitch = function(prop, newValue) {
-        this.$attrib.notifySwitch(prop, newValue, null, this.name, this.html);
-      };
-      Component.prototype.doIf = function(prop, newValue) {
-        this.$attrib.notifyIf(prop, newValue, null, this.name, this.html);
-      };
-      Component.prototype.$animate = function(moment) {
-        let ata = this.$attrib.getWatchItemsByType(this.name, "animate");
-        let da = this.animateOptions;
-        let arr = [];
-        ;
-        (() => {
-          if (!ata.length && !(ata instanceof Array) || !da) {
-            return;
-          }
-          for (let a = 0; a < ata.length; a++) {
-            let at = ata[a];
-            let { ns: name, selector: selector2 } = at;
-            if (at.ns) {
-              if (da[name]) {
-                let ns = da[name];
-                Object.assign(at, da[name]);
-                delete da[name];
-              }
-              ;
-            } else {
-              arr.push(ata);
-            }
-            ;
-          }
-          ;
-        })();
-        if (!ata.length) {
-          return false;
-        }
-        ;
-        (() => {
-          let obj = {};
-          let selector2 = {};
-          for (let key in da) {
-            if (da.hasOwnProperty(key)) {
-              selector2.val = key;
-              obj.selector = selector2;
-              Object.assign(obj, da[key]);
-              ata.push(obj);
-              obj = {};
-              selector2 = {};
-            }
-            ;
-          }
-          ;
-        })();
-        return new Mo(ata, this.html).animate(moment);
-      };
-      Component.prototype.$templating = function(data2, t, isConvert) {
-        let template = t || this.template;
-        return new Templating(data2, template, isConvert).createElement();
-      };
-      Component.prototype.createElement = function() {
-        let isSelector = this.template.substring(0, 1) == "#";
-        if (!isSelector)
-          return;
-        let selector2 = this.template.substr(1);
-        let query = document.getElementById(selector2);
-        let isTemplate = this.isTemplate = query && query.toString().includes("Template");
-        if (!query) {
-          throw new Error(`the template for ${this.name} is not found with.`);
-        }
-        ;
-        return new Promise((res) => {
-          switch (isTemplate) {
-            case true:
-              {
-                let element = query.getContent(true);
-                if (!element) {
-                  throw new Error(`it might be theres no template in component - ${this.name}`);
-                }
-                element.cake_component = this.name;
-                this.html = this.Node(element);
-                this._parseHTML(this.isStatic).then(() => {
-                  this._watchBindedItems();
-                  res();
-                });
-              }
-              break;
-            case null:
-              {
-                res();
-              }
-              break;
-            default:
-              {
-                let element = query;
-                if (!element) {
-                  throw new Error(`it might be theres no template in component - ${this.name}`);
-                }
-                element.cake_component = this.name;
-                this.html = this.Node(element);
-                this.isStatic = true;
-                this._parseHTML(this.isStatic).then(() => {
-                  res();
-                });
-              }
-              ;
-          }
-          ;
-        });
-      };
-      Component.prototype.createElementAsync = function() {
-        return new Promise((res) => {
-          this.createElement().then(() => {
-            res();
-          });
-        }).then(() => {
-          this.isReady = true;
-        });
-      };
-      Component.prototype._isParsed = false;
-      Component.prototype._parseHTML = function(isStatic = false) {
-        return this.$attrib.inject(this.html, this.name, isStatic).then(() => {
-          this.original = this.html.cloneNode();
-          this._isParsed = true;
-        });
-      };
-      Component.prototype.render = function(options) {
-        let { root, multiple, cleaned, emit, static: static2, hashed, data: data2 } = options || {};
-        let payload = { emit: emit || {} };
-        ;
-        const getValue = (item) => {
-          return this.data[item] || this.$scope[item] || null;
-        };
-        return new Promise((res, rej) => {
-          !!root && (this.root = root);
-          multiple && this._smoothReset();
-          if (!this.isReady) {
-            this.createElement().then(() => {
-              hashed === true && this.$hash.add(this.name);
-              return !this.template && this.fire.isConnected && this.fire.isConnected(payload, true);
-            }).then(() => {
-              this.isReady = true;
-              res();
-            });
-          } else {
-            res();
-          }
-          ;
-        }).then(() => {
-          return this.await.destroy.then(() => {
-            return this.await.animateRemove;
-          }).then(() => {
-            return new Promise((res, rej) => {
-              let forItems = this.$attrib.getWatchItemsByType(this.name, "for");
-              for (let i = 0; i < forItems.length; i++) {
-                let nv = getValue(forItems[i]);
-                this.doFor(forItems[i], nv);
-              }
-              ;
-              res(this.html);
-            }).then((element) => {
-              payload = { element, emit };
-              return new Promise((res, rej) => {
-                try {
-                  this.fire.beforeConnected && this.fire.beforeConnected(payload, true);
-                  res(element);
-                } catch (err) {
-                  rej(err);
-                }
-                ;
-              });
-            }).then((element) => {
-              if (this.isStatic) {
-              } else {
-                let prom = !data2 ? Promise.resolve() : (() => {
-                  return new Promise((res) => {
-                    let el2 = element.getElement();
-                    el2 = this.$templating(data2, el2);
-                    this.html = element = this.Node(el2);
-                    this.html.replaceDataSrc();
-                    data2 = null;
-                    res();
-                  });
-                })();
-                return prom.then(() => {
-                  element.appendTo(this.root, cleaned);
-                  this.isConnected = true;
-                });
-              }
-            }).then(() => {
-              return this.findTarget();
-            }).then(() => {
-              return this.findContainer();
-            }).then(() => {
-              let switchItems = this.$attrib.getWatchItemsByType(this.name, "switch");
-              for (let i = 0; i < switchItems.length; i++) {
-                this.doSwitch(switchItems[i], getValue(switchItems[i]));
-              }
-              ;
-            }).then(() => {
-              return this.addEvent(static2, multiple);
-            }).then(() => {
-              try {
-                return this.fire.isConnected && this.fire.isConnected(payload, true);
-              } catch (err) {
-                console.log(440, err);
-              }
-            }).then(() => {
-              return this.$animate("render");
-            }).then(() => {
-              return new Promise((res, rej) => {
-                setTimeout(() => {
-                  this._watchReactive();
-                  res();
-                }, 100);
               });
             });
           });
-        });
+        }
+        append(name2) {
+          this.storage.create(name2);
+        }
+        remove(name2) {
+          this.storage.remove(name2);
+        }
       };
-      Component.prototype.renderAsync = function(options) {
-        this.render(options).then(() => {
-          this.$persist.append(this.name);
-        });
+    }
+  });
+
+  // src/scripts/storage/handler-stat.js
+  var require_handler_stat = __commonJS({
+    "src/scripts/storage/handler-stat.js"(exports, module) {
+      var stat = {
+        handlers: {},
+        subscribe: {}
       };
-      Component.prototype._smoothReset = function() {
-        this.isConnected = false;
-        this.html = this.original.cloneNode();
-      };
-      Component.prototype._hardReset = function(name) {
-        this.isConnected = false;
-        this.$persist.remove(name);
-        this.html = this.original.cloneNode();
+      window.Stat = stat;
+      function set(storage, component2, fn2) {
+        if (storage[component2] == void 0) {
+          storage[component2] = {};
+        }
+        ;
+        if (storage[component2][fn2] == void 0) {
+          storage[component2][fn2] = 0;
+        } else {
+          storage[component2][fn2] += 1;
+        }
+        ;
         return true;
+      }
+      module.exports = {
+        handlers: {
+          set: function(component2, fn2) {
+            return set(stat.handlers, component2, fn2);
+          },
+          get: function(component2) {
+            if (stat.handlers[component2] != void 0) {
+              console.table(stat.handlers[component2]);
+            } else {
+              console.log(null);
+            }
+            ;
+          }
+        },
+        subscribe: {
+          set: function(component2, fn2) {
+            return set(stat.subscribe, component2, fn2);
+          },
+          get: function(component2) {
+            if (stat.subscribe[component2] != void 0) {
+              console.table(stat.subscribe[component2]);
+            } else {
+              console.log(null);
+            }
+            ;
+          }
+        }
       };
-      Component.prototype.reset = function() {
-        let animate2 = this.$animate("remove");
-        if (animate2 instanceof Promise) {
-          return this.await.animateRemove = new Promise((res) => {
-            animate2.then(() => {
-              return this.html.remove();
-            }).then(() => {
-              return this._hardReset(this.name);
-            }).then(() => {
-              res();
-            });
-          });
-        } else {
-          return new Promise((res) => {
-            this.html.remove(this.name);
-            this._hardReset(this.name);
+    }
+  });
+
+  // src/scripts/storage/subscriber.js
+  var require_subscriber = __commonJS({
+    "src/scripts/storage/subscriber.js"(exports, module) {
+      var Stat = require_handler_stat();
+      var subscriber = {};
+      window.Subscribe = subscriber;
+      module.exports = {
+        set: function(subscribe2) {
+          return new Promise((res, rej) => {
+            for (component in subscribe2) {
+              if (subscribe2.hasOwnProperty(component)) {
+                let events = subscribe2[component];
+                for (let event in events) {
+                  if (events.hasOwnProperty(event)) {
+                    let handler = events[event];
+                    if (!subscriber[component]) {
+                      subscriber[component] = {};
+                    }
+                    ;
+                    if (!subscriber[component][event]) {
+                      subscriber[component][event] = [];
+                    }
+                    ;
+                    subscriber[component][event].push(handler);
+                    Stat.subscribe.set(component, handler.original);
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
+            }
+            ;
             res();
           });
+        },
+        get: function(component2, event) {
+          return subscriber[component2] && subscriber[component2][event];
         }
       };
-      Component.prototype.addEvent = function(static2, multiple) {
-        let isStatic = !!static2;
-        let isMultiple = !!multiple;
-        if (isMultiple && isStatic) {
-          return false;
-        }
-        ;
-        let component3 = this.name;
-        function notify(event, component4, isPreventDefault, isStopPropagation) {
-          return function(e) {
-            console.log(509, !isPreventDefault, component4, event);
-            if (!isPreventDefault) {
-              e.preventDefault();
-            }
-            ;
-            if (isStopPropagation) {
-              e.stopPropagation();
-            }
-            ;
-            Cake.Observer.notify(component4, event, e);
-          };
-        }
-        ;
-        if (!this.targets)
-          return;
-        for (let event in this.targets) {
-          if (this.targets.hasOwnProperty(event)) {
-            let cf = this.targets[event];
-            for (let item of cf) {
-              let { sel, el: el2, cb } = item;
-              let _event = event;
-              let place = event.substring(0, 2);
-              let isPreventDefault = place.includes("~");
-              let isStopPropagation = place.includes("^");
-              if (isPreventDefault || isStopPropagation) {
-                _event = event.slice(1);
-                cb = cb || _event;
-              } else {
-                if (!cb) {
-                  cb = event;
+    }
+  });
+
+  // src/scripts/storage/handler.js
+  var require_handler = __commonJS({
+    "src/scripts/storage/handler.js"(exports, module) {
+      var Stat = require_handler_stat();
+      var handler = {};
+      window.Handler = handler;
+      module.exports = {
+        set: function(handlers, component2) {
+          return new Promise((res) => {
+            for (let fn2 in handlers) {
+              if (handlers.hasOwnProperty(fn2)) {
+                let _handler = handlers[fn2];
+                if (!handler[component2]) {
+                  handler[component2] = {};
                 }
+                ;
+                handler[component2][_handler.original] = _handler;
+                Stat.handlers.set(component2, _handler.original);
               }
               ;
-              if (!el2.Ref().get("__cake__events")) {
-                el2.Ref().set("__cake__events", {});
+            }
+            ;
+            res();
+          });
+        },
+        get: function(component2, event) {
+          return handler[component2] && handler[component2][event];
+        }
+      };
+    }
+  });
+
+  // src/scripts/observer.js
+  var require_observer = __commonJS({
+    "src/scripts/observer.js"(exports, module) {
+      var Subscriber = require_subscriber();
+      var Handler = require_handler();
+      var Stat = require_handler_stat();
+      function Observer2(logger) {
+        this.logger = logger || false;
+        this.results = {};
+      }
+      Observer2.prototype.notify = function(component2, event, e) {
+        let _component = component2;
+        let _event = event;
+        let _e = e;
+        let handler = Handler.get(_component, _event);
+        if (!handler) {
+          console.error(`no setup handler for the event ${_event} in ${_component} component`);
+          return;
+        }
+        ;
+        _component = handler.binded;
+        let prom = new Promise((res, rej) => {
+          let e2 = handler(_e);
+          res(e2);
+        });
+        Stat.handlers.set(_component, handler.original);
+        return prom.then((variable) => {
+          let execs = [];
+          if (!this.results[_component]) {
+            this.results[_component] = {};
+          }
+          ;
+          let subscribe2 = Subscriber.get(_component, _event);
+          if (subscribe2) {
+            for (let s = 0; s < subscribe2.length; s++) {
+              let fn2 = subscribe2[s];
+              Stat.subscribe.set(_component, fn2.original);
+              execs.push(new Promise((res, rej) => {
+                try {
+                  let exec = (() => {
+                    return fn2(variable);
+                  })();
+                  if (exec && exec.ObjectType == "Promise") {
+                    exec.then((result) => {
+                      if (!this.results[_component]) {
+                        this.results[_component] = {};
+                      }
+                      ;
+                      this.results[_component][_event] = result;
+                      res(result);
+                    }).catch((err) => {
+                      rej(err);
+                    });
+                  } else {
+                    this.results[_component][_event] = exec;
+                    res(exec);
+                  }
+                } catch (e2) {
+                  console.log(e2);
+                  rej(e2);
+                }
+                ;
+              }));
+            }
+            ;
+          } else {
+            if (this.logger) {
+              console.info(`no subscriber for (${_event}) event of (${_component}) component`);
+            }
+            ;
+            this.results[_component][_event] = variable;
+          }
+          ;
+          return Promise.all(execs).then(() => {
+            variable = null;
+            execs = [];
+            return true;
+          });
+        });
+      };
+      module.exports = Observer2;
+    }
+  });
+
+  // src/scripts/form.js
+  var require_form = __commonJS({
+    "src/scripts/form.js"(exports, module) {
+      module.exports = function(component2) {
+        class Options {
+          constructor(type2) {
+            this.type = type2;
+            this.storage = {};
+          }
+          store(formControl, data2) {
+            this.storage[formControl] = data2;
+          }
+          get options() {
+            if (this.type == "select" || this.type == "virtual") {
+              let a = {};
+              for (let key in this.storage) {
+                let val = this.storage[key];
+                a[key] = val.options;
               }
               ;
-              let store = el2.Ref().get("__cake__events");
-              if (!store[cb]) {
-                el2.addEventListener(_event, notify(cb, component3, isPreventDefault, isStopPropagation), true);
-                store[cb] = true;
-                el2.Ref().set("__cake__events", store);
+              return a;
+            }
+            ;
+            return false;
+          }
+          get value() {
+            if (this.type == "input") {
+              let a = "";
+              for (let key in this.storage) {
+                let val = this.storage[key];
+                a = val.options[0];
+              }
+              ;
+              return a;
+            }
+            ;
+            return false;
+          }
+          get query() {
+            let a = {};
+            for (let key in this.storage) {
+              let val = this.storage[key];
+              a = val.query[0] || null;
+            }
+            ;
+            return a;
+          }
+          get has() {
+            let a = "";
+            for (let key in this.storage) {
+              let val = this.storage[key];
+              a = val.query[0] || null;
+            }
+            ;
+            return a;
+          }
+        }
+        ;
+        const form = {};
+        form.options = (obj) => {
+          let { options, params } = obj;
+          if (!options) {
+            options = [];
+          }
+          ;
+          let isgroup = options.length > 1;
+          let prom = Promise.all(options.map((item) => {
+            let { control, field, tbl, src, schema, type: type2 } = item;
+            return component2.fire(src, { tbl, field, params }).then((opts) => {
+              opts = opts || [];
+              item.query = opts;
+              opts = opts.map((item2) => {
+                return schema(item2);
+              });
+              if (type2 != "input") {
+                let scheme = schema({});
+                for (let key in scheme) {
+                  if (scheme.hasOwnProperty(key)) {
+                    scheme[key] = "";
+                  }
+                  ;
+                }
+                ;
+                opts.unshift(scheme);
+              }
+              item.options = opts;
+              return item;
+            }).then((iter) => {
+              let { type: type3, control: control2 } = iter;
+              if (!type3) {
+                type3 = "others";
+              }
+              ;
+              const cls = new Options(type3);
+              if (isgroup) {
+                let o2 = {};
+                if (!o2[control2]) {
+                  o2[control2] = cls;
+                  o2[control2].store(control2, iter);
+                }
+                ;
+                return o2;
               } else {
+                cls.store(control2, iter);
+                return cls;
+              }
+              ;
+            });
+          })).then((res) => {
+            if (isgroup) {
+              return res.reduce((accu, iter) => {
+                Object.assign(accu, iter);
+                return accu;
+              }, {});
+            } else {
+              return res[0];
+            }
+          }).catch((err) => {
+            console.error(err);
+          });
+          return prom;
+        };
+        form.plot = (config) => {
+          let { data: data2, container } = config;
+          if (!data2 && !container) {
+            return;
+          }
+          ;
+          const query = (root, selector2, callback) => {
+            if (!root) {
+              console.info("root is not provided!");
+              return;
+            }
+            const els = root.querySelectorAll(`${selector2}`);
+            const len = els.length;
+            if (!len) {
+              callback(null, data2);
+              return;
+            }
+            for (let e = 0; e < len; e++) {
+              let el2 = els[e];
+              let name2 = el2.name;
+              let value2 = data2[name2];
+              let r = callback(el2, value2, e);
+              if (r == "break") {
+                break;
+              }
+              ;
+              if (r == "continue") {
                 continue;
               }
               ;
             }
             ;
-          }
-          ;
-        }
-        ;
-      };
-      Component.prototype.findTarget = function() {
-        let q = this.$attrib.getEventTarget(this.name);
-        let e = JSON.parse(JSON.stringify(q));
-        for (let item of e) {
-          item.el = document.querySelector(`[data-event=${item.sel}]`);
-          if (!this.targets[item.event]) {
-            this.targets[item.event] = [];
-          }
-          ;
-          this.targets[item.event].push(item);
-        }
-        ;
-      };
-      Component.prototype.toggler = function(_this) {
-        let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
-        let cl = class {
-          constructor(bind2, bases, html, _this2) {
-            this.toggle = _this2.toggle;
-            this.bind = bind2;
-            this.bases = bases;
-            this.cache = _this2.$cache;
-            this.html = html;
-          }
-          check(bind2) {
-            let config = this.toggle[bind2];
-            if (!config) {
-              console.error(`${bind2} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
-            } else {
-              if (attrToggle.length) {
-                let { ns } = config;
-                let f = attrToggle.find((item) => {
-                  return item.name == `ns-${ns}`;
-                });
-                f && (config.sel = `[data-toggle=${f.sel}]`);
-              }
-              ;
-              return config;
-            }
-            ;
-          }
-          _toggle() {
-            let config = this.check(this.bind);
-            if (!config) {
-              return;
-            }
-            let { basis = "data-name", cls = "is-active", mode = "radio", sel, persist: persist2 = true } = config;
-            let targets = this.html.querySelectorAll(sel);
-            if (!targets.length) {
-              return;
-            }
-            ;
-            let prev, next;
-            if (targets.length == 1) {
-              let isbool = typeof this.bases == "boolean";
-              let isforce = !!this.bases;
-              let el2 = targets[0];
-              if (persist2) {
-                const _forceState = function(el3, cls2, isforce2) {
-                  if (isforce2) {
-                    if (el3.classList.contains(cls2)) {
-                      el3.classList.remove(cls2);
-                    }
-                    ;
-                  } else {
-                    if (!el3.classList.contains(cls2)) {
-                      el3.classList.add(cls2);
-                    }
-                    ;
-                  }
-                };
-                if (isbool) {
-                  if (isforce) {
-                    this.cache.createOrUpdate(this.bind, true);
-                    _forceState(el2, cls, true);
-                  } else {
-                    this.cache.createOrUpdate(this.bind, false);
-                    _forceState(el2, cls, false);
-                  }
-                  el2.classList.toggle(cls);
-                } else {
-                  this.cache.createOrUpdate(this.bind, !el2.classList.contains(cls));
-                  el2.classList.toggle(cls);
-                }
-                ;
-              }
-              ;
-            } else {
-              for (let t = 0; t < targets.length; t++) {
-                let el2 = targets[t];
-                let has = el2.classList.contains(cls);
-                let attr = el2.getAttribute(basis);
-                if (attr == this.bases) {
-                  if (mode == "switch") {
-                    el2.classList.toggle(cls);
-                  } else {
-                    if (!has) {
-                      el2.classList.add(cls);
-                    }
-                    ;
-                  }
-                  ;
-                  if (persist2) {
-                    this.cache.createOrUpdate(this.bind, attr);
-                  }
-                  ;
-                  next = attr;
-                } else {
-                  if (has) {
-                    el2.classList.remove(cls);
-                    prev = el2.getAttribute(basis);
-                  }
-                  ;
-                }
-                ;
-              }
-              ;
-            }
-            return { prev, next };
-          }
-          _recall() {
-            let config = this.check(this.bind);
-            if (!config) {
-              return;
-            }
-            let { basis = "data-name", cls = "is-active", sel } = config;
-            return this.cache.get(this.bind).then((result) => {
-              if (!result) {
-                return result;
-              }
-              ;
-              let bases = result;
-              let targets = this.html.querySelectorAll(sel);
-              if (!targets.length) {
-                return;
-              }
-              ;
-              if (targets.length == 1) {
-                let el2 = targets[0];
-                if (bases) {
-                  el2.classList.add(cls);
-                }
-                ;
+          };
+          query(container, "INPUT.input", function(el2, value2) {
+            if (value2 != void 0) {
+              if (el2.type == "date") {
+                value2 = new Date(value2) == "Invalid Date" ? "" : new Date(value2).toJSON().split("T")[0];
+                el2.value = value2;
               } else {
-                for (let t = 0; t < targets.length; t++) {
-                  let el2 = targets[t];
-                  let has = el2.classList.contains(cls);
-                  let attr = el2.getAttribute(basis);
-                  if (attr == bases) {
-                    if (!has) {
-                      el2.classList.add(cls);
-                    }
-                    ;
-                  }
-                  ;
-                }
-                ;
+                el2.value = value2;
               }
-              ;
-              return bases;
-            });
-          }
-        };
-        let fn2 = (bind2, bases) => {
-          return new cl(bind2, bases, this.html, this)._toggle();
-        };
-        fn2.recall = (bind2) => {
-          return new cl(bind2, false, this.html, this)._recall();
-        };
-        return fn2;
-      };
-      Component.prototype.findContainer = function() {
-        return new Promise((res) => {
-          let containers = this.html.getContainers();
-          for (let c = 0; c < containers.length; c++) {
-            let el2 = containers[c];
-            let name = el2.dataset.container;
-            if (name) {
-              this.container[name] = el2;
             }
             ;
-          }
-          ;
-          res();
-        });
-      };
-      Component.prototype._watchBindedItems = function() {
-      };
-      Component.prototype._watchReactive = function() {
-        if (!this.items.length) {
-          this.items = this.$attrib.getWatchItems(this.name);
-          let name = this.name;
-          let input = this.$attrib.getWatchItemsByType(this.name, "input") || { input: false };
-          let notify = this.$attrib.notify[name];
-          console.log(input);
-          if (input) {
-            input.forEach((item) => {
-              let { attr, bind: bind2, sel, nodeType } = item;
-              let el2 = document.querySelector(`[data-input=${sel}]`);
-              if (el2 && !el2._reactive) {
-                if (nodeType == "INPUT" || nodeType == "TEXTAREA") {
-                  notify.forEach((n) => {
-                    n(name, { value: el2.value, bind: bind2 });
-                  });
-                  el2.addEventListener("input", (e) => {
-                    if (notify && notify.length) {
-                      notify.forEach((n) => {
-                        n(name, { value: e.target.value, bind: bind2 });
-                      });
-                    }
-                    ;
-                  });
-                  el2.addEventListener("change", (e) => {
-                    if (notify && notify.length) {
-                      notify.forEach((n) => {
-                        n(name, { value: e.target.value, bind: bind2 });
-                      });
-                    }
-                    ;
-                  });
-                } else if (nodeType == "SELECT") {
-                  (() => {
-                    const { selectedOptions } = input;
-                    const selected = [];
-                    for (let i = 0; i < selectedOptions.length; i++) {
-                      const opt = selectedOptions[i];
-                      const text = opt.text;
-                      const value = opt.value;
-                      selected.push({ text, value });
-                    }
-                    ;
-                    if (notify && notify.length) {
-                      notify.forEach((n) => {
-                        n(name, { value: selected, bind: bind2 });
-                      });
-                    }
-                    ;
-                  })();
-                  el2.addEventListener("change", (e) => {
-                    const { selectedOptions } = e.target;
-                    const selected = [];
-                    for (let i = 0; i < selectedOptions.length; i++) {
-                      const opt = selectedOptions[i];
-                      const text = opt.text;
-                      const value = opt.value;
-                      selected.push({ text, value });
-                    }
-                    ;
-                    if (notify && notify.length) {
-                      notify.forEach((n) => {
-                        n(name, { value: selected, bind: bind2 });
-                      });
-                    }
-                    ;
-                  });
+          });
+          setTimeout(() => {
+            query(container, "SELECT.input:not(.cake-template)", function(select, value2) {
+              query(select, "OPTION:not(.cake-template)", function(option, _value, index) {
+                if (option) {
+                  if (option.value == value2) {
+                    select.selectedIndex = index;
+                    return "break";
+                  }
+                  ;
+                } else {
+                  console.log(option, _value, "provide schema");
                 }
-                ;
-                el2._reactive = true;
-              }
-              ;
+              });
             });
-          }
-          ;
-        }
-        ;
+          }, 500);
+          return Promise.resolve();
+        };
+        return form;
       };
-      Component.prototype.observer = function(subscribe2) {
-        function callback(name) {
-          return this.handler[name];
-        }
-        this.observer = new Observer(this, subscribe2, callback.bind(this));
-      };
-      Component.prototype.variable = function(obj) {
-        let vary = Object.keys(obj);
-        let validate = {};
-        let values = [];
-        function invalid(name, test, type) {
-          if (!test) {
-            validate[name] = `value is not '${type}'`;
-          }
-          ;
-        }
-        ;
-        for (let key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            let config = obj[key];
-            let { type, value } = config;
-            let test;
-            if (["string", "number"].includes(type)) {
-              test = typeof value == type;
-            } else if (value instanceof Array) {
-              test = type == "array";
-            } else {
-              test = type == "object";
-            }
-            values.push(value);
-            invalid(key, test, type);
-          }
-          ;
-        }
-        ;
-        if (Object.keys(validate).length) {
-          throw new Error(JSON.stringify(validate));
-        } else {
-          return values;
-        }
-      };
-      module.exports = Component;
     }
   });
 
@@ -5432,35 +5472,39 @@
       var Attrib = require_attributes();
       var Scope = require_scope()();
       var Component = require_component();
-      var Hasher = require_hash();
       var Router = require_router();
       var Persistent = require_persist();
       var StorageKit = require_storage()();
       var Observer2 = require_observer();
       var Formy = require_form();
       var Utils = require_utils();
-      function Cake2(name) {
-        this.componentName = name;
+      var Templating = require_templating();
+      var Plugin = require_plugin();
+      var Subscriber = require_subscriber();
+      var Handler = require_handler();
+      var ComponentStorage = require_components_store();
+      function Cake2(name2) {
+        this.componentName = name2;
         this.components = {};
       }
       Cake2.app = function(config) {
         this.name = config.name || "";
       };
-      Cake2.Components = function(name) {
+      Cake2.Components = function(name2) {
         return {
-          subscribe(cb, ctx) {
+          subscribe(cb2, ctx2) {
             function subscribeExternal() {
-              let component3 = Cake2.Components[name];
-              if (component3) {
-                if (cb instanceof Function) {
-                  let name2 = cb.name;
-                  if (ctx) {
-                    cb = cb.bind(ctx);
+              let component2 = Cake2.Components[name2];
+              if (component2) {
+                if (cb2 instanceof Function) {
+                  let name3 = cb2.name;
+                  if (ctx2) {
+                    cb2 = cb2.bind(ctx2);
                   }
-                  cb.binded = "external";
-                  cb.original = name2;
-                  cb.listenTo = component3.name;
-                  component3.Subscribe(cb);
+                  cb2.binded = "external";
+                  cb2.original = name3;
+                  cb2.listenTo = component2.name;
+                  component2.Subscribe(cb2);
                 }
               } else {
               }
@@ -5469,7 +5513,7 @@
             ;
             return new Promise((res, rej) => {
               let lk = setInterval(() => {
-                if (Cake2.Components[name]) {
+                if (Cake2.Components[name2]) {
                   subscribeExternal();
                   clearInterval(lk);
                   res();
@@ -5481,22 +5525,21 @@
         };
       };
       Cake2.Models = {};
-      Cake2.Subscribe = {};
-      Cake2.Handlers = {};
+      Cake2.plugin = Plugin;
       Cake2.Attributes = new Attrib();
-      Cake2.Models.$loaded = function(name) {
+      Cake2.Models.$loaded = function(name2) {
         return new Promise((res, rej) => {
           let mk = setInterval(() => {
-            if (Cake2.Models[name]) {
+            if (Cake2.Models[name2]) {
               clearInterval(mk);
-              res(Cake2.Models[name]);
+              res(Cake2.Models[name2]);
             }
             ;
           });
           setTimeout(() => {
-            if (!Cake2.Models[name]) {
+            if (!Cake2.Models[name2]) {
               clearInterval(mk);
-              rej(name);
+              rej(name2);
             }
           }, 1e4);
         });
@@ -5528,17 +5571,13 @@
           return m;
         }
       };
-      Cake2.create = function(name, template, options) {
-        let group = new Cake2(name, template, options);
-        group.create(name, template, options);
+      Cake2.create = function(name2, template, options) {
+        let group = new Cake2(name2, template, options);
+        group.create(name2, template, options);
       };
-      Cake2.plugin = function() {
+      Cake2.init = function(name2) {
+        return new Component(name2);
       };
-      Cake2.init = function(name) {
-        return new Component(name);
-      };
-      Cake2.Hasher = new Hasher(Cake2.Components);
-      Cake2.Hasher.listen();
       Cake2.Router = Router(Cake2.Components, Component);
       Cake2.Persistent = new Persistent();
       Cake2.Persistent.listen(Cake2.Components);
@@ -5547,8 +5586,8 @@
         storage: "session",
         child: "object"
       });
-      Cake2.getSubscriber = function(component3, handler) {
-        let subscribe2 = Cake2.Subscribe;
+      Cake2.getSubscriber = function(component2, handler) {
+        let subscribe2 = Subscriber;
         let obj = {};
         for (let c in subscribe2) {
           if (subscribe2.hasOwnProperty(c)) {
@@ -5561,7 +5600,7 @@
                   let original = _handler.original;
                   let binded = _handler.binded;
                   let listenTo = _handler.listenTo;
-                  if (listenTo == component3) {
+                  if (listenTo == component2) {
                     if (original == handler) {
                       if (!obj[binded]) {
                         obj[binded] = handler;
@@ -5592,16 +5631,16 @@
         ;
         return obj;
       };
-      Cake2.Observer = new Observer2(Cake2.Subscribe, Cake2.Handlers);
-      Cake2.prototype._defineProperty = function(component3, prop, get, set) {
-        Object.defineProperty(component3, prop, {
+      Cake2.Observer = new Observer2();
+      Cake2.prototype._defineProperty = function(component2, prop, get, set) {
+        Object.defineProperty(component2, prop, {
           configurable: true,
           get() {
             return get();
           },
-          set(value) {
+          set(value2) {
             if (set) {
-              set(value);
+              set(value2);
             } else {
             }
           }
@@ -5612,13 +5651,13 @@
       });
       Cake2._globalScope = new Scope("globalScope");
       Cake2.prototype._defineProperty(Component.prototype, "$globalScope", function() {
-        const scope2 = Cake2._globalScope;
-        return scope2;
+        const scope = Cake2._globalScope;
+        return scope;
       });
       Cake2._universalScope = new Scope("universalScope");
       Cake2.$universalScope = function() {
-        const scope2 = Cake2._universalScope;
-        return scope2;
+        const scope = Cake2._universalScope;
+        return scope;
       };
       Cake2.prototype._defineProperty(Component.prototype, "$attrib", function() {
         return Cake2.Attributes;
@@ -5632,26 +5671,45 @@
       Cake2.prototype._defineProperty(Component.prototype, "$hash", function() {
         return Cake2.Hasher;
       });
-      Cake2.prototype.create = function(name, template, options) {
-        console.time(name);
-        let component3 = new Component(name, template, options);
-        const scope2 = new Scope(name);
-        scope2.registerNotifier(function(prop, newValue, prevValue, component4) {
-          return Cake2.Attributes.notifier(prop, newValue, prevValue, component4);
+      Cake2.prototype.create = function(name2, template, options) {
+        console.time(name2);
+        let component2 = new Component(name2, template, options);
+        const scope = new Scope(name2);
+        component2.scope && (() => {
+          for (let _component in component2.scope) {
+            if (component2.scope.hasOwnProperty(_component)) {
+              const handlers = component2.scope[_component];
+              for (let key in handlers) {
+                if (handlers.hasOwnProperty(key)) {
+                  let handler = handlers[key];
+                  const bind2 = handler.name;
+                  handler = handler.bind(component2);
+                  scope.hook(_component, bind2, handler);
+                }
+                ;
+              }
+              ;
+            }
+            ;
+          }
+          ;
+        })();
+        scope.registerNotifier(function(prop, newValue, prevValue, component3) {
+          return Cake2.Attributes.notifier(prop, newValue, prevValue, component3);
         });
-        Cake2.Attributes.registerNotifier(name, function(name2, obj) {
-          return scope2.notifier(name2, obj);
+        Cake2.Attributes.registerNotifier(name2, function(name3, obj) {
+          return scope.notifier(name3, obj);
         });
-        component3.compile.then(() => {
-          let { subscribe: subscribe2, root, html, handlers, role } = component3;
-          return Cake2.Observer.registerSubscribe(subscribe2).then(() => {
+        component2.compile.then(() => {
+          let { subscribe: subscribe2, root, html, handlers, role, state } = component2;
+          return Subscriber.set(subscribe2).then(() => {
             return { root, handlers };
           });
         }).then(({ handlers, root }) => {
-          Cake2.Observer.registerHandlers(handlers, component3.name);
-          this._defineProperty(component3, "root", function() {
-            if (component3._root) {
-              return component3._root;
+          Handler.set(handlers, component2.name);
+          this._defineProperty(component2, "root", function() {
+            if (component2._root) {
+              return component2._root;
             } else {
               let selector2 = root || "#app";
               let query = document.querySelector(selector2);
@@ -5660,18 +5718,21 @@
               }
             }
             ;
-            throw new Error(`the selector '${root}' as container of component '${component3.name}' is not found!`);
-          }, function(value) {
-            Object.assign(component3, { _root: value });
+            throw new Error(`the selector '${root}' as container of component '${component2.name}' is not found!`);
+          }, function(value2) {
+            Object.assign(component2, { _root: value2 });
           });
-          component3.role == "form" && (() => {
-            const methods = Formy(component3);
-            const form2 = () => {
-              return component3.root.querySelector("FORM");
+          this._defineProperty(component2, "$scope", function() {
+            return scope;
+          });
+          component2.role == "form" && (() => {
+            const methods = Formy(component2);
+            const form = () => {
+              return component2.root.querySelector(component2.formSelector || "FORM");
             };
             for (let method in methods) {
               if (methods.hasOwnProperty(method)) {
-                Object.defineProperty(form2, method, {
+                Object.defineProperty(form, method, {
                   get() {
                     return methods[method];
                   }
@@ -5680,25 +5741,22 @@
               ;
             }
             ;
-            this._defineProperty(component3, "$form", function() {
-              return form2;
+            this._defineProperty(component2, "$form", function() {
+              return form;
             });
           })();
-          this._defineProperty(component3, "$scope", function() {
-            return scope2;
-          });
         }).then(() => {
-          component3.fire = function() {
-            function fire(name2, variable) {
-              variable = !variable ? null : typeof variable == "function" ? variable.bind(component3)() : function() {
+          component2.fire = function() {
+            function fire(name3, variable) {
+              variable = !variable ? null : typeof variable == "function" ? variable.bind(component2)() : function() {
                 return variable;
-              }.bind(component3)();
+              }.bind(component2)();
               let o2 = {
-                [name2]: () => {
+                [name3]: () => {
                   return variable;
                 }
               };
-              fn = o2[name2].bind(component3);
+              fn = o2[name3].bind(component2);
               if (typeof fn == "function") {
                 let getAttributes2 = function(element) {
                   let o3 = {};
@@ -5706,13 +5764,13 @@
                     return o3;
                   }
                   ;
-                  let attributes2 = element.attributes;
-                  if (attributes2) {
-                    for (let i = 0; i < attributes2.length; i++) {
-                      let attribute = attributes2[i];
-                      let name3 = attribute.name;
-                      let value = attribute.value;
-                      o3[name3] = value;
+                  let attributes = element.attributes;
+                  if (attributes) {
+                    for (let i = 0; i < attributes.length; i++) {
+                      let attribute = attributes[i];
+                      let name4 = attribute.name;
+                      let value2 = attribute.value;
+                      o3[name4] = value2;
                     }
                     ;
                   }
@@ -5720,10 +5778,10 @@
                   return o3;
                 };
                 var getAttributes = getAttributes2;
-                fn.name = name2;
-                fn.original = name2;
-                fn.binded = component3.name;
-                Cake2.Observer.registerHandlers({ [name2]: fn }, component3.name);
+                fn.name = name3;
+                fn.original = name3;
+                fn.binded = component2.name;
+                Handler.set({ [name3]: fn }, component2.name);
                 let payload = variable;
                 ;
                 if (variable && (variable.element || variable.root || variable.container)) {
@@ -5733,93 +5791,87 @@
                   payload = { status: 0, attributes: { element, root, container } };
                 }
                 ;
-                Cake2.MainMessageChannel.send({ component: component3.name, event: name2, payload });
-                const notify = Cake2.Observer.notify(component3.name, name2, {}).then(() => {
-                  return Cake2.Observer.results[component3.name][name2];
+                const notify = Cake2.Observer.notify(component2.name, name3, {}).then(() => {
+                  return Cake2.Observer.results[component2.name][name3];
                 });
-                component3.await[name2] = notify;
-                return component3.await[name2];
+                component2.await[name3] = notify;
+                return component2.await[name3];
               }
               ;
               console.error(`the param in fire is not an instance of function`);
             }
             ;
-            function addStaticMethod(fn2, handlers) {
+            function addStaticMethod(fire2, handlers) {
               for (let h in handlers) {
                 if (handlers.hasOwnProperty(h)) {
                   let handler = handlers[h];
                   let event = handler.original;
-                  Object.defineProperty(fn2, event, {
-                    get() {
-                      let fn3 = {
-                        [event]: function(variable, isBroadcast) {
-                          if (isBroadcast != void 0) {
-                            isBroadcast = isBroadcast;
-                          }
-                          ;
-                          if (isBroadcast == void 0 && event == "destroy") {
-                            isBroadcast = true;
-                          }
-                          ;
-                          if (isBroadcast == void 0) {
-                            isBroadcast = false;
-                          }
-                          ;
-                          if (isBroadcast) {
-                            const notify = new Promise((res, rej) => {
-                              setTimeout(() => {
-                                let payload = variable;
-                                payload = payload || {};
-                                Cake2.Observer.notify(component3.name, event, payload).then(() => {
-                                  return Cake2.Observer.results[component3.name][event];
-                                }).then((r) => {
-                                  res(r);
-                                }).catch((err) => {
-                                  console.log(448, component3.name, event, payload);
-                                  console.trace();
-                                  console.error(err);
-                                });
-                              });
+                  let fn2 = {
+                    [event]: function(variable, isBroadcast) {
+                      if (isBroadcast != void 0) {
+                        isBroadcast = isBroadcast;
+                      }
+                      ;
+                      if (isBroadcast == void 0) {
+                        isBroadcast = false;
+                      }
+                      ;
+                      if (isBroadcast == void 0 && event == "destroy") {
+                        isBroadcast = true;
+                      }
+                      ;
+                      if (isBroadcast) {
+                        component2.await[event] = new Promise((res) => {
+                          setTimeout(() => {
+                            let payload = variable || {};
+                            Cake2.Observer.notify(component2.name, event, payload).then(() => {
+                              return Cake2.Observer.results[component2.name][event];
+                            }).then((r) => {
+                              res(r);
+                            }).catch((err) => {
+                              console.log(448, component2.name, event, payload);
+                              console.trace();
+                              console.error(err);
                             });
-                            component3.await[event] = notify;
-                            return component3.await[event];
-                          } else {
-                            return handler(variable);
-                          }
-                          ;
-                        }
-                      };
-                      fn3[event] = fn3[event].bind(component3);
-                      fn3[event].originalName = event;
-                      fn3[event].binded = component3.name;
-                      return fn3[event];
+                          });
+                        });
+                        return component2.await[event];
+                      } else {
+                        return handler(variable);
+                      }
+                      ;
                     }
-                  });
+                  };
+                  fn2[event] = fn2[event].bind(component2);
+                  fn2[event].originalName = event;
+                  fn2[event].binded = component2.name;
+                  fire2[event] = fn2[event];
+                  fire2.component = component2.name;
                 }
                 ;
               }
               ;
             }
-            addStaticMethod(fire, component3.handlers);
+            addStaticMethod(fire, component2.handlers);
             return fire;
           }();
         }).then(() => {
-          if (component3.type == "view") {
-            component3.toggler = component3.toggler(component3);
-            Cake2.Components[name] = component3;
+          if (component2.type == "view") {
+            component2.toggler = component2.toggler(component2);
+            ComponentStorage.set(name2, component2);
           }
           ;
         }).then(() => {
-          component3.options.router && Cake2.Router.subscribe(component3.options.router.bind(component3));
-          component3.options.data && component3.options.data.bind(component3.data)(component3);
-          component3.options.init && component3.options.init.bind(component3)();
-          component3.options.utils && component3.options.utils.bind(component3.utils)(component3);
+          component2.options.router && Cake2.Router.subscribe(component2.options.router.bind(component2));
+          component2.options.data && component2.options.data.bind(component2.data)(component2);
+          component2.options.init && component2.options.init.bind(component2)();
+          component2.options.utils && component2.options.utils.bind(component2.utils)(component2);
         }).then(() => {
-          if (component3.type == "model") {
-            Cake2.Models[name] = component3;
+          if (component2.type == "model") {
+            Cake2.Models[name2] = component2;
           }
-          if (component3.isStatic && component3.type == "view") {
-            component3.render();
+          if (component2.isStatic && component2.type == "view") {
+            component2.render();
           } else {
           }
           ;
@@ -5835,18 +5887,7 @@
   var polyfill = require_polyfill();
   var utils = require_utils();
   var templateExtend = require_template_extend();
-  var piece = require_piece();
-  var observer = require_observer();
-  var templating = require_templating();
-  var animate = require_animate();
-  var persist = require_persist();
-  var hash = require_hash();
-  var form = require_form();
-  var storageKit = require_storage()();
-  var scope = require_scope()();
-  var router = require_router()();
-  var attributes = require_attributes();
-  var component2 = require_component();
+  var plugin = require_plugin();
   var cake = require_cake();
   window.Cake = cake;
 })();

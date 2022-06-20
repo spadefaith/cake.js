@@ -1,7 +1,9 @@
 const Mo = require('./animate');
-const Templating = require('./templating');
 const Piece = require('./piece');
 const Utils = require('./utils');
+const Templating = require('./templating');
+const Plugin = require('./plugin');
+
 // const {pushState} = require('./router')();
 
 function Component(name, template, options){
@@ -19,11 +21,18 @@ function Component(name, template, options){
     this.animateOptions = options.animate;
     this.role = options.role;
     this.isReady = false;
+    this.scope = options.scope;
+
+    this.formSelector = options.form;
 
     this.await = {};//storage of async handlers
+    
+    this.state = options.state;
+    this.originalState = {};
 
 
     this.utils = Utils;
+
 
 
     // options.data && options.data.bind(this.data)(this);
@@ -40,9 +49,10 @@ function Component(name, template, options){
         res();
     }).then(()=>{
 
-        this._bindSubscribe();
+        return this._bindSubscribe();
     }).then(()=>{
-        
+        return this.cloneState();
+    }).then(()=>{
         switch(this.type == 'view' && !!this.template){
             case true:
                 return this.createElementAsync();
@@ -50,7 +60,7 @@ function Component(name, template, options){
                 this.isStatic = false;
                 break
         };
-    })
+    });
 
 };
 
@@ -59,6 +69,36 @@ Component.prototype.hasEvent = false;
 Component.prototype.isConnected = false;
 Component.prototype.destroyed = false;
 Component.prototype.isCreated = false;
+
+
+
+Component.prototype.cloneState = function(){
+    if(!this.state){
+        return;
+    };
+    for (let key in this.state){
+        if(this.state.hasOwnProperty(key)){
+            this.originalState[key] = this.state[key];
+        };
+    };
+    this.$state = (()=>{
+        return this.state;
+    })();
+
+};
+
+
+
+Component.prototype.clearState = function(){
+    if(!this.state){
+        return;
+    };
+    this.state = JSON.parse(JSON.stringify(this.originalState));
+
+    this.$state = (()=>{
+        return this.state;
+    })();
+};
 
 Component.prototype.Subscribe = function(handler){
     this.$observer.registerSubscribe({
@@ -106,25 +146,23 @@ Component.prototype._bindSubscribe = function(){
         if (this.subscribe.hasOwnProperty(component)){
             subscribe = this.subscribe[component];
 
-            // if(component == 'alert'){
-            //     console.log(subscribe);
-            // }
-            
+            if(!!subscribe.components && !subscribe.handler){
+                throw new Error(`there is no handler in format many of subscribe in event ${component}`);
+            } else if (!subscribe.components && !!subscribe.handler){
+                throw new Error(`there is no components in format many of subscribe in event ${component}`);
+            };
+
             let isMany = !!subscribe.components && !!subscribe.handler;
-            // console.log(component, subscribe);
             
-
-
-
             if (isMany){
     
                 /**
                  * multiple components triggering the same event;
                  * this component is listening to that one event;
-                 * {
-                 *     components:[],
-                 *     handler(){},
-                 * }
+                    event :{
+                        components:[],
+                        handler(){},
+                    }
                  */
                 let event = component;
                 let {components, handler} = subscribe;
@@ -138,10 +176,12 @@ Component.prototype._bindSubscribe = function(){
                         flattened[component] = {};
                     };
                     if (!flattened[component][event]){
-                        flattened[component][event] = [];
+                        // flattened[component][event] = [];
+                        flattened[component][event] = {};
                     }
                     handler.listenTo = component;
-                    flattened[component][event].push(handler);
+                    // flattened[component][event].push(handler);
+                    flattened[component][event] = handler;
                 };
     
             } else {
@@ -150,12 +190,12 @@ Component.prototype._bindSubscribe = function(){
                     flattened[component] = {};
                 };
                 /**
-                 * single event is triggerd by a component;
-                 * {
-                 *      event:{
-                 *          handler(){},
-                 *      }
-                 * }
+                single event is triggerd by a component;
+                    component:{
+                        event:{
+                            handler(){},
+                        }
+                    }
                  */
                  let fns = subscribe;//object
        
@@ -173,10 +213,12 @@ Component.prototype._bindSubscribe = function(){
                         handler.listenTo = component;
        
                         if (!flattened[component][original]){
-                           flattened[component][original] = [];
+                           flattened[component][original] = {};
+                        //    flattened[component][original] = [];
                         };
                         
-                        flattened[component][original].push(handler);
+                        // flattened[component][original].push(handler);
+                        flattened[component][original] = handler;
                     };
     
                  };
@@ -186,11 +228,7 @@ Component.prototype._bindSubscribe = function(){
     this.subscribe = flattened;
 };
 
-Component.prototype.notifyStaticComponent = function(page, event, data){
 
-    Cake.Observer.notify(page, event, data, this.staticComponent[page], true, this.name);
-
-};
 
 Component.prototype.doFor = function(prop, newValue){
     // console.trace();
@@ -198,7 +236,7 @@ Component.prototype.doFor = function(prop, newValue){
         return this.html;
     };
     if (newValue == null) return;
-    this.$attrib.notifyFor(prop, newValue, null, this.name, getHTML());
+    return this.$attrib.notifyFor(prop, newValue, null, this.name, getHTML());
 };
 
 Component.prototype.doToggle = function(prop, newValue){
@@ -261,7 +299,7 @@ Component.prototype.$animate = function(moment){
 
 Component.prototype.$templating = function(data, t, isConvert){
     let template = t || this.template;
-    return new Templating(data, template, isConvert).createElement();
+    return new Templating(Plugin('templating')).createElement(data, template, isConvert);
 };
 
 Component.prototype.createElement = function(){
@@ -342,18 +380,36 @@ Component.prototype._parseHTML = function(isStatic=false){
 };
 
 Component.prototype.render = function(options){
-    let {root, multiple, cleaned, emit, static, hashed, data} = options || {};
-    let payload = {emit:emit || {}};;
-    const getValue = (item)=>{
-        return this.data[item] || this.$scope[item] || null;
+
+    if(this.isConnected){
+        console.error(`${this.name} is already rendered and connected to the DOM`);
+        return Promise.resolve();
     };
+
+    let {root, cleaned, emit={}, data={}} = options || {};
+
+
+
+
+    let multiple = this.options.multiple;
+    let state = this.state || {};
+
+    let payload = {emit};
+
+    const getValue = (item)=>{
+        //get the initial value in state as it being cleared when the component is destroyed;
+        //or in the data attribute upon render;
+        return {...state,...data}[item] || null;
+    };
+
     return new Promise((res, rej)=>{
 
         (!!root) && (this.root = root);
-        (multiple) && this._smoothReset();
+        
+
         if (!this.isReady){
             this.createElement().then(()=>{
-                (hashed === true) && this.$hash.add(this.name);
+                // (hashed === true) && this.$hash.add(this.name);
 
                 return (!this.template) && this.fire.isConnected && this.fire.isConnected(payload, true);
 
@@ -373,11 +429,21 @@ Component.prototype.render = function(options){
                 //by mutation;
     
                 let forItems = this.$attrib.getWatchItemsByType(this.name, 'for');
-                for (let i = 0; i < forItems.length; i++){
-                    let nv = getValue(forItems[i]);
-                    this.doFor(forItems[i], nv);
-                };
-                res(this.html);
+                // for (let i = 0; i < forItems.length; i++){
+                //     let nv = getValue(forItems[i]);
+                //     this.doFor(forItems[i], nv);
+                // };
+                // console.log(forItems);
+                Promise.all(forItems.map(item=>{
+                    return this.doFor(item, getValue(item));
+                })).then(()=>{
+                    // console.log(405, this.name, this.html);
+                    res(this.html);
+
+                });
+
+
+
             }).then((element)=>{
                 payload = {element, emit};
                 
@@ -405,6 +471,7 @@ Component.prototype.render = function(options){
                             res();
                         })
                     })();
+  
                     return prom.then(()=>{
                         
     
@@ -412,25 +479,20 @@ Component.prototype.render = function(options){
                         this.isConnected = true;
                     });
                 }
-            }).then(()=>{
-                return this.findTarget();
-            }).then(()=>{
-                return this.findContainer();
-                
             }).
             // .then(()=>{
             //     return this.findRouterLink();
             // }).
             then(()=>{
                 //switch
-                let switchItems = this.$attrib.getWatchItemsByType(this.name, 'switch');
+                // let switchItems = this.$attrib.getWatchItemsByType(this.name, 'switch');
     
-                for (let i = 0; i < switchItems.length; i++){
-                    this.doSwitch(switchItems[i], getValue(switchItems[i]));
-                };
+                // for (let i = 0; i < switchItems.length; i++){
+                //     this.doSwitch(switchItems[i], getValue(switchItems[i]));
+                // };
             }).then(()=>{
-                // console.log('this containers must have el',this.name, this.container);
-                return this.addEvent(static, multiple);
+                return this.findContainer();
+                
             }).then(()=>{
                 try {
                     // console.log('setting attributes', this.name);
@@ -439,9 +501,17 @@ Component.prototype.render = function(options){
                     console.log(440,err);
                 }
             }).then(()=>{
+                return this.findTarget();
+            }).then(()=>{
+                // console.log(this.container);
+                // console.log('this containers must have el',this.name, this.container);
+                // return this.addEvent(static, multiple);
+                return this.addEvent();
+            }).then(()=>{
                 // console.log('start animation', this.name);
                 return this.$animate('render');
             }).then(()=>{
+                (multiple) && this._smoothReset();
                 return new Promise((res, rej)=>{
                     setTimeout(()=>{
                         this._watchReactive();
@@ -477,12 +547,18 @@ Component.prototype._hardReset = function(name){
 Component.prototype.reset = function(){
     let animate = this.$animate('remove');
     // console.log(this,this.html, animate);
+
+
     if (animate instanceof Promise){
         return this.await.animateRemove = new Promise((res)=>{
             animate.then(()=>{
                 //it is very important to remove first the component
                 //before hard reset;
                 return this.html.remove();
+            }).then(()=>{
+                this.container = {};
+            }).then(()=>{
+                return this.clearState();
             }).then(()=>{
                 return this._hardReset(this.name);
             }).then(()=>{
@@ -492,6 +568,8 @@ Component.prototype.reset = function(){
     } else {
         return new Promise((res)=>{
             this.html.remove(this.name);
+            this.clearState();
+            this.container = {};
             this._hardReset(this.name);
             res();
         });
@@ -499,16 +577,16 @@ Component.prototype.reset = function(){
 };
 
 Component.prototype.addEvent = function (static, multiple){
-    let isStatic = !!static;
-    let isMultiple = !!multiple;
-    if (isMultiple && isStatic){
-        return false;
-    };
+    // let isStatic = !!static;
+    // let isMultiple = !!multiple;
+    // if (isMultiple && isStatic){
+    //     return false;
+    // };
     let component = this.name;
     function notify(event, component,  isPreventDefault, isStopPropagation){
         return function(e){ 
             // console.log(512,e);
-            console.log(509,!isPreventDefault, component,event)
+            // console.log(509,!isPreventDefault, component,event)
             if (!isPreventDefault){
                 e.preventDefault();
             };
@@ -519,6 +597,8 @@ Component.prototype.addEvent = function (static, multiple){
             Cake.Observer.notify(component, event, e);
         };
     };
+    // this.name == 'product_list' && console.log(this.targets);
+    // console.log(547,this.name, this.targets);
     if (!this.targets) return;
     for (let event in this.targets){
         if (this.targets.hasOwnProperty(event)){
@@ -565,16 +645,18 @@ Component.prototype.addEvent = function (static, multiple){
 
 Component.prototype.findTarget = function(){
     let q = this.$attrib.getEventTarget(this.name);
-    let e = JSON.parse(JSON.stringify(q));//deep cloning
-
-
-    for (let item of e){
-        item.el = document.querySelector(`[data-event=${item.sel}]`);
-        if (!this.targets[item.event]){
-            this.targets[item.event] = [];
+    return new Promise((res)=>{
+        for (let item of q){
+            let els = this.html.querySelectorAllIncluded(`[data-event=${item.sel}]`);
+            for (let e = 0; e < els.length; e++){
+                if (!this.targets[item.event]){
+                    this.targets[item.event] = [];
+                };
+                this.targets[item.event].push({el:els[e], ...item});
+            };
         };
-        this.targets[item.event].push(item);
-    };
+        res();
+    });
 }; 
 
 // Component.prototype.findRouterLink = function(){
@@ -743,7 +825,6 @@ Component.prototype.findContainer = function(){
 
     return new Promise((res)=>{
         let containers = this.html.getContainers();
-
         for (let c = 0; c < containers.length; c++){
             let el = containers[c];
             let name = el.dataset.container;
@@ -762,91 +843,63 @@ Component.prototype._watchBindedItems = function(){
 
 };
 
-Component.prototype._watchReactive = function(){
-    if (!this.items.length){
-        this.items = this.$attrib.getWatchItems(this.name);
+Component.prototype._validator = function(name, value){
+    if(this.options.validate){
+        this.validate = this.options.validate;
+        const handler = this.validate[name];
+        if(handler){
 
-        //this.items are the data-bind attribute declared in html;
-
-        let name = this.name;
-        let input = this.$attrib.getWatchItemsByType(this.name, 'input') || {input:false};
-        let notify = this.$attrib.notify[name];
-        
-        console.log(input);
-
-        if (input){
-            input.forEach(item=>{
-                let {attr, bind, sel, nodeType} = item;
-                let el = document.querySelector(`[data-input=${sel}]`);
-                // console.log(737, el);
-                if (el && !el._reactive){
-                    // setTimeout(()=>{
-                    // }, 1000);
-                    // console.log(738, el.getAttribute('value'));
-
-                    // console.log(741, nodeType);
-                    if(nodeType == 'INPUT' || nodeType == 'TEXTAREA'){
-                        // console.log(738, el.getAttribute('value'));
-                        // console.log(739, el.getAttribute('value'));
-                        notify.forEach(n=>{
-                            n(name, {value:el.value, bind});
-                        });
-
-                        el.addEventListener('input', (e)=>{
-                            if (notify && notify.length){
-                                notify.forEach(n=>{
-                                    n(name, {value:e.target.value, bind});
-                                });
-                            };
-                        });
-                        el.addEventListener('change', (e)=>{
-                            if (notify && notify.length){
-                                notify.forEach(n=>{
-                                    n(name, {value:e.target.value, bind});
-                                });
-                            };
-                        });
-                    } else if(nodeType == 'SELECT'){
-                        (()=>{
-                            const {selectedOptions} = input;
-                            const selected = [];
-                            for (let i = 0; i < selectedOptions.length; i++){
-                                const opt = selectedOptions[i];
-                                const text = opt.text;
-                                const value = opt.value;
-                                selected.push({text, value});
-                            };
-
-                            if (notify && notify.length){
-                                notify.forEach(n=>{
-                                    n(name, {value:selected, bind, });
-                                });
-                            };
-                        })();
-                        el.addEventListener('change', (e)=>{
-                            const {selectedOptions} = e.target;
-                            const selected = [];
-                            for (let i = 0; i < selectedOptions.length; i++){
-                                const opt = selectedOptions[i];
-                                const text = opt.text;
-                                const value = opt.value;
-                                selected.push({text, value});
-                            };
-
-                            if (notify && notify.length){
-                                notify.forEach(n=>{
-                                    n(name, {value:selected, bind, });
-                                });
-                            };
-                        });
-                    };
-
-                    el._reactive = true;
-                };
-            });
         };
+    };
+};
 
+/*
+    this will watch the form input and validate the data,
+    , set it to scope and state as formData;
+*/
+Component.prototype._watchReactive = function(){
+    if(this.role == 'form' && this.options.watch === true){
+        const validator = this.options.validate;
+        const form = this.$form();
 
+        if(form._reactive){
+            return ;
+        };
+  
+        if(this.state && !this.state.formData){
+            this.state.formData = {};
+        };
+        const component = this;
+        const handler = (e)=>{
+            const target = e.target;
+            const name = target.name || target.id;
+            const value = target.value;
+            let handler = validator[name];
+            if(handler){
+                handler = handler.bind(component);
+                if(handler){
+                    let validated = handler(e);
+                    if(validated){
+                        this.state && (this.state.formData[name] = value);
+                        this.$scope.set(name, value);
+                    };
+                };
+            } else {
+                this.state && (this.state.formData[name] = value);
+                this.$scope.set(name, value);
+            };
+        };
+        form.addEventListener('change',(e)=>{
+            if(!(e.target.tagName == 'INPUT' || e.target.tagName == 'TEXTAREA')){
+                handler(e);
+            };
+        });
+        form.addEventListener('input',(e)=>{
+            if(e.target.tagName == 'INPUT' || e.target.tagName == 'TEXTAREA'){
+                handler(e);
+            };
+        });
+        form._reactive = true;
     };
 };
 
@@ -870,7 +923,9 @@ Component.prototype.variable = function(obj){
     for (let key in obj){
         if (obj.hasOwnProperty(key)){
             let config = obj[key];
-            let {type, value} = config;
+            // let {type, value} = config;
+            let type = config.type;
+            let value = config.value;
             let test;
             if (['string', 'number'].includes(type)){
                 test = typeof value == type;

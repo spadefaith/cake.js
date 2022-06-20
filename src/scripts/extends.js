@@ -88,6 +88,9 @@
             return proper;
         };
     };
+    String.prototype.removeSpace = function(){
+        return this.split(" ").join("");
+    };
     
     String.prototype.toCamelCase = function(){
         let str = this.toLowerCase();

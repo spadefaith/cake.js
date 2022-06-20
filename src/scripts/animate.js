@@ -12,7 +12,7 @@ module.exports = class {
                 let cf = this.config[i];
                 // console.log(cf)
 
-                let {element} = cf;
+                let element = cf.element;
                 //when there is no config for certain moment, render || remove
                 //safekeep
                 if (!cf[moment]){ res();break;};
@@ -34,7 +34,9 @@ module.exports = class {
                         case (kk instanceof Object):{
                             //maybe the offset is declared along with the keyframes;
                             //name - refers to default animation
-                            let {name, offset} = kk;
+                            // let {name, offset} = kk;
+                            let name = kk.name;
+                            let offset = kk.offset;
                             if (name && offset){
                                 //support for element.animation - offset, equivalent to 10%-100% css @keyframes;
                                 let def = this.dic(name);
@@ -112,11 +114,13 @@ module.exports = class {
             slideOutUp:[{
                 transform: "translate3d(0,0,0)",
                 visibility: "visible",
-                opacity: "1"
+                opacity: "1",
+                easing: 'ease-out',
             },{
                 transform: "translate3d(0,100%,0)",
                 visibility: "hidden",
-                opacity: "0"
+                opacity: "0",
+                easing: 'ease-out',
             }],
             slideOutRight:[{
                 transform: "translate3d(0,0,0)",
@@ -147,15 +151,20 @@ module.exports = class {
                 opacity: "0",
                 easing: 'ease-out',
             }],
-            slideInUp:[{
-                transform: "translate3d(0,100%,0)",
-                visibility: "hidden",
-                opacity: "0"
-            },{
-                transform: "translate3d(0,0,0)",
-                visibility: "visible",
-                opacity: "1"
-            }],
+            slideInUp:[
+                {
+                    transform: "translate3d(0,100%,0)",
+                    visibility: "hidden",
+                    opacity: "0",
+                    easing: 'ease-out',
+                },
+                {
+                    transform: "translate3d(0,0,0)",
+                    visibility: "visible",
+                    opacity: "1",
+                    easing: 'ease'
+                },
+            ],
             slideInRight:[{
                 transform: "translate3d(100%,0,0)",
                 visibility: "hidden",
@@ -178,11 +187,13 @@ module.exports = class {
             slideInDown:[{
                 transform: "translate3d(0,-100%,0)",
                 visibility: "hidden",
-                opacity: "0"
+                opacity: "0",
+                easing: 'ease-out',
             },{
                 transform: "translate3d(0,0,0)",
                 visibility: "visible",
-                opacity: "1"
+                opacity: "1",
+                easing: 'ease-out',
             }],
             disappear:[{
                 opacity: "1"

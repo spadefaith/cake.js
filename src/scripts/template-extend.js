@@ -71,41 +71,41 @@ HTMLTemplateElement.prototype.collectContent = function(){
 };
 HTMLTemplateElement.prototype.parseStyle = function(style){
     if (!style) return false;
-    var styles = style.textContent;
-    styles = styles.replace(/\s/g, '')
+    var styles = style.textContent.trim();
     if (!styles.length) { return;}
-    let isSelector = false;
-    let isOpen = false;
-    let isClose = false;
-    let splitted = styles.split("");
-    let selector = "";
-    styles = "";
-    var obj = false;
-    for (let l = 0; l < splitted.length; l++){
-        let cha = splitted[l];
-        if (cha == '{'){
-            isSelector = true;
-            isOpen = true;
-        };
-        if (cha == '}'){
-            isSelector = false;
-            isOpen = false;
-        };
-        if (!isSelector && cha != '\t' && cha != '}' && cha != " " && cha != ';'){
-            selector += cha;
-        };
-        if (isOpen && cha != '\t' && cha != '{' & cha != " "){
-            styles += cha;
-        };
-        if (cha == '}'){
-            if (!obj){
-                obj = {};
-            };
-            obj[selector] = styles;
-            selector = "";
-            styles = "";
+    let obj = {};
+
+    let sel = "";
+    let splitted = styles.split("}");
+    for (let sp = 0; sp < splitted.length; sp++){
+        let item = splitted[sp];
+        let [sel, style] = item.split("{");
+        if(!!sel){
+            obj[sel.trim()] = (()=>{
+                let n = false;
+                let s = "";
+                let splitted = style.split("");
+                for (let sp = 0; sp < splitted.length; sp++){
+                    let item = splitted[sp];
+                    if(item == "\n"){
+                        n = true;
+                    } else if (item == " "){
+                        if(n){
+
+                        } else {
+                            s += item;
+                        };
+                    } else {
+                        n = false;
+                        s += item;
+                    };
+                };
+                return s;
+            })();
         };
     };
+
+
     return obj;
 };
 

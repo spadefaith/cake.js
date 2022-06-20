@@ -1,5 +1,6 @@
 const Utils = require('./utils');
 const StorageKit = require('./storage')();
+const ComponentStorage = require('./storage/components-store');
 const authCredential = new StorageKit({
     child:'object',
     storage:'local',
@@ -16,7 +17,7 @@ module.exports = function(components, component){
             this.authRoute = {};
             this.route = this.compile(routes);
             this.prev = null;
-            this.components = components;
+            this.components = ComponentStorage;
 
             this.watch();
             this.persist();
@@ -233,14 +234,14 @@ module.exports = function(components, component){
             if (!window.hasRouterPop){
                 // console.log('set pop state');
                 window.addEventListener('popstate',(e)=>{
-                    // console.log(111, e);
+                    // console.log(236, e);
                     this.parse();
                     this.notify().then(()=>{
-                        // console.log('notified');
+                        console.log('notified');
                         return this.clear().then(()=>{
-                            // console.log('cleared');
+                            console.log('cleared');
                             return this.navigate().then(()=>{
-                                // console.log('navigated');
+                                console.log('navigated');
                             });
                         });
                     })
@@ -350,7 +351,7 @@ module.exports = function(components, component){
             for (let i = 0; i < keys.length; i++){
                 const route = this.route[keys[i]];
 
-                const {regex, components, params, name, overlay,display} = route;
+                const {regex, components, params, name, overlay,display,onrender} = route;
                 if (params){
                     let _path = String(path);
                     _path = _path.slice(1);
@@ -378,7 +379,7 @@ module.exports = function(components, component){
 
                     // console.log(381, route);
 
-                    this.prev = {components, state,path, name, prev:this.prev, overlay, display};
+                    this.prev = {components, state,path, name, prev:this.prev, overlay, display, onrender};
                     has = true;
                     break;
                 };
@@ -416,13 +417,18 @@ module.exports = function(components, component){
             }
         }
         navigate(ispersist){
+            // console.log('here', this.prev);
             if (this.prev){
-                const {components, state, path, name, overlay} = this.prev;
+                const {components, state, path, name, overlay, onrender={}} = this.prev;
                 // if(overlay){
                 //     storage.create(name);
                 // };
+
+
+                // console.log(425, components);
+
                 try {
-                    // console.log(this.prev);
+
                     // console.log(hooks);
                     if(components.length){
                         // return Promise.all(components.map(item=>{                        
@@ -431,12 +437,20 @@ module.exports = function(components, component){
                         return new Promise((res, rej)=>{
                             const l = components.length;
                             let i = 0;
+
+
                             if(l){
                                 const recur = ()=>{
                                     let component = components[i];
+
+                                   
+
                                     if(components.length > i){
-                                        component = this.components[component];
-                                        component.render({emit:{route:this.prev}}).then(()=>{
+                                        let componentName = component;
+                                        // component = this.components[component];
+                                        component = this.components.get(component);
+
+                                        component.render({emit:{route:this.prev},...(onrender[componentName] || {})}).then(()=>{
                                             if(component.await.isConnected){
                                                 component.await.isConnected && component.await.isConnected.then(()=>{
                                                     recur();
@@ -473,6 +487,11 @@ module.exports = function(components, component){
             if (this.prev){
                 const {components:_components, state, path, name} = this.prev;
 
+                // const _components = this.prev.components;
+                // const state = this.prev.state;
+                // const path = this.prev.path;
+                // const name = this.prev.name;
+
                 promise = new Promise((res, rej)=>{
                     const l = components.length;
                     let i = 0;
@@ -480,7 +499,8 @@ module.exports = function(components, component){
                         const recur = ()=>{
                             let component = components[i];
                             if(components.length > i){
-                                component = this.components[component];
+                                // component = this.components[component];
+                                component = this.components.get(component);
                                 component.fire.destroy();
                                 component.await.destroy.then(()=>{
                                     recur();
@@ -508,7 +528,10 @@ module.exports = function(components, component){
         clear(){
             let promise = Promise.resolve();
             
-            const {overlay} = this.prev || {};
+            // console.log(this.prev);
+
+            // const {overlay} = this.prev || {};
+            const overlay = this.prev && this.prev.overlay || undefined;
             //if overlay prevent in detroying current rendered component;
             if(overlay){
                 return promise;
@@ -516,35 +539,72 @@ module.exports = function(components, component){
 
             // console.log('has cleared?', overlay);
 
-            if (this.prev && this.prev.prev){
-                const {components, state, path, name} = this.prev.prev;
 
-                // console.log(530, components);
+            const recur = function(index, componentNames, sourceComponents, callback){
+                let component = componentNames[index];
+                let componentName = component;
+                let self = recur;               
+                try {
+
+                    if(componentNames.length > index){
+                        // component = sourceComponents[component];
+                        component = sourceComponents.get(component);
+
+
+                        if(!component.fire.destroy){
+                            throw new Error(`${componentName} has no destroy handler!`);
+                        };
+
+                        component.fire.destroy();
+                        component.await.destroy.then(()=>{
+                            self(index, componentNames, sourceComponents, callback);
+                        });
+                    } else {
+                        // rej(`${component} is not found`);
+                        callback()
+                    };
+                    index += 1;
+                } catch(err){
+                    throw (err);
+                }
+            }
+
+            if (this.prev && this.prev.prev){
+                // const {components, state, path, name, overlay} = this.prev.prev;
+                let component = this.prev.prev.component;
+                let state = this.prev.prev.state;
+                let path = this.prev.prev.path;
+                let name = this.prev.prev.name;
+                let overlay = this.prev.prev.overlay;
+                let destroyPromise = Promise.resolve();
+
+                if(overlay){
+                    destroyPromise = new Promise((res, rej)=>{
+                        const components = this.prev.components;
+                        // console.log(components);
+                        const l = components.length;
+                        let i = 0;
+                        if(l){
+                            recur(i, components, this.components, res);
+                        } else {
+                            res();
+                        };
+                    });
+                };
 
                 promise = new Promise((res, rej)=>{
+                    
                     const l = components.length;
                     let i = 0;
                     if(l){
-                        const recur = ()=>{
-                            let component = components[i];
-                            if(components.length > i){
-                                component = this.components[component];
-                                component.fire.destroy();
-                                component.await.destroy.then(()=>{
-                                    recur();
-                                });
-                            } else {
-                                // rej(`${component} is not found`);
-                                res()
-                            };
-                            
-                            i += 1;
-                        };recur();
+                        recur(i, components, this.components, res);
                     } else {
                         res();
                     };
                 });
-                return promise;
+                return destroyPromise.then(()=>{
+                    return promise;
+                });
             };
             return promise;
         }

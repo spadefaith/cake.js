@@ -1,36 +1,38 @@
 const Utils = require('./utils');
+const Templating = require('./templating');
 
 const notifyAttr = require('./attrib/data-attr');
 const notifyBind = require('./attrib/data-bind');
 const notifyClass = require('./attrib/data-class');
-const notifyForAuto = require('./attrib/data-for-auto');
 const notifyForUpdate = require('./attrib/data-for-update');
 const notifyFor = require('./attrib/data-for');
 const notifyIf = require('./attrib/data-if');
-const notifyInput = require('./attrib/data-input');
-const notifySwitch = require('./attrib/data-switch');
+const notifyModel = require('./attrib/data-model');
 const notifyToggle = require('./attrib/data-toggle');
+const AttribConfigStorage = require('./storage/AttribConfigStorage');
+// const notifyForAuto = require('./attrib/data-for-auto');
+// const notifySwitch = require('./attrib/data-switch');
 
-const st = {};
-const logicalType = ['if', 'bind', 'switch', 'toggle', 'class', 'attr'];
-
+// const st = {};
+// 
 function Attrib(){
+
     this.uiid = 0;
     this.notify = {};
+    this.sts = {};
+    this.storage = new AttribConfigStorage();
+    this.logicalType = ['if', 'bind', 'switch', 'toggle', 'class', 'attr'];
 };
 
-Attrib.prototype.notifyFor = notifyFor(st);
-Attrib.prototype.notifySwitch = notifySwitch({st,logicalType});
-Attrib.prototype.notifyForAuto = notifyForAuto(st);
+Attrib.prototype.notifyFor = notifyFor;
+Attrib.prototype.notifyForUpdate = notifyForUpdate;
 
-Attrib.prototype.notifyForUpdate = notifyForUpdate({st,logicalType});
-
-Attrib.prototype.notifyClass = notifyClass(st);
-Attrib.prototype.notifyBind = notifyBind(st);
-Attrib.prototype.notifyAttr = notifyAttr(st);
-Attrib.prototype.notifyIf = notifyIf(st);
-Attrib.prototype.notifyInput = notifyInput(st);
-Attrib.prototype.notifyToggle = notifyToggle(st);
+Attrib.prototype.notifyClass = notifyClass;
+Attrib.prototype.notifyBind = notifyBind;
+Attrib.prototype.notifyAttr = notifyAttr;
+Attrib.prototype.notifyIf = notifyIf;
+Attrib.prototype.notifyModel = notifyModel;
+Attrib.prototype.notifyToggle = notifyToggle;
 
 /*
     watch for the (name) which is registered to the scope
@@ -41,17 +43,17 @@ Attrib.prototype.notifyToggle = notifyToggle(st);
 
 Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     // console.time('attr');
-    let val = newValue;
+    let val = JSON.parse(JSON.stringify(newValue));
     if(Utils.isObject(val)){
         val = JSON.parse(JSON.stringify(newValue));
     };
     const equiv = {
         for:'For',
         forUpdate:'ForUpdate',
-        switch:'Switch',
+        // switch:'Switch',
         toggle:'Toggle',
         bind:'Bind',
-        input:'Input',
+        // model:'Model',
         if:'If',
         class:'Class',
         attr:'Attr',
@@ -60,7 +62,8 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     (()=>{
         let hits = {};
         const actions = Object.keys(equiv);
-        const configs = st[component];
+        // const configs = this.sts[component];
+        const configs = this.storage.get(component);
         if(!configs){
             return [];
         };
@@ -91,14 +94,9 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
                     let attr = hits[index];
                     const name = equiv[attr];
                     index += 1;
-                    if(name == 'For'){
-                        this[`notify${name}`](prop, val, prevValue, component);
+                    this[`notify${name}`](prop, val, prevValue, component).then(()=>{
                         rec();
-                    } else {
-                        this[`notify${name}`](prop, val, prevValue, component).then(()=>{
-                            rec();
-                        });
-                    };
+                    });
                 } else {
                     res();
                 };
@@ -121,7 +119,7 @@ Attrib.prototype.getEventTarget = function(component){
     let id = `${component}`;
     let target = Object.caching('getEventTarget').get(id);
     if (!target){
-        let cf = st[component];
+        let cf = this.storage.get(component);
         target = (cf && cf.evt)?cf.evt:[];
         Object.caching('getEventTarget').set(id, target);
     };
@@ -132,7 +130,7 @@ Attrib.prototype.getRouterTarget = function(component){
     let id = `${component}`;
     let target =  Object.caching('getRouterTarget').get(id);
     if(!target){
-        let cf = st[component];
+        let cf = this.storage.get(component);
         target = (cf && cf.router)?cf.router:[];
         Object.caching('getRouterTarget').set(id, target);
     };
@@ -143,7 +141,7 @@ Attrib.prototype.getWatchItems = function(component){
     let id = `${component}`;
     let target =  Object.caching('getWatchItems').get(id);
     if(!target){
-        let _st = st[component] || {};
+        let _st = this.storage.get(component);
         let wt = new Set;
         for (let type in _st){
             if (_st.hasOwnProperty(type)){
@@ -163,13 +161,16 @@ Attrib.prototype.getWatchItems = function(component){
     return target;
 };
 
+Attrib.prototype.getConfig = function(component){
+    return this.storage.get(component);
+};
 
 
 Attrib.prototype.getWatchItemsByType = function(component, type){
     let id = `${component}-${type}`;
     let target =  Object.caching('getWatchItemsByType').get(id);
     if (!target){
-        let _st = st[component] || {};
+        let _st = this.storage.get(component);;
         let tst = _st[type] || [];
         let wt = new Set();
         for (let t = 0; t < tst.length; t++){
@@ -201,7 +202,8 @@ Attrib.prototype.getWatchItemsBySel = function(component, type, sel){
     let id = `${component}-${type}-${sel}`
     let target =  Object.caching('watchItemsBySel').get(id);
     if (!target){
-        let array = st[component][type];
+        // let array = this.sts[component][type];
+        let array = this.storage.get(component, type);;
         let find = array.find(item=>{return item.sel == sel});
         target = (find)?find:false;
         Object.caching('watchItemsBySel').set(id, target);
@@ -213,13 +215,9 @@ Attrib.prototype._activateReactive = (component)=>{
 
 };
 
-Attrib.prototype._register = function(store, f, s, obj){
-    switch(true){
-        case (!store[f]):{store[f] = {}};
-        case (!store[f][s]):{store[f][s] = []};
-        default:{store[f][s].push(obj)};
-        break;
-    };
+Attrib.prototype._register = function(f, s, obj){
+
+    return this.storage.set(f, s, obj);
 };
 
 Attrib.prototype._static = function(component){
@@ -264,12 +262,11 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
         for (let e = 0; e < els.length; e++){
             let id = `cke${this.uiid}`;
             let el = els[e];
-            let splitted = el.dataset.event.split(" ").join("").split(',');
+            let splitted = el.dataset.event.removeSpace().split(',');
             for (let s = 0; s < splitted.length ; s++){
                 let [event, cb] = splitted[s].split(':');
-                // console.log( splitted[s].split(':'), event, cb);
-                // cb = cb || event;
-                this._register(st, component, 'evt', {event, sel:id, cb});
+  
+                this._register(component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;
             }
@@ -293,7 +290,7 @@ Attrib.prototype._compileToggle = function(toggles, component, isStatic){
             if (c[ns]){
                 id = c[ns];
             };
-            this._register(st, component, 'toggle', {sel:id, name:'ns-'+ns});
+            this._register(component, 'toggle', {sel:id, name:'ns-'+ns});
             el.dataset.toggle = id;
             this.uiid++;
             c[ns] = id;
@@ -313,6 +310,9 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
         let o = {};
         for (let f = 0; f < els.length; f++){
             let id = `ckf${this.uiid}`;
+
+            o[id] = {};
+
             let el = els[f];
             let fr = el.dataset.for;
             let autoBind = el.dataset.forAutoBind;
@@ -320,9 +320,15 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             let [a, b, c] = fr.split(" ");
 
             if(autoBind){
+                let iteration = el.dataset.forIter;
+
                 let split = autoBind.split(':');
                 let autoBindKey = split[0] && split[0].trim();
                 let autoBindValue = split[1] && split[1].trim();
+
+                o[id] = {iteration};
+
+                // console.log(342, iter);
 
                 el.dataset.forAutoBindKey = autoBindKey;
                 el.dataset.forAutoBindValue = autoBindValue;
@@ -335,7 +341,8 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             el.dataset.forTemplate = id;
 
 
-            o[id] = {bind:c, sel:id, iter:a, ins: b, cleaned:isCleaned};
+            o[id] = Object.assign(o[id], {bind:c, sel:id, iter:a, ins: b, cleaned:isCleaned});
+
             ++this.uiid;
             if (f != 0){
                 let parent = el.parentElement && el.parentElement.closest('[data-for]');
@@ -355,7 +362,7 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
         };
         for (let key in o){
             if (o.hasOwnProperty(key)){
-                this._register(st, component, 'for', o[key]);
+                this._register(component, 'for', o[key]);
             };
         };
         res();
@@ -380,7 +387,7 @@ Attrib.prototype._compileForUpdate = function(fors, component, isStatic){
             }
 
             let [a, b, c] = fr.split(" ");
-            this._register(st, component, 'forUpdate', {bind:c, sel:id, iter:a,ins: b});
+            this._register(component, 'forUpdate', {bind:c, sel:id, iter:a,ins: b});
             this.uiid++;
         };
         res();
@@ -422,7 +429,7 @@ Attrib.prototype._compileSwitch = function(switchs, component, isStatic){
                     this.uiid++;
                 };
             };
-            this._register(st, component, 'switch', {bind, sel:id, map, cases:casesId});
+            this._register(component, 'switch', {bind, sel:id, map, cases:casesId});
             this.uiid++;
         };
         res()
@@ -448,7 +455,7 @@ Attrib.prototype._compileBind = function(elModels, component, isStatic){
                     var bind = val;
                     var attr = 'value';
                 };
-                this._register(st, component, 'bind', {attr, bind, sel:id});
+                this._register(component, 'bind', {attr, bind, sel:id});
             }
             this.uiid++;
             el.dataset.bind = id;
@@ -487,7 +494,7 @@ Attrib.prototype._compileAnimate = function(anims, component, isStatic){
                 };
             };
             o.selector = {attr:'data-animate', val:id};
-            this._register(st, component, 'animate', o);
+            this._register(component, 'animate', o);
             this.uiid++;
             el.dataset.animate = id;
         };
@@ -540,7 +547,7 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
                 let [_true, _false] = r.split(':');
 
 
-                this._register(st, component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
+                this._register(component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
 
                 
             }
@@ -568,45 +575,54 @@ Attrib.prototype._compileClass = function(cls, component, isStatic){
             id = `cc${this.uiid}`;
             el = els[s];
             cl = el.dataset.class;
-            let [test, className] = cl.split('&&');
-            test = test.trim();
-            className = className.trim();
 
-            
+            let cls = cl.split(',');
 
-            hasRegularLog = test.match(regex);
-
-
-            if(test.substring(0,2).includes('!')){
-                hasNegate = true;
-                hasNegateCount = (test.substring(0,2) == '!!')?2:(test.substring(0,1)=='!')?1:0;
-            } else {
-                hasNegate = false;
-                hasNegateCount = 0;
-            };
-
-            
-            if(hasRegularLog){
-                let splitted = test.split(regex);
-            
-                bindVal = splitted[0].trim();
-                testVal = splitted[1].trim();
-                ops = hasRegularLog[0].trim();
-            } else {
+            for (let c = 0; c < cls.length; c++){
+                let clItem = cls[c];
+                let [test, className] = clItem.split('&&');
+                test = test.trim();
+                className = className.trim();
+    
                 
-                !hasNegate && (bindVal = test);
-                if(hasNegate){
-                    bindVal = test.substring(hasNegateCount);
-                    testVal = hasNegateCount == 2;
+    
+                hasRegularLog = test.match(regex);
+    
+    
+                if(test.substring(0,2).includes('!')){
+                    hasNegate = true;
+                    hasNegateCount = (test.substring(0,2) == '!!')?2:(test.substring(0,1)=='!')?1:0;
+                } else {
+                    hasNegate = false;
+                    hasNegateCount = 0;
                 };
-            };
+    
+                
+                if(hasRegularLog){
+                    let splitted = test.split(regex);
+                
+                    bindVal = splitted[0].trim();
+                    testVal = splitted[1].trim();
+                    ops = hasRegularLog[0].trim();
+                } else {
+                    
+                    !hasNegate && (bindVal = test);
+                    if(hasNegate){
+                        bindVal = test.substring(hasNegateCount);
+                        testVal = hasNegateCount == 2;
+                    };
+                };
+    
+                
+                // if(component == 'header1'){
+                //     console.log(1534, bindVal, test, testVal, hasNegateCount);
+                // }
+    
+                this._register(component, 'class', {hasNegate, bind:bindVal, testVal,className, ops, sel:id});
+            }
 
-            
-            // if(component == 'header1'){
-            //     console.log(1534, bindVal, test, testVal, hasNegateCount);
-            // }
 
-            this._register(st, component, 'class', {hasNegate, bind:bindVal, testVal,className, ops, sel:id});
+
             this.uiid++;
             el.dataset.class = id;
         };
@@ -647,7 +663,7 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
                 hasNegate && (bind = bind.slice(1));
             };
 
-            this._register(st, component, 'attr', {hasNegate, bind, testVal,attrkey, attrvalue, ops, sel:id});
+            this._register(component, 'attr', {hasNegate, bind, testVal,attrkey, attrvalue, ops, sel:id});
             this.uiid++;
             el.dataset.attr = id;
         };
@@ -655,25 +671,7 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
     });
 };
 
-Attrib.prototype._compileRouter = function(router, component, isStatic){
-    return new Promise((res)=>{
-
-        if (!router.length) {res();return;};
-        let els = this._static(component)(router, isStatic);
-        if (!els.length){res();return;}
-        for (let s = 0; s < els.length; s++){
-            let id = `rt${this.uiid}`;
-            let el = els[s];
-            let value = el.dataset.routerLink;
-            this._register(st, component, 'router', {value, sel:id});
-            this.uiid++;
-            el.dataset.routerLink = id;
-        };
-        res();
-    });
-}
-
-Attrib.prototype._compileInput = function(elModels, component, isStatic){
+Attrib.prototype._compileModel = function(elModels, component, isStatic){
     return new Promise((res)=>{
 
         if (!elModels.length) {res();return;};
@@ -683,8 +681,7 @@ Attrib.prototype._compileInput = function(elModels, component, isStatic){
             let id = `cknt${this.uiid}`;
             let el = els[s];
             let nodeType = el.tagName;
-            let model = el.dataset.input;
-            //data-input='username:'
+            let model = el.dataset.model;
             let gr = model.split(',');
 
             for (let g = 0; g < gr.length; g++){
@@ -695,22 +692,19 @@ Attrib.prototype._compileInput = function(elModels, component, isStatic){
                     var bind = val;
                     var attr = 'value';
                 };
-                this._register(st, component, 'input', {attr, bind, sel:id,nodeType});
+                this._register(component, 'model', {attr, bind, sel:id,nodeType});
             };
             this.uiid++;
-            el.dataset.input = id;
+            el.dataset.model = id;
         };
         res();
     });
 }
 
 Attrib.prototype.inject = function(el, component, isStatic=false){
-    // console.trace()
-    // console.time(`inject ${component}`)
-    // this.st.component = new RAM('for', new RAM());
-
     return new Promise((res)=>{
-        let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','input','attr');
+        // let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','model','attr');
+        let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','attr');
         // console.log(query, component);
         res(query);
     }).then((query)=>{
@@ -726,7 +720,10 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
             'for-update':this._compileForUpdate,
             'event':this._compileEvents,
             'animate':this._compileAnimate,
-            'input':this._compileInput,
+            // 'model':this._compileModel,
+
+            // 'model':"",
+            // 'validator':"",
         };
 
         for (let q in query){
@@ -738,7 +735,8 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
         };
         
         console.timeEnd(component);
-        return (r.length)?Promise.all(r):Promise.resolve();
+        
+        return Promise.all(r.length?r:[r]);
     }).then(()=>{
 
         

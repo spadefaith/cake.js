@@ -37,6 +37,7 @@ const TYPES = {
         return this.typeof(ctx) == 'function';
     },
 };
+
 const LOOP = {
     each:function(ctx, fn, type){
         if (type == 'object'){
@@ -90,6 +91,29 @@ const LOOP = {
     },
 };
 
+const OBJECT = {
+    dictionary:function(obj,path){
+        if(path){
+            path = path.split('.');
+        };
+        for (let p = 0; p < path.length; p++){
+            if(obj[p]){
+                obj = obj[p];
+            } else{
+                obj = null;
+                break;
+            };
+        };
+        return obj;
+    }
+};
+
+const STRING = {
+    removeWhiteSpace(str){
+        return String(str).split(" ").join("");
+    },
+}
+
 const OTHERS = {
     perf:function(fn){
         console.time('test');
@@ -125,6 +149,9 @@ const OTHERS = {
         for(let key in obj){
             if(obj.hasOwnProperty(key)){
                 let val = obj[key];
+                if(val.toString().includes('Object')){
+                    val = JSON.stringify(val);
+                };
                 if(istrim && val){
                     searchParams += `${encodeURI(key)}=${encodeURI(val)}&`;
                 } else {
@@ -132,13 +159,13 @@ const OTHERS = {
                 };
             };
         };
-        return searchParams;
+        return searchParams.slice(0, searchParams.length - 1);
     },
-    sanitize:function(string){
+    sanitize:function(string, exclude=[]){
         if(typeof string != 'string'){
             return string;
         };
-        const map = {
+        let map = {
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
@@ -146,49 +173,87 @@ const OTHERS = {
             "'": '&#x27;',
             "/": '&#x2F;',
         };
+        map = Object.keys(map).reduce((accu, key)=>{
+            if(!exclude.includes(key)){
+                accu[key] = map[key];
+            };
+            return accu;
+        },{});
+   
         const reg = /[&<>"'/]/ig;
-        return string.replace(reg, (match)=>(map[match]));
+        return string.replace(reg, (match)=>{
+            return map[match] || match;
+        });
     },
     toFormData:function(form, options={}){
+        const controls = [];
+        const textareas = form.querySelectorAll('TEXTAREA');
+        const inputs = form.querySelectorAll('INPUT');
+        const selects = form.querySelectorAll('SELECT');
         
-        let formData = new FormData(form);
-        let o = {};
-        let fd = new FormData();
-        for (let [key, value] of formData.entries()){
-            let type;
-            if(form[key]){
-                const element = form[key];
-                // console.log(element, element.parentElement, element.closest('.cake-template'));
-                if(element.closest && !element.closest('.cake-template')){
-                    const tag = element.tagName;
-                    if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
-                        value = element.checked;
-                    } else {
-                        if(options.sanitize == undefined || !!options.sanitize){
-                            value = this.sanitize(value);
-                        };
-                    };
-                    
-                    if(options.json){
-                        if(options.trim){
-                            if(value != ""){
-                                o[key] = value;
-                            };
-                        } else {
-                            o[key] = value;
-                        }; 
-                    } else {
-                        fd.append(key, value);
-                    }
-                };
 
+        function loop(arr, cont){
+            for (let i = 0; i < arr.length; i++){
+                cont.push(arr[i]);
             };
-
-
         };
+
+        loop(textareas, controls);
+        loop(inputs, controls);
+        loop(selects, controls);
+
+
+        let o = {};
+
+        for (let i = 0; i < controls.length; i++){
+            let control = controls[i];
+            let key = control.name || control.id;
+
+            if(key && ["{{","((","[[","<<","%%","&&"].includes(key)){
+
+            } else {
+                let type;
+                const element = form[key];
+
+                
+                if(element){
+
+                    if(element.closest && !element.closest('.cake-template')){
+                        const tag = element.tagName;
+                        
+                        if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
+                            value = element.checked;
+                        } else {
+                            value = this.sanitize(element.value,options.sanitize);
+                        };
+                        
+                        if(options.json){
+                            if(options.trim){
+                                if(value != ""){
+                                    o[key] = value;
+                                };
+                            } else {
+                                o[key] = value;
+                            }; 
+                        } else {
+                            fd.append(key, value);
+                        }
+                    };
+    
+                };
+            };
+        };
+        
+
         if(options.json){
             return o;
         } else {
+            let fd = new FormData();
+            for (let key in o){
+                if (o.hasOwnProperty(key)){
+                    fd.append(key, o[key]);
+                };
+            };
             return fd;
         };
     },
@@ -220,9 +285,6 @@ const OTHERS = {
     instanceID(){
         //to have unique identifier every web app using this, in sessionStorage or localStorage;
         return location.origin;
-    },
-    removeWhiteSpace(str){
-        return String(str).split(" ").join("");
     },
     recurse(array, callback){
         return new Promise((res, rej)=>{
@@ -311,11 +373,14 @@ const OTHERS = {
     },
     isDesktop(){
         return this.device() == 'desktop';
+    },
+    escapeRegExp(text) {
+        return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     }
-}
+};
 
 try {
-    global.UTILS = {...LOOP, ...TYPES, ...OTHERS};
+    global.UTILS = {...LOOP, ...TYPES, ...OTHERS, ...STRING};
 } catch (err){
     global.UTILS = {};
 
@@ -327,6 +392,9 @@ try {
         global.UTILS[key] = value;
     });
     iter(OTHERS, function(key, value){
+        global.UTILS[key] = value;
+    });
+    iter(STRING, function(key, value){
         global.UTILS[key] = value;
     });
 };

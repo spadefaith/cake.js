@@ -101,9 +101,9 @@ Piece.prototype.appendTo = function(root, cleaned){
     if (!root && !root.attributes){
         throw new TypeError(`the ${root} is not an instance of Element`);
     };
+
     cleaned && (root.innerHTML = "");
 
-    
 
     for (let i = 0; i < this.el.length; i++){
         let el = this.el[i];

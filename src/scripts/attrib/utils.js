@@ -1,13 +1,12 @@
-exports.getConfig = function(st, type, prop, newValue, prevValue, component){
+exports.getConfig = function(st, prop, newValue, prevValue, component){
     /*
         newValue is null, when emptying the scope;
     */
     if (newValue == null) {return []};
     if (newValue == prevValue && type != 'bind'){ return [];};
-
     return (()=>{
         let ctx = [];
-        let s = ( (st[component] && st[component][type]) || [] );
+        let s = st;
         if (s && s.length){
             for (let i = 0; i < s.length; i++){
                 let item = s[i];

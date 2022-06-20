@@ -1,4 +1,5 @@
 const StorageKit = require('./storage')();
+const ComponentStorage = require('./storage/components-store');
 module.exports = class {
     constructor(){
         this.storage = new StorageKit({
@@ -8,6 +9,7 @@ module.exports = class {
         });
     }
     listen(components){
+        components = ComponentStorage;
         let event = 'DOMContentLoaded';
         if('deviceready' in document){
             event = 'deviceready';
@@ -20,7 +22,7 @@ module.exports = class {
 
                     for (let r = 0; r < result.length; r++){
                         let item = result[r];
-                        let component = components[item];
+                        let component = components.get(item);
                         component.isConnected = false;
 
 

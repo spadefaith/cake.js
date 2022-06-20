@@ -1,7 +1,11 @@
-function Templating(data, template, isConvert){
-    this.data = data;
-    this.template = template;
-    this.isConvert = isConvert;
+const Utils = require('./utils');
+// escapeRegExp
+
+function Templating(options){
+    this.options = options;
+    this.tag = ((this.options && this.options.tag) || "{{ }}").split(" ");
+    this.lefttag = Utils.escapeRegExp(this.tag[0]);
+    this.righttag = Utils.escapeRegExp(this.tag[1]); 
 };
 Templating.prototype._getTag = function(template){
     //get the tag in < h1>;
@@ -10,21 +14,25 @@ Templating.prototype._getTag = function(template){
 Templating.prototype._bindReplace = function(obj,string){
     for (let key in obj){
         if (obj.hasOwnProperty(key)){
-            let pattern = new RegExp(`{{${key}}}`, 'g');
+
+            let pattern = new RegExp(`${this.lefttag}${key}${this.righttag}`, 'g');
             pattern && (string = string.replace(pattern, `${obj[key]}`));
         };
     };
     return string;
 };
+Templating.prototype.replaceString = function(obj, string){
+    return this._bindReplace(obj, string);
+}
 Templating.prototype._toElement = function(template, tag){
     let fr = document.createElement('template');
     fr.innerHTML = template;
     return fr.content.children[0];
 };
-Templating.prototype.createElement = function(){
-    let template = this.template;
-    let data = this.data;
-    let isConvert = this.isConvert;
+Templating.prototype.createElement = function(data,template,  isConvert){
+    // let template = this.template;
+    // let data = this.data;
+    // let isConvert = this.isConvert;
 
 
     if (data){
@@ -37,6 +45,9 @@ Templating.prototype.createElement = function(){
             for (let d = 0; d < data.length; d++){
                 let dd = data[d];
                 let bindData = this._bindReplace(dd, template);
+
+                // console.log(42, dd, bindData);
+
                 let element = this._toElement(bindData, tag);
                 if (isConvert){
                     element = element.outerHTML;
@@ -52,6 +63,11 @@ Templating.prototype.createElement = function(){
 
 
             let bindData = this._bindReplace(data, template);
+
+            // console.log(60, this.tag);
+            // console.log(61, bindData);
+
+
             let element = this._toElement(bindData, tag);
             if (isConvert){
                 element = element.outerHTML;
