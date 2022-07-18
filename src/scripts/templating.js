@@ -9,7 +9,11 @@ function Templating(options){
 };
 Templating.prototype._getTag = function(template){
     //get the tag in < h1>;
-    return template.match(new RegExp('(?<=<)|([^/s]+)(?=\>)', 'g'))[2];
+    try {
+        return template.match(new RegExp('(?<=<)|([^/s]+)(?=\>)', 'g'))[2];
+    } catch(err){
+        throw new Error(`template of ${template} is empty.`);
+    }
 };
 Templating.prototype._bindReplace = function(obj,string){
     for (let key in obj){

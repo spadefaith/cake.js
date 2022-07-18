@@ -79,7 +79,10 @@ HTMLTemplateElement.prototype.parseStyle = function(style){
     let splitted = styles.split("}");
     for (let sp = 0; sp < splitted.length; sp++){
         let item = splitted[sp];
-        let [sel, style] = item.split("{");
+        let _sp1 = item.split("{");
+        let sel = _sp1[0];
+        let style = _sp1[1];
+        // let [sel, style] = item.split("{");
         if(!!sel){
             obj[sel.trim()] = (()=>{
                 let n = false;
@@ -121,7 +124,11 @@ HTMLTemplateElement.prototype.parseHTML = function(others){
 };
 
 HTMLTemplateElement.prototype.getContent = function(isConvert){
-    let {style, others} = this.collectContent()
+    let _collectedContent = this.collectContent();
+    // let {style, others} = this.collectContent();
+    let style = _collectedContent.style;
+    let others = _collectedContent.others;
+    
     let styles = this.parseStyle(style);
     let element = this.parseHTML(others);
 

@@ -1,6 +1,9 @@
 const Utils = require('../utils');
 
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 
 module.exports = (async function(prop, newValue, prevValue, component, html){
     html = html || document;
@@ -12,7 +15,12 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     if (!configs.length) return;
     for (let c = 0; c < configs.length; c++){
         let config = configs[c];
-        let {attr, bind, sel} = config;
+        // let {attr, bind, sel} = config;
+
+        let attr = config.attr;
+        let bind = config.bind;
+        let sel = config.sel;
+
         let attrHyphen = attr.toHyphen();
         if (prop == bind){
             let els = html.querySelectorAll(`[data-model=${sel}]`);

@@ -153,9 +153,32 @@
             return q;
         })();
     };
+
+
     
     HTMLElement.prototype.querySelectorAllIncluded = function(selector, attr, val){
-        let q = this.querySelectorAll(selector).toArray();
+        let q;
+        try {
+            q = this.querySelectorAll(selector);
+            q && (q = q.toArray());
+        } catch(err){
+            q = [];
+        };
+
+        if(selector){
+            q = this.querySelectorAll(selector).toArray();
+        } else if (attr && val){
+            q = this.querySelectorAll(`[${attr}=${val}]`).toArray();
+            if(this.dataset[attr] == val){
+                q.push(this);
+            };
+        } else if (attr && !val){
+            q = this.querySelectorAll(`[${attr}]`).toArray();
+            if(!!this.dataset[attr]){
+                q.push(this);
+            };
+        };
+
         switch (true){
             case !attr && !val:{
                 let qu = this.closest(selector);
@@ -163,11 +186,12 @@
             };
             break;
             case attr && val:{
-                this.getAttribute(attr) == val && q.push(this);
+                // this.getAttribute(attr) == val && q.push(this);
             };
             break;
             case attr && !val:{
-                this.getAttribute(attr) && q.push(this);
+                
+                // this.getAttribute(attr) && q.push(this);
             }
             break;
         };
@@ -216,6 +240,53 @@
                 delete storage[key];
             }
         }
-    }
+    };
+
+    HTMLElement.prototype.replaceDataSrc = function(){
+        let srcs = this.querySelectorAllIncluded(null, 'data-src',null);
+        for (let s = 0; s < srcs.length; s++){
+            let el = srcs[s];
+            el.setAttribute('src', el.dataset.src);
+            el.removeAttribute('data-src');
+        };
+    };
+
+
+    Object.keep = function(path, data){
+        let rawdirs = path.split(".");
+        let dirs = rawdirs.slice(1);
+        let isArray = data.constructor.name=='Array';
+        let ins = isArray?[]:{};
+
+        const has = function(obj, prop, value){
+            if(!obj[prop]){
+                obj[prop] = value==undefined?{}:value;
+            };
+            return obj[prop];
+        };
+
+        if(rawdirs[0]){
+            has(Object.cache, rawdirs[0], (dirs.length)?{}:data);
+        };
+
+        let orig = Object.cache[rawdirs[0]];
+
+        for (let i = 0; i < dirs.length; i++){
+            let dir = dirs[i];
+            let last = dirs.length -1 == i;
+        
+            if(last){
+                orig = has(orig, dir, ins);
+                if(isArray){
+                    orig = orig.concat(data);
+                } else {
+                    orig = Object.assign(orig, data);
+                };
+            } else {
+                orig = has(orig, dir, {});
+            };
+        };
+        return Object.cache[rawdirs[0]];
+    };
     
 })(window);

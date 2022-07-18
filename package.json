@@ -2,7 +2,6 @@
   "name": "cake",
   "version": "1.0.0",
   "description": "vanilla simple component library",
-  "main": "bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,5 +22,26 @@
   "dependencies": {
     "esbuild": "^0.14.10",
     "express": "^4.17.2"
+  },
+  "devDependencies": {
+    "@parcel/reporter-bundle-buddy": "^2.6.2",
+    "parcel": "^2.6.2"
+  },
+
+  
+  "source": "./src/app.js",
+  "modern": "dist2/modern.js",
+  "legacy": "dist2/legacy.js",
+  "targets": {
+    "modern": {
+      "engines": {
+        "browsers": "Chrome 80"
+      }
+    },
+    "legacy": {
+      "engines": {
+        "browsers": "> 0.5%, last 2 versions, not dead"
+      }
+    }
   }
 }

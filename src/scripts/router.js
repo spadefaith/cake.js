@@ -1,33 +1,46 @@
 const Utils = require('./utils');
 const StorageKit = require('./storage')();
 const ComponentStorage = require('./storage/components-store');
-const authCredential = new StorageKit({
+const RouterStore = new StorageKit({
     child:'object',
     storage:'local',
     name:`_cake_router_cf`,
 });
-module.exports = function(components, component){
+module.exports = function(models, component){
 
     const hooks = [];
     return class {
         constructor(routes, options){
-            
-            this.unauthRoute = options && options['401'] || null;
-
-            this.authRoute = {};
+            this.options = options;
+            this.unauthRoute = null;
+            this.componentConf = null;
+            this.authValidRoute = null;
+            this.authConfig = (function(){
+                if(!this.options){return;};
+                const confAuth = this.options.auth;
+                const confComponents = this.options.components;
+                // console.log(29, confComponents);
+                if(confComponents){
+                    this.componentConf = confComponents;
+                };
+                if(confAuth && confAuth.verify){
+                    const verify = confAuth.verify;
+                    this.verifyComponent = verify[0];
+                    this.verifyComponentHandler = verify[1];
+                    this.unauthRoute = confAuth['401'];
+                    return confAuth;
+                };
+                if(confAuth && confAuth.valid){
+                    this.authValidRoute = confAuth.valid;
+                };
+                return null;
+            }.bind(this))();
+            this.authRedirectRoute = {};//route to redirect back when the token is still valid;
             this.route = this.compile(routes);
             this.prev = null;
             this.components = ComponentStorage;
-
             this.watch();
             this.persist();
-            // this.navigate();
-
-            // console.log(this.route);
-            // console.log(12,routes);
-            // console.log(13,this.route);
-            // console.log(14,this.prev);
-            
             Object.defineProperty(component.prototype, '$router', {
                 configurable:true,
                 get:()=>{
@@ -36,6 +49,7 @@ module.exports = function(components, component){
                         goBack:this.goBack.bind(this),
                         auth:this.auth.bind(this),
                         logout:this.logout.bind(this),
+                        login:this.login.bind(this),
                         ...this.prev,
                     };
                 },
@@ -43,23 +57,65 @@ module.exports = function(components, component){
                     return;
                 },
             });
-
-            // this.authenticate();
-
         }
-        authenticate(initialize){
-            if(this.unauthRoute){
+        getComponent(name, path){
+            if(this.componentConf && this.componentConf[name]){
+                let rerender = this.componentConf[name].rerender;
+
+                if(rerender){
+                    name = rerender.includes(path)?name:null;
+                };
+            };
+            return name ? this.components.get(name): null;
+        }
+        verifyAuth(token){
+            return models.$loaded(this.verifyComponent).then(model=>{
+                return model.fire[this.verifyComponentHandler](token);
+            });
+        }
+        async authenticate(name){
+
+            /*
+                happens when the current page is in the unAuthRoute
+                usually the login page,
+                when still the token is valid,
+                instead of redirect to unAuthRoute
+                it will redirect to the route declared per role
+                this happens in mobile app, when the app is minimized,
+                the path is reset to '/';
+            */
+
+            const initialize = (this.unauthRoute == name);
+            // const initialize = this.unauthRoute[name];
+
+
+            if(this.unauthRoute){//has 401;
                 try {
-                    const config = authCredential.get('role', true);
-                    // console.log(52, this.authRoute);
-                    // console.log(53, config);
+
+
+                    const config = RouterStore.get('role', true);
+
+                    // console.log(config);
+
+                    const token = config.token;
+                    const isverified = await this.verifyAuth(token);
+                    
+                    if(isverified.status == 0){
+                        this.logout();
+                    };
+
+                 
+
                     if(config){
                         if(initialize){
-                            const {role, data} = config;
-                            const route = this.authRoute[role];
-                            // console.log(route);
+                            const role = config.role;
+                            const data = config.data;
+
+                            // console.log(99, this.authRedirectRoute, data, role);
+
+                            const route = this.authRedirectRoute[role];//redirect back to a page;
                             if(route){
-                                const {name} = route;
+                                const name = route.name;
                                 this.goTo(name);
                             };
                         } else {
@@ -82,52 +138,65 @@ module.exports = function(components, component){
             };
             
         }
-        auth(cred){
-            if(cred){
-                let {role,token, data} = cred;
-                authCredential.createOrUpdate('role',{role,token, data});
-            } else {
-                const cred = authCredential.get('role', true);
-                if(cred){
-                    let o = {};
+        login(cred){
+            let role = cred.role;
+            let token = cred.token;
+            let data = cred.data;
+            let created =RouterStore.createOrUpdate('role',{role,token, data});
 
-                    if(cred){
-                        o = cred;
-                    }
 
-                    if(o.data){
-                        o = o.data;
-                    };
-                    if(o.user){
-                        o = o.user;
-                    };
-                    o.token = cred.token;
-                    return o;
-                } else {
-                    return "token";
-                }
+            return created
+        }
+        auth(){
+            const auth = RouterStore.get('role', true);
+            if(!auth){
+                // this.logout();
+                return {};
             };
+            return auth;
         }
         logout(){
             try {
-                authCredential.remove('role');
+                RouterStore.remove('role');
             } catch(err){};
             this.goTo(this.unauthRoute,{replace:true});
             // sessionStorage.createOrUpdate('history',[]);
         }
-        goTo(routeName,config){
+        goTo(routeName,config={}){
             try {
                 let routes = this.route;
-                let {params={}, replace:isreplace} = config || {};
+                // let {params={}, replace:isreplace} = config || {};
+
+                let params = config.params || {};
+                let isreplace = config.replace;
+
+
                 let hash = null;
                 const raw = Object.entries(routes);
 
                 // console.log(108, routeName,config,isreplace, raw);
 
+                if(!routeName){
+                    const auth = RouterStore.get('role', true);
+                    const role = auth.role;
+                    const route = this.authRedirectRoute[role];//redirect back to a page;
+                    if(route){
+                        routeName = route.name;
+                    };
+                };
+
+                if(!routeName){
+                    throw new Error(`provide routename`);
+                };
 
                 for (let i = 0; i < raw.length; i++){
-                    const [route, config] = raw[i];
-                    const {name} = config;
+                    // const [route, config] = raw[i];
+                    const route = raw[i][0];
+                    const config = raw[i][1];
+                    // const {name} = config;
+                    const name = config.name;
+
+
                     if(name == routeName){
                         hash = route;
                         break;
@@ -257,13 +326,15 @@ module.exports = function(components, component){
             let con = {};
             for (let key in routes){
                 let config = routes[key];
+                // console.log(281, config);
                 key = String(key);
                 const len = key.length;
                 let regex = key;
                 if(['404'].includes(key)){
                     //http errors;
-                    const callback = routes[key];
-                    routes[key] = {callback, name:key};
+                    const callback = routes[key];//function
+                    
+                    config = {callback, name:key};
                 } else {
                     regex = regex.slice(1);
                 };
@@ -301,18 +372,23 @@ module.exports = function(components, component){
                         ...config,
                     }
                 };
+                // console.log(key, con[key],config);
 
-                let {auth} = config;
 
-                // console.log(217,auth);
-                // console.log(218,this);
+                if(this.authValidRoute){
+                    Utils.each(this.authValidRoute, function(obj, i){
+                        let key = obj.key;
+                        let value = obj.value;
 
-                if(auth){
-                    if(this.authRoute[auth]){
-                        throw new Error(`auth ${auth} is found in other route`);
-                    } else {
-                        this.authRoute[auth] = config;
-                    };
+                        if(value == config.name){
+                            if(this.authRedirectRoute[value]){
+                                throw new Error(`auth ${item} is found in other route`);
+                            } else {
+                                this.authRedirectRoute[value] = config;
+                            };
+                        };
+                    });
+
                 };
 
             };
@@ -336,7 +412,11 @@ module.exports = function(components, component){
                 return;
             };
             const url = new URL(`http://localhost${hash}`);
-            const {search, pathname:path} = url;
+            // const {search, pathname:path} = url;
+
+            let search = url.search;
+            let path = url.pathname;
+
             const keys = this.route.keys;
             const state = {};
             if (search){
@@ -351,33 +431,36 @@ module.exports = function(components, component){
             for (let i = 0; i < keys.length; i++){
                 const route = this.route[keys[i]];
 
-                const {regex, components, params, name, overlay,display,onrender} = route;
+                const regex = route.regex;
+                const components = route.components;
+                const params = route.params;
+                const name = route.name;
+                const auth = route.auth;
+                const overlay = route.overlay;
+                const display = route.display;
+                const onrender = route.onrender;
+
                 if (params){
                     let _path = String(path);
                     _path = _path.slice(1);
                     _path = _path.split('/');
                     Object.entries(params).forEach(param=>{
-                        const [key, value] = param;
+                        const key = param[0];
+                        const value = param[1];
+
                         if (_path[value]){
                             state[key] = _path[value];
                         };
                     });
                 };
-
                 const test = regex.test(path);
-
-                // console.log(160, test, route);
-                
+                // console.log(test, path, regex);
                 if (test){
                     routeName = name;
                     
-                    if(this.unauthRoute != name){
-                        this.authenticate();
-                    } else {
-                        this.authenticate(true);
+                    if(auth == true){
+                        this.authenticate(routeName);
                     };
-
-                    // console.log(381, route);
 
                     this.prev = {components, state,path, name, prev:this.prev, overlay, display, onrender};
                     has = true;
@@ -385,11 +468,20 @@ module.exports = function(components, component){
                 };
             };
 
+            console.log(430, has, hash);
 
             if(!has){
+                // console.log(464, this.route, this.options);
+                // console.log(465, this.route['404']);
                 if(this.route['404']){
                     let path = this.route['404'].callback();
-                    const {origin, pathname} = location;
+                    // const {origin, pathname} = location;
+
+                    // console.log(470,path);
+
+                    let origin = location.origin;
+                    let pathname = location.pathname;
+
                     if(this.route[path]){
                         // console.log(1);
                         if(path == '/'){
@@ -419,7 +511,16 @@ module.exports = function(components, component){
         navigate(ispersist){
             // console.log('here', this.prev);
             if (this.prev){
-                const {components, state, path, name, overlay, onrender={}} = this.prev;
+                // const {components, state, path, name, overlay, onrender={}} = this.prev;
+
+                const components = this.prev.components;
+                const state = this.prev.state;
+                const path = this.prev.path;
+                const name = this.prev.name;
+                const overlay = this.prev.overlay;
+                const onrender = this.prev.onrender || {};
+
+
                 // if(overlay){
                 //     storage.create(name);
                 // };
@@ -446,23 +547,48 @@ module.exports = function(components, component){
                                    
 
                                     if(components.length > i){
+                                        i += 1;
                                         let componentName = component;
                                         // component = this.components[component];
+                                        
+                                        let isunload = this.getComponent(component,path);
                                         component = this.components.get(component);
 
-                                        component.render({emit:{route:this.prev},...(onrender[componentName] || {})}).then(()=>{
-                                            if(component.await.isConnected){
-                                                component.await.isConnected && component.await.isConnected.then(()=>{
+                                        if(component){
+                                            if(component.isConnected && !isunload){
+                                                if(component.fire.softReload){
+                                                    component.fire.softReload();
+                                                    component.await.softReload && component.await.softReload.then(()=>{
+                                                        recur();
+                                                    });
+                                                } else {
                                                     recur();
-                                                });
+                                                };
                                             } else {
-                                                recur();
-                                            }
-                                        }).catch(err=>{
-                                            throw err;
-                                        });
-    
-                                        i += 1;
+                                                component.render({emit:{route:this.prev},...(onrender[componentName] || {})}).then(()=>{
+                                                    if(component.await.isConnected){
+                                                        component.await.isConnected && component.await.isConnected.then(()=>{
+                                                            recur();
+                                                        });
+                                                    } else {
+                                                        recur();
+                                                    }
+                                                }).catch(err=>{
+                                                    throw err;
+                                                });
+                                            };
+                                        }
+                                        
+
+
+                                        // if(component){
+
+                                        // } else {
+                                        //     recur();
+                                        // }
+
+                                        
+                                        
                                     } else {
                                         res()
                                         // rej(`${component} is not found`);
@@ -482,36 +608,44 @@ module.exports = function(components, component){
             }
         }
         static pushState(data, notused, path){
+            console.log(path);
             window.history.pushState(data, notused, path);
             let promise = Promise.resolve();
             if (this.prev){
-                const {components:_components, state, path, name} = this.prev;
+                // const {components:_components, state, path, name} = this.prev;
 
-                // const _components = this.prev.components;
-                // const state = this.prev.state;
-                // const path = this.prev.path;
-                // const name = this.prev.name;
+                const _components = this.prev.components;
+                const state = this.prev.state;
+                const path = this.prev.path;
+                const name = this.prev.name;
 
                 promise = new Promise((res, rej)=>{
                     const l = components.length;
                     let i = 0;
                     if(l){
-                        const recur = ()=>{
+                        const recur = async ()=>{
                             let component = components[i];
                             if(components.length > i){
                                 // component = this.components[component];
-                                component = this.components.get(component);
-                                component.fire.destroy();
-                                component.await.destroy.then(()=>{
-                                    recur();
-                                });
+                                component = this.getComponent(component,path);
+
+                                
+                                if(component){
+                                    component.fire.destroy();
+                                    component.await.destroy.then(()=>{
+                                        return recur();
+                                    });
+                                } else {
+                                    await recur();
+                                }
                             } else {
                                 // rej(`${component} is not found`);
                                 res()
                             };
                             
                             i += 1;
-                        };recur();
+                        };
+                        recur();
                     } else {
                         res();
                     };
@@ -528,9 +662,8 @@ module.exports = function(components, component){
         clear(){
             let promise = Promise.resolve();
             
-            // console.log(this.prev);
+            
 
-            // const {overlay} = this.prev || {};
             const overlay = this.prev && this.prev.overlay || undefined;
             //if overlay prevent in detroying current rendered component;
             if(overlay){
@@ -539,50 +672,61 @@ module.exports = function(components, component){
 
             // console.log('has cleared?', overlay);
 
-
-            const recur = function(index, componentNames, sourceComponents, callback){
+            const recur = async function(index, componentNames, sourceComponents, callback){
                 let component = componentNames[index];
                 let componentName = component;
                 let self = recur;               
                 try {
 
                     if(componentNames.length > index){
+                        index += 1;
                         // component = sourceComponents[component];
-                        component = sourceComponents.get(component);
 
+                        component = this.getComponent(component,this.prev.path);
+               
+                        
 
-                        if(!component.fire.destroy){
-                            throw new Error(`${componentName} has no destroy handler!`);
+                        if(component){
+                            if(!component.fire.destroy){
+                                throw new Error(`${componentName} has no destroy handler!`);
+                            };
+    
+                            component.fire.destroy();
+                            component.await.destroy.then(()=>{
+                                return self(index, componentNames, sourceComponents, callback);
+                            });
+                        } else {
+                            await self(index, componentNames, sourceComponents, callback);
                         };
 
-                        component.fire.destroy();
-                        component.await.destroy.then(()=>{
-                            self(index, componentNames, sourceComponents, callback);
-                        });
                     } else {
                         // rej(`${component} is not found`);
                         callback()
                     };
-                    index += 1;
+                    
                 } catch(err){
                     throw (err);
                 }
-            }
+            }.bind(this);
+
+            // console.log(624, this.components);
 
             if (this.prev && this.prev.prev){
                 // const {components, state, path, name, overlay} = this.prev.prev;
-                let component = this.prev.prev.component;
+                let components = this.prev.prev.components;
                 let state = this.prev.prev.state;
                 let path = this.prev.prev.path;
                 let name = this.prev.prev.name;
                 let overlay = this.prev.prev.overlay;
                 let destroyPromise = Promise.resolve();
+                // const components = this.prev.components;
 
+                
                 if(overlay){
                     destroyPromise = new Promise((res, rej)=>{
-                        const components = this.prev.components;
-                        // console.log(components);
+                        
                         const l = components.length;
+                        
                         let i = 0;
                         if(l){
                             recur(i, components, this.components, res);
@@ -595,6 +739,7 @@ module.exports = function(components, component){
                 promise = new Promise((res, rej)=>{
                     
                     const l = components.length;
+                    // console.log(644, components, l);
                     let i = 0;
                     if(l){
                         recur(i, components, this.components, res);

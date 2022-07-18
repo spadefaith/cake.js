@@ -1,6 +1,8 @@
 const Utils = require('../utils');
-
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 
 module.exports = (async function(prop, newValue, prevValue, component, html){
     html = html || document;
@@ -23,7 +25,22 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
         /**
          * the incremetedSel is not null when this is called within a loop or data-for;
          */
-        let {attr, bind, sel, testval, _true, _false, ops, hasNegate, incrementedSel,incrementId} = config;
+        // let {attr, bind, sel, testval, _true, _false, ops, hasNegate, incrementedSel,incrementId} = config;
+
+        let attr = config.attr;
+        let bind = config.bind;
+        let sel = config.sel;
+        let testval = config.testval;
+        let _true = config._true;
+        let _false = config._false;
+        let ops = config.ops;
+        let hasNegate = config.hasNegate;
+        let incrementedSel = config.incrementedSel;
+        let incrementId = config.incrementId;
+
+
+
+
         let attrHyphen = attr.toHyphen();
         let trueNotIgnore = _true != 'null';
         let falseNotIgnore = _false != 'null';

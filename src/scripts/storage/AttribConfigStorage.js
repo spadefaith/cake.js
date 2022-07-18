@@ -1,18 +1,20 @@
-function storage(){
+function ComponentAttribStorage(){
     this.store = {};
+
 };
 
-storage.prototype.set = function(f, s, obj){
+ComponentAttribStorage.prototype.set = function(component, type, obj){
     let store = this.store;
     switch(true){
-        case (!store[f]):{store[f] = {}};
-        case (!store[f][s]):{store[f][s] = []};
-        default:{store[f][s].push(obj)};
+        case (!store[component]):{store[component] = {}};
+        case (!store[component][type]):{store[component][type] = []};
+        default:{store[component][type].push(obj)};
         break;
     };
+    return true;
 };
 
-storage.prototype.get = function(component, attr){
+ComponentAttribStorage.prototype.get = function(component, attr){
     let store = this.store;
     if(component && attr){
         return store[component] && store[component][attr] || [];
@@ -22,4 +24,7 @@ storage.prototype.get = function(component, attr){
     }
 };
 
-module.exports = storage;
+
+
+
+module.exports = ComponentAttribStorage;

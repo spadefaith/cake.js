@@ -39,7 +39,8 @@ const TYPES = {
 };
 
 const LOOP = {
-    each:function(ctx, fn, type){
+    _each:function(ctx, fn, type){
+        
         if (type == 'object'){
             var i = 0;
             for (var key in ctx){
@@ -54,10 +55,16 @@ const LOOP = {
             }
         };
     },
+    each:function(ctx, fn){
+        var type = TYPES.isArray(ctx) || ctx.length ? 'array': 'object';
+        this._each(ctx,  function(obj, index){
+            fn(obj, index);
+        },type);
+    },
     map:function(ctx, fn){
         var type = TYPES.isArray(ctx) || ctx.length ? 'array': 'object';
         var st = ctx.length &&  type == 'array'?[]:{};
-        this.each(ctx, function(obj, index){
+        this._each(ctx, function(obj, index){
             var r = fn(obj, index);
             if (type == 'object'){
                 st[r.key] = r.value;
@@ -69,7 +76,7 @@ const LOOP = {
     },
     reduce: function(ctx, accu, fn){
         var type = TYPES.typeof(ctx);
-        this.each(ctx, function(obj, index){
+        this._each(ctx, function(obj, index){
             accu = fn(obj,accu, index);
         }, type);
         return accu;
@@ -77,7 +84,7 @@ const LOOP = {
     filter:function(ctx, fn){
         var type = TYPES.isArray(ctx) || ctx.length ? 'array': 'object';
         var st = ctx.length && type == 'array'?[]:{};
-        this.each(ctx, function(obj, index){
+        this._each(ctx, function(obj, index){
             var r = fn(obj, index);
             if (r){
                 if (type == 'object'){
@@ -86,7 +93,7 @@ const LOOP = {
                     st.push(obj.value);
                 };
             };
-        }, type);
+        },type);
         return st;
     },
 };
@@ -97,8 +104,9 @@ const OBJECT = {
             path = path.split('.');
         };
         for (let p = 0; p < path.length; p++){
-            if(obj[p]){
-                obj = obj[p];
+            let _p = path[p];
+            if(obj[_p]){
+                obj = obj[_p];
             } else{
                 obj = null;
                 break;
@@ -186,6 +194,8 @@ const OTHERS = {
         });
     },
     toFormData:function(form, options={}){
+        //trim, json, skipsanitize, sanitize = boolean
+
         const controls = [];
         const textareas = form.querySelectorAll('TEXTAREA');
         const inputs = form.querySelectorAll('INPUT');
@@ -221,10 +231,18 @@ const OTHERS = {
                     if(element.closest && !element.closest('.cake-template')){
                         const tag = element.tagName;
                         
-                        if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
+                        if (tag == 'SELECT'){
+                            value = element.value
+                        }  else if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
                             value = element.checked;
+                        } else if(tag == 'INPUT' && element.getAttribute('type') == 'file'){
+                            value = element.files;
                         } else {
-                            value = this.sanitize(element.value,options.sanitize);
+                            if(options.sanitize == false){
+                                value = element.value;
+                            } else {
+                                value = this.sanitize(element.value,options.skipsanitize);
+                            }
                         };
                         
                         if(options.json){
@@ -236,8 +254,10 @@ const OTHERS = {
                                 o[key] = value;
                             }; 
                         } else {
-                            fd.append(key, value);
+                            o[key] = value;
                         }
+
+
                     };
     
                 };
@@ -251,7 +271,15 @@ const OTHERS = {
             let fd = new FormData();
             for (let key in o){
                 if (o.hasOwnProperty(key)){
-                    fd.append(key, o[key]);
+                    let value = o[key];
+                    
+                    if(value.constructor.name == "FileList"){
+                        LOOP.each(value, function(item, index){
+                            fd.append(key, item, item.name);
+                        });
+                    } else {
+                        fd.append(key, value);
+                    };
                 };
             };
             return fd;
@@ -322,7 +350,7 @@ const OTHERS = {
         // Edge 20+
         var isEdge = !isIE && !!window.StyleMedia;
         // Chrome 1+
-        var isChrome = !!window.chrome && !!window.chrome.webstore;
+        var isChrome = !!window.chrome && !!window.chrome.webstore || !!window.cordova;
         // Blink engine detection
         var isBlink = (isChrome || isOpera) && !!window.CSS;
         return window._browser =
@@ -379,8 +407,29 @@ const OTHERS = {
     }
 };
 
+const ARRAY = {
+    unique:function(arr, prop){
+        if(Set && TYPES.isArray(arr)){
+            return [...new Set(arr)];
+        } else {
+            let a = {};
+            Loop.each(arr, function(item, index){
+                if(prop && TYPES.isObject(item)){
+                    let p = OBJECT.dictionary(item, prop);
+                    if(p){
+                        a[p] = true;
+                    };
+                } else {
+                    a[item] = true;
+                };
+            });
+            return Object.keys(a);
+        };
+    }
+}
+
 try {
-    global.UTILS = {...LOOP, ...TYPES, ...OTHERS, ...STRING};
+    global.UTILS = {...LOOP, ...TYPES, ...OTHERS, ...STRING,...ARRAY};
 } catch (err){
     global.UTILS = {};
 

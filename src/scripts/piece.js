@@ -17,14 +17,28 @@ Piece.toArray = function(el){
         } break;
     };
     return r;
+};
+Piece.prototype.loop = function(callback){
+    try {
+        let i = -1, length = this.el.length;
+        while(++i < length){
+            let el = this.el[i];
+            callback(i, el);
+        };
+        return true;
+    } catch(err){
+        console.error(err);
+        return false;
+    };
+
 }
 Piece.prototype.getElements = function(){
     return this.el;
 };
-Piece.prototype.getElement = function(){
-    return this.el[0];
+Piece.prototype.getElement = function(index=0){
+    return this.el[index];
 };
-Piece.prototype.remove = function(name){
+Piece.prototype.remove = function(){
     let i = -1, length = this.el.length;
     let fg = document.createDocumentFragment();
     while(++i < length){
@@ -32,17 +46,22 @@ Piece.prototype.remove = function(name){
         el  && (fg.appendChild(el));
         // el  && el.remove();
     };
-    fr = null;
+    fg = null;
+    return true;
 };
 
 Piece.prototype.replaceDataSrc = function(){
-    let els = this.el[0];
-    let srcs = els.querySelectorAll('[data-src]');
-    for (let s = 0; s < srcs.length; s++){
-        el = srcs[s];
-        el.setAttribute('src', el.dataset.src);
-        el.removeAttribute('data-src');
-    };
+
+    return this.loop(function(index, el){
+        el.replaceDataSrc();
+    });
+    // let els = this.el[0];
+    // let srcs = els.querySelectorAll('[data-src]');
+    // for (let s = 0; s < srcs.length; s++){
+    //     el = srcs[s];
+    //     el.setAttribute('src', el.dataset.src);
+    //     el.removeAttribute('data-src');
+    // };
 };
 
 Piece.cloneNode = function(el){

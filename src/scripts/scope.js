@@ -53,7 +53,9 @@ module.exports = function(dependency){
         notifier(component, obj){
             //called by usually form input;
             //reactive input;
-            const {value, bind} = obj;
+            // const {value, bind} = obj;
+            const value = obj.value;
+            const bind = obj.bind;
             if (!this.reactiveData[component]){
                 this.reactiveData[component] = {};
             };

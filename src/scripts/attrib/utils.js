@@ -68,7 +68,8 @@ exports.extendConfig = function(configs){
     };
 
     return cloned.reduce((accu, iter)=>{
-        let {incrementedSels} = iter;
+        // let {incrementedSels} = iter;
+        let incrementedSels = iter.incrementedSels;
         if(incrementedSels && incrementedSels.length){
             incrementedSels.forEach(ic=>{
                 let cloned = {...iter};

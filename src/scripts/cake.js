@@ -91,7 +91,11 @@ Cake.MainMessageChannel = (function(){
         },
         receive(fn){
             channel.port1.onmessage = function(payload){
-                let {isTrusted, data} = payload || {isTrusted:false};
+                // let {isTrusted, data} = payload || {isTrusted:false};
+                let data = payload.data;
+                let isTrusted = payload.isTrusted == undefined?false:payload.isTrusted;
+
+
                 if (isTrusted){
                     fn({status:1, data});
                 } else {
@@ -128,7 +132,7 @@ Cake.init = function(name){
 // Cake.Hasher.listen();
 
 
-Cake.Router = Router(Cake.Components, Component);
+Cake.Router = Router(Cake.Models, Component);
 
 
 
@@ -279,7 +283,17 @@ Cake.prototype.create = function(name, template, options){
 
 
     component.compile.then(()=>{
-        let { subscribe, root, html, handlers, role, state} = component;
+        // let { subscribe, root, html, handlers, role, state} = component;
+
+        let subscribe = component.subscribe;
+        let root = component.root;
+        let html = component.html;
+        let handlers = component.handlers;
+        let role = component.role;
+        let state = component.state;
+
+
+
         // console.log(role == 'form');
 
         // console.log(284, component.name, subscribe);
@@ -292,8 +306,10 @@ Cake.prototype.create = function(name, template, options){
 
         //subscribe and handlers are binded to its componnt
         
-    }).then(({handlers,root})=>{
-
+    }).then((_obj)=>{
+        // const {handlers,root}
+        const handlers = _obj.handlers;
+        const root = _obj.root;
         // Cake.Observer.registerHandlers(handlers, component.name);
 
  
@@ -434,13 +450,17 @@ Cake.prototype.create = function(name, template, options){
                                     isBroadcast = isBroadcast;
                                 };
 
-                                if (isBroadcast == undefined){
-                                    isBroadcast = false;
-                                };
+
                                 if (isBroadcast == undefined && event == 'destroy'){
                                     //force to broadcast is destroy event;
                                     isBroadcast = true;
                                 };
+
+                                if (isBroadcast == undefined){
+                                    isBroadcast = false;
+                                };
+
+                                // console.log(461, component.name, event, isBroadcast);
 
                                 if (isBroadcast){
                                     /**

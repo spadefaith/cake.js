@@ -3,7 +3,10 @@ const Piece = require('../piece');
 const Templating = require('../templating');
 const Plugin = require('../plugin');
 
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 
 
 module.exports = (async function(prop, newValue, prevValue, component, html){
@@ -31,9 +34,13 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
         let ins = configs[c].ins;
         let targets = configs[c].targets;
         // let index = -1;
+
         for (let o in newValue){
             if (newValue.hasOwnProperty(o)){
                 let targets = document.querySelectorAll(`[data-for-update-bind=${o}]`);
+
+  
+
                 // console.log(467, targets);
                 // const row = newValue[o];
                 // index += 1;
@@ -43,7 +50,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                     let target = targets[t];
                     let binded = target.dataset.forUpdateBind;
 
-                    
+         
 
                     // console.log({binded})
                     // console.log({target})
@@ -56,15 +63,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         template.classList.remove('cake-template');
                         let dataForIteration = newValue[binded];
 
-                        // console.log({dataForIteration})
-
-
+     
 
                         let i = -1; l = dataForIteration.length;
                         while(++i < l){
                             let item = dataForIteration[i];
                             let index = i;
-
+                            // console.log(71, item, index, t, o);
+                            
                             for (let lt = 0; lt < this.logicalType.length; lt++){
                                 let type = this.logicalType[lt];
                                 const logicalHtml = new Piece(target).querySelectorAllIncluded(`[data-${type}]`)
@@ -74,7 +80,8 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                     // console.log(550, hit, hit.dataset[type]);
                                     if (hit.dataset[type]){
                                         let sel = hit.dataset[type];
-                                        let incrementedSel = `${sel}-${index}`;
+                                        let incrementedSel = `${sel}-${o}-${index}`;
+                                        // console.log(83, incrementedSel);
                                         template.dataset[type] = incrementedSel;
                                         let bind = this.getWatchItemsBySel(component,type,sel).bind;
                                         if (bind.includes('.')){
@@ -100,7 +107,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     
                               
                             let create = templating.createElement(item, template, false);
-                            // console.log(create);
+
                             create.classList.remove('cake-template');
                             create.removeAttribute('data-for-template');
                             target.insertAdjacentElement('beforebegin', create);

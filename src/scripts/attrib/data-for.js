@@ -2,8 +2,10 @@ const Utils = require('../utils');
 const Templating = require('../templating');
 const Plugin = require('../plugin');
 const ComponentStorage = require('../storage/components-store');
-
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 
 module.exports = (async function(prop, newValue, prevValue, component, html){
         
@@ -36,11 +38,21 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
 
 
+
             for (let c = 0; c < configs.length; c++){
-                let {bind, sel, iter, ins, component, cleaned} = configs[c];
+                // let {bind, sel, iter, ins, component, cleaned} = configs[c];
+
+                let bind = configs[c].bind;
+                let sel = configs[c].sel;
+                let iter = configs[c].iter;
+                let ins = configs[c].ins;
+                let component = configs[c].component;
+                let cleaned = configs[c].cleaned;
         
                 // html = Cake.Components[component].html;
                 html = ComponentStorage.get(component).html;
+
+
                 
                 let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
                 let cloned = target.cloneNode(true);
@@ -72,7 +84,9 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         if(!['for','evt','animate','switch'].includes(key)){
                            let conf = sts[key];
                            let temp = conf[0];
-                           let {bind} = temp || {};
+                        //    let {bind} = temp || {};
+
+                           let bind = temp && temp.bind || undefined;
 
                            if(bind && bind.match(new RegExp(templating.lefttag),'g')){
                                 data.forEach((item, index)=>{
@@ -108,8 +122,11 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 ;(()=>{
                     if (cleaned){
                         let parent = target.parentElement;
-                        parent.innerHTML = "";
-                        parent.appendChild(target);
+                        parent.children.toArray().forEach(child=>{
+                            if(child.dataset.for && !child.classList.contains('cake-template')){
+                                child.remove();
+                            };
+                        });
                     };
 
                     let i = -1; l = data.length;
@@ -120,11 +137,18 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         //switch;
                         (()=>{
                             if(switchConfig && !switchConfig.length)return;
-                            const [{bind, map, sel, cases}] = switchConfig;
+                            // const [{bind, map, sel, cases}] = switchConfig;
+
+                            let bind = switchConfig[0].bind;
+                            let map = switchConfig[0].map;
+                            let sel = switchConfig[0].sel;
+                            let cases = switchConfig[0].cases;
+
                             const mapping = item[map];
                             const switchElement = template.querySelector(`[data-switch=${sel}]`);
                             let hitCase = cases.find(item=>{
 
+                           
                                 let _id = item._id;
                                 let bind = item.bind;
                                 
@@ -136,6 +160,8 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             });
 
                             const find = cloned.querySelector(`[data-case=${sel}-${hitCase._id}]`);
+
+                     
 
                             find.classList.remove('cake-template');
                             switchElement.innerHTML = find.outerHTML;
@@ -211,17 +237,18 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 };
                             });
                         })();
-                        
-                        let safeSrc = create.querySelectorAll('[data-src]');
-                        if (safeSrc){
+
+                        create.replaceDataSrc();
+                        // let safeSrc = create.replaceDataSrc();
+                        // if (safeSrc){
         
-                            for (let s = 0; s < safeSrc.length; s++){
-                                let el = safeSrc[s];
-                                el.src = el.dataset.src;
-                                el.removeAttribute('data-src');
+                        //     for (let s = 0; s < safeSrc.length; s++){
+                        //         let el = safeSrc[s];
+                        //         el.src = el.dataset.src;
+                        //         el.removeAttribute('data-src');
         
-                            };
-                        };
+                        //     };
+                        // };
                     });
 
 

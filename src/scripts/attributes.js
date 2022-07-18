@@ -1,4 +1,4 @@
-const Utils = require('./utils');
+
 const Templating = require('./templating');
 
 const notifyAttr = require('./attrib/data-attr');
@@ -10,6 +10,7 @@ const notifyIf = require('./attrib/data-if');
 const notifyModel = require('./attrib/data-model');
 const notifyToggle = require('./attrib/data-toggle');
 const AttribConfigStorage = require('./storage/AttribConfigStorage');
+const UTILS = require('./utils');
 // const notifyForAuto = require('./attrib/data-for-auto');
 // const notifySwitch = require('./attrib/data-switch');
 
@@ -43,10 +44,17 @@ Attrib.prototype.notifyToggle = notifyToggle;
 
 Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     // console.time('attr');
-    let val = JSON.parse(JSON.stringify(newValue));
-    if(Utils.isObject(val)){
-        val = JSON.parse(JSON.stringify(newValue));
+
+    // console.log(47, newValue);
+
+    if(newValue == undefined){
+        return Promise.resolve();
     };
+
+    let val = JSON.parse(JSON.stringify(newValue));
+    // if(Utils.isObject(val)){
+    //     val = JSON.parse(JSON.stringify(newValue));
+    // };
     const equiv = {
         for:'For',
         forUpdate:'ForUpdate',
@@ -57,7 +65,12 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
         if:'If',
         class:'Class',
         attr:'Attr',
+
+        // disabled:'Disabled',
+        // readonly:'Readonly',
+        // checked:'Checked',
     };
+
     let hits = Object.caching('AttribProp').get(prop) || 
     (()=>{
         let hits = {};
@@ -73,7 +86,8 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
             if(vals){
                 for (let v = 0; v < vals.length; v++){
                     const val = vals[v];
-                    const {bind} = val;
+                    // const {bind} = val;
+                    const bind = val.bind;
                     if(bind == prop){
                         hits[action] = true;
                     };
@@ -142,29 +156,29 @@ Attrib.prototype.getWatchItems = function(component){
     let target =  Object.caching('getWatchItems').get(id);
     if(!target){
         let _st = this.storage.get(component);
-        let wt = new Set;
-        for (let type in _st){
-            if (_st.hasOwnProperty(type)){
-                let tst = _st[type];
-                for (let t = 0; t < tst.length; t++){
-                    let item = tst[t];
-                    let {bind} = item;
-                    if (bind){
-                        wt.add(bind);
-                    } else {continue};
+        let red = UTILS.reduce(_st,{wt:[], forWt:[]}, function(obj, accu, index){
+            let type = obj.key;
+            let tst = obj.value;
+            UTILS.each(tst, function(item, index){
+                let bind = item.bind;
+                if(bind){
+                    if(type == 'for'){
+                        accu.forWt.push(bind);
+                    } else {
+                        accu.wt.push(bind);
+                    };
                 };
-            };
-        };
-        target = [...wt];
+            });
+            return accu;
+        });
+        let wt = UTILS.unique(red.wt);
+        let forWt = UTILS.unique(red.forWt);
+        //make the for first;
+        target = forWt.concat(wt);
         Object.caching('getWatchItems').set(id, target);
     };
     return target;
 };
-
-Attrib.prototype.getConfig = function(component){
-    return this.storage.get(component);
-};
-
 
 Attrib.prototype.getWatchItemsByType = function(component, type){
     let id = `${component}-${type}`;
@@ -175,7 +189,8 @@ Attrib.prototype.getWatchItemsByType = function(component, type){
         let wt = new Set();
         for (let t = 0; t < tst.length; t++){
             let item = tst[t];
-            let {bind} = item;
+            // let {bind} = item;
+            let bind = item.bind;
             switch(!!bind){
                 case true:{
                     wt.add(bind);
@@ -210,13 +225,15 @@ Attrib.prototype.getWatchItemsBySel = function(component, type, sel){
     };
     return target;
 };
+Attrib.prototype.getConfig = function(component){
+    return this.storage.get(component);
+};
 
 Attrib.prototype._activateReactive = (component)=>{
 
 };
 
 Attrib.prototype._register = function(f, s, obj){
-
     return this.storage.set(f, s, obj);
 };
 
@@ -252,41 +269,55 @@ Attrib.prototype._static = function(component){
     }
 };
 
+Attrib.prototype._loopElements = function(attr, els, component, isStatic,cb){
+    if (!els.length) {return false;};
+    els = this._static(component)(els, isStatic);
+    if (!els.length){return false;};
+    for (let i = 0; i < els.length; i++){
+        let el = els[i];
+        let id = `ckm${this.uiid}`;
+        let target, gr;
+        if(attr.includes(',')){
+            let attrs = attr.split(',');
+            target = {}, gr = {};
+            for (let a = 0; a < attrs.length; a++){
+                let attr = attrs[a];
+                target[attr] = el.dataset[attr];
+                gr[attr] = target.split(',');
+            };
+        } else {
+            target = el.dataset[attr];
+            gr = target.split(',');
+        }
+        cb(el, id, target, gr, i);
+    };
+    return true;
+};
+
 Attrib.prototype._compileEvents = function(events,component, isStatic){
     return new Promise((res)=>{
-        // console.log(component, events,isStatic)
-        if (!events.length) {res();return;};
-        let els = this._static(component)(events, isStatic)
-        // console.log(els,component);
-        if (!els.length){res();return;}
-        for (let e = 0; e < els.length; e++){
-            let id = `cke${this.uiid}`;
-            let el = els[e];
-            let splitted = el.dataset.event.removeSpace().split(',');
+        this._loopElements('event',events, component, isStatic, (function(el, id, target, gr, index){
+            let splitted = gr;
             for (let s = 0; s < splitted.length ; s++){
-                let [event, cb] = splitted[s].split(':');
-  
+                let _sp1 = splitted[s].split(':');
+                let event = _sp1[0];
+                let cb = _sp1[1];
                 this._register(component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;
             }
-        };
+        }).bind(this));
+
         res();
     });
 };
 
 Attrib.prototype._compileToggle = function(toggles, component, isStatic){
     return new Promise((res)=>{
-        if (!toggles.length){res();return;}
-        let els = this._static(component)(toggles, isStatic);
-        if (!els.length){res();return;}
         let c = {};
-        for(let t = 0; t < toggles.length; t++){
-            let id = `ckt${this.uiid}`;
-            let el = toggles[t];
-            let ns = el.dataset.toggle;
-            
-
+        // console.log(316, toggles);
+        this._loopElements('toggle',toggles, component, isStatic, (function(el, id, target, gr, index){
+            let ns = target;
             if (c[ns]){
                 id = c[ns];
             };
@@ -294,7 +325,7 @@ Attrib.prototype._compileToggle = function(toggles, component, isStatic){
             el.dataset.toggle = id;
             this.uiid++;
             c[ns] = id;
-        };
+        }).bind(this));
         c = {};
         res();
     });
@@ -304,7 +335,6 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
         let target = el;
         if (!fors.length) {res();return;};
         let els = this._static(component)(fors, isStatic);
-        // console.log(component, els)
         if (!els.length){res();return;}
 
         let o = {};
@@ -316,8 +346,12 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             let el = els[f];
             let fr = el.dataset.for;
             let autoBind = el.dataset.forAutoBind;
-            let isCleaned = el.dataset.forCleaned=="true"; 
-            let [a, b, c] = fr.split(" ");
+            let isCleaned = el.dataset.forCleaned==undefined || el.dataset.forCleaned=="true"; 
+            // let [a, b, c] = fr.split(" ");
+            let _sp1 = fr.split(" ");
+            let a = _sp1[0];
+            let b = _sp1[1];
+            let c = _sp1[2];
 
             if(autoBind){
                 let iteration = el.dataset.forIter;
@@ -371,13 +405,8 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
 
 Attrib.prototype._compileForUpdate = function(fors, component, isStatic){
     return new Promise((res)=>{
-        if (!fors.length) {res();return;};
-        let els = this._static(component)(fors, isStatic);
-        if (!els.length){res();return;}
-        for (let f = 0; f < els.length; f++){
-            let id = `ckfu${this.uiid}`;
-            let el = els[f];
-            let fr = el.dataset.forUpdate;
+        this._loopElements('forUpdate',fors, component, isStatic, (function(el, id, target, gr, index){
+
             el.style.display  = 'none';
             el.classList.add('cake-template');
             el.dataset.forUpdate = id;
@@ -385,107 +414,81 @@ Attrib.prototype._compileForUpdate = function(fors, component, isStatic){
             if (!el.dataset.for){
                 el.dataset.forTemplate = id;
             }
+            let _sp1 = target.split(" ");
+            let a = _sp1[0];
+            let b = _sp1[1];
+            let c = _sp1[2];
 
-            let [a, b, c] = fr.split(" ");
             this._register(component, 'forUpdate', {bind:c, sel:id, iter:a,ins: b});
             this.uiid++;
-        };
+        }).bind(this));
+
         res();
     });
 };
 
 Attrib.prototype._compileSwitch = function(switchs, component, isStatic){
     return new Promise((res)=>{
-        if (!switchs.length) {res();return;};
-        let els = this._static(component)(switchs, isStatic);
-        if (!els.length){res();return;}
-        for (let s = 0; s < els.length; s++){
-            let id = `cks${this.uiid}`;
-            let el = els[s];
-
+        this._loopElements('switch',switchs, component, isStatic, (function(el, id, target, gr, index){
             let bind = el.dataset.switch, map='def';
             if (bind.includes('.')){
-                var [f, ...rest] = el.dataset.switch.split('.');
-                bind = f;
-                map = rest[0];
+                const _sp1 = el.dataset.switch.split('.');
+                bind = _sp1[0];
+                map = _sp1[1];
             };
             el.dataset.switch = id;
             let cases = el.querySelectorAll('[data-case]');
-            // console.log(cases);
             let casesId = [];
             for (let c = 0; c < cases.length; c++){
                 let _case = cases[c];
                 let closest = _case.closest(`[data-switch=${id}]`);
-
-
                 _case.classList.add('cake-template');
-
                 if (closest){
                     let caseBind = _case.dataset.case;
                     let _id = `cksc${this.uiid}`
                     _case.dataset.case = `${id}-${_id}`;
                     casesId.push({_id, bind:caseBind});
-
                     this.uiid++;
                 };
             };
             this._register(component, 'switch', {bind, sel:id, map, cases:casesId});
             this.uiid++;
-        };
+        }).bind(this));
         res()
     });
 };
 
 Attrib.prototype._compileBind = function(elModels, component, isStatic){
     return new Promise((res)=>{
-
-        if (!elModels.length) {res();return;};
-        let els = this._static(component)(elModels, isStatic);
-        if (!els.length){res();return;}
-        for (let s = 0; s < els.length; s++){
-            let id = `ckm${this.uiid}`;
-            let el = els[s];
-            let model = el.dataset.bind;
-            let gr = model.split(',');
+        this._loopElements('bind',elModels, component, isStatic, (function(el, id, target, gr, index){
             for (let g = 0; g < gr.length; g++){
                 let val = gr[g].split(" ").join("");
                 if (val.includes(':')){
-                    var [attr, bind] = val.split(":");
+                    const _sp1 = val.split(":");
+                    var attr = _sp1[0];
+                    var bind = _sp1[1];
                 } else {
                     var bind = val;
-                    var attr = 'value';
+                    var attr = el.value == undefined?'textContent':'value';
                 };
                 this._register(component, 'bind', {attr, bind, sel:id});
             }
             this.uiid++;
             el.dataset.bind = id;
-        };
+        }).bind(this));
         res();
     });
 };
 
 Attrib.prototype._compileAnimate = function(anims, component, isStatic){
     return new Promise((res)=>{
-        if (!anims.length) {res();return;};
-
-        // console.log(1403,component);
-
-        let els = this._static(component)(anims, isStatic);
-        if (!els.length){res();return;}
-
-        
-        for (let s = 0; s < els.length; s++){
-            let id = `cka${this.uiid}`;
-            let el = els[s];
-            let anim = el.dataset.animate;
-            anim = anim.split(" ").join("");
-            //to handle multiple attr binding;
-            //render:appead-slideInUp, remove:disappear
+        this._loopElements('animate',anims, component, isStatic,(function(el, id, target, gr, index){
             let o = {};
-            let split = anim.split(',');
-            for (let a = 0; a < split.length; a++){
-                let item = split[a];
-                let [ctx, anims] = item.split(':');
+            for (let a = 0; a < gr.length; a++){
+                let item = gr[a];
+                let _sp1 = item.split(':');
+                let ctx = _sp1[0];
+                let anims = _sp1[1];
                 if (ctx == 'ns'){
                     o.ns = anims;
                     break;
@@ -497,34 +500,28 @@ Attrib.prototype._compileAnimate = function(anims, component, isStatic){
             this._register(component, 'animate', o);
             this.uiid++;
             el.dataset.animate = id;
-        };
+        }).bind(this));
         res();
     });
 };
 
+
 Attrib.prototype._compileIf = function(ifs, component, isStatic){
     return new Promise((res)=>{
-        if (!ifs.length) {res();return;};
-        let els = this._static(component)(ifs, isStatic);
-        if (!els.length){res();return;}
         const regex = new RegExp('<|>|===|==|!==|!=');
-        for (let s = 0; s < els.length; s++){
-            let id = `ci${this.uiid}`;
-            let el = els[s];
-            let _if = el.dataset.if;
-            let _ifBind = el.dataset.ifBind;
-            let gr = _if.split(',');
-            for (let g = 0; g < gr.length; g++){
+        this._loopElements('if,ifBind',ifs, component, isStatic,(function(el, id, target, gr, index){
+            let _if = target['if'];
+            let _ifBind = target['ifBind'];
+            let _gr = gr['if'];
+            
+            for (let g = 0; g < _gr.length; g++){
                 let val = gr[g];
-
                 let attr = val.substring(0,val.indexOf('='));
                 let exp = val.substring(val.indexOf('=')+1, val.length);
-
-
                 exp = exp.split(new RegExp('[()]')).join("");
-                
-                let [test, r] = exp.split('?');
-
+                let _sp2 = exp.split('?');
+                let test = _sp2[0];
+                let r = _sp2[1];
 
                 let hasNegate = test[0] == '!';
                 hasRegularLog = test.match(regex);
@@ -543,44 +540,90 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
                     bind = bind.slice(1);
                 };
                 
-
-                let [_true, _false] = r.split(':');
-
-
+                let _sp1 = r.split(':');
+                let _true = _sp1[0];
+                let _false = _sp1[1];
                 this._register(component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
-
-                
             }
             this.uiid++;
             el.dataset.if = id;
-        };
+
+        }).bind(this));
+
+
+        // if (!ifs.length) {res();return;};
+        // let els = this._static(component)(ifs, isStatic);
+        // if (!els.length){res();return;}
+        // const regex = new RegExp('<|>|===|==|!==|!=');
+        // for (let s = 0; s < els.length; s++){
+        //     let id = `ci${this.uiid}`;
+        //     let el = els[s];
+        //     let _if = el.dataset.if;
+        //     let _ifBind = el.dataset.ifBind;
+        //     let gr = _if.split(',');
+        //     for (let g = 0; g < gr.length; g++){
+        //         let val = gr[g];
+
+        //         let attr = val.substring(0,val.indexOf('='));
+        //         let exp = val.substring(val.indexOf('=')+1, val.length);
+
+
+        //         exp = exp.split(new RegExp('[()]')).join("");
+                
+        //         // let [test, r] = exp.split('?');
+
+        //         let _sp2 = exp.split('?');
+        //         let test = _sp2[0];
+        //         let r = _sp2[1];
+
+
+        //         let hasNegate = test[0] == '!';
+        //         hasRegularLog = test.match(regex);
+
+        //         let bind, testVal, ops;
+        //         if(hasRegularLog){
+        //             let splitted = test.split(regex);
+        //             bind = splitted[0].trim();
+        //             testVal = splitted[1].trim();
+        //             ops = hasRegularLog[0];
+        //         } else {
+        //             bind = test;
+        //         };
+
+        //         if(hasNegate){
+        //             bind = bind.slice(1);
+        //         };
+                
+        //         let _sp1 = r.split(':');
+        //         let _true = _sp1[0];
+        //         let _false = _sp1[1];
+        //         // let [_true, _false] = r.split(':');
+
+
+        //         this._register(component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
+
+                
+        //     }
+        //     this.uiid++;
+        //     el.dataset.if = id;
+        // };
         res();
     });
 };
 
 Attrib.prototype._compileClass = function(cls, component, isStatic){
     return new Promise((res)=>{
-        
-        if (!cls.length) {res();return;};
-        let els = this._static(component)(cls, isStatic);
-        if (!els.length){res();return;}
-
-
         let regex = new RegExp('<|>|===|==|!==|!=');
-
-        for (let s = 0; s < els.length; s++){
-
-            let id, el, cl, hasRegularLog, hasNegate, bindVal, ops, testVal, hasNegateCount;
-
-            id = `cc${this.uiid}`;
-            el = els[s];
-            cl = el.dataset.class;
-
-            let cls = cl.split(',');
-
+        this._loopElements('class',cls, component, isStatic, (function(el, id, target, gr, index){
+            let hasRegularLog, hasNegate, bindVal, ops, testVal, hasNegateCount;
+            let cls = gr;
             for (let c = 0; c < cls.length; c++){
                 let clItem = cls[c];
-                let [test, className] = clItem.split('&&');
+                let _sp1 = clItem.split('&&');
+                // let [test, className] = clItem.split('&&');
+                let test = _sp1[0];
+                let className = _sp1[1];
+
                 test = test.trim();
                 className = className.trim();
     
@@ -625,26 +668,26 @@ Attrib.prototype._compileClass = function(cls, component, isStatic){
 
             this.uiid++;
             el.dataset.class = id;
-        };
+        }).bind(this));
+
         res();
     });
 };
 
 Attrib.prototype._compileAttr = function(attrs, component, isStatic){
     return new Promise((res)=>{
-        if (!attrs.length) {res();return;};
-        let els = this._static(component)(attrs, isStatic);
-        if (!els.length){res();return;}
         let regex = new RegExp('<|>|===|==|!==|!=');
-        for (let s = 0; s < els.length; s++){
-            let id, el, cl, hasRegularLog, hasNegate, bindVal, ops, testVal;
-            id = `cre${this.uiid}`;
-            el = els[s];
-            cl = el.dataset.attr;
-            let [test, attrPair] = cl.split('&&');
+        this._loopElements('attr',attrs, component, isStatic, (function(el, id, target, gr, index){
+            let hasRegularLog, hasNegate, bindVal, ops, testVal;
+            let _sp2 = target.split('&&');
+            let test = _sp2[0];
+            let attrPair = _sp2[1];
             attrPair = attrPair.trim();
         
-            let [attrkey, attrvalue] = attrPair.split('=');
+            let _sp1 = attrPair.split('=');
+            let attrkey = _sp1[0];
+            let attrvalue = _sp1[1];
+
             test = test.trim();
             
             hasRegularLog = test.match(regex);
@@ -666,7 +709,8 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
             this._register(component, 'attr', {hasNegate, bind, testVal,attrkey, attrvalue, ops, sel:id});
             this.uiid++;
             el.dataset.attr = id;
-        };
+        }).bind(this));
+
         res();
     });
 };
@@ -674,20 +718,17 @@ Attrib.prototype._compileAttr = function(attrs, component, isStatic){
 Attrib.prototype._compileModel = function(elModels, component, isStatic){
     return new Promise((res)=>{
 
-        if (!elModels.length) {res();return;};
-        let els = this._static(component)(elModels, isStatic);
-        if (!els.length){res();return;}
-        for (let s = 0; s < els.length; s++){
-            let id = `cknt${this.uiid}`;
-            let el = els[s];
+        this._loopElements('model',elModels, component, isStatic, (function(el, id, target, gr, index){
             let nodeType = el.tagName;
-            let model = el.dataset.model;
-            let gr = model.split(',');
 
             for (let g = 0; g < gr.length; g++){
                 let val = gr[g].split(" ").join("");
                 if (val.includes(':')){
-                    var [attr, bind] = val.split(":");
+                    // var [attr, bind] = val.split(":");
+                    var splitted = val.split(':');
+                    var attr = splitted[0];
+                    var bind = splitted[1];
+
                 } else {
                     var bind = val;
                     var attr = 'value';
@@ -696,16 +737,15 @@ Attrib.prototype._compileModel = function(elModels, component, isStatic){
             };
             this.uiid++;
             el.dataset.model = id;
-        };
+        }).bind(this));
+
         res();
     });
 }
 
 Attrib.prototype.inject = function(el, component, isStatic=false){
     return new Promise((res)=>{
-        // let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','model','attr');
         let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','attr');
-        // console.log(query, component);
         res(query);
     }).then((query)=>{
         let r = [];
@@ -738,7 +778,6 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
         
         return Promise.all(r.length?r:[r]);
     }).then(()=>{
-
         
         // return this.store.createOrUpdate(component, this.st[component]);
         return Promise.resolve();

@@ -60,14 +60,25 @@ module.exports =  function (component){
 
     form.options = (obj)=>{
         // console.log(9, obj);
-        let {options, params} = obj;
+        // let {options, params} = obj;
+        let options = obj.options;
+        let params = obj.params;
+        
         if (!options) { options = [] };
 
         // console.log(33, params);
         let isgroup = options.length > 1;
 
         let prom = Promise.all(options.map(item=>{
-            let {control, field, tbl, src, schema, type} = item;
+            // let {control, field, tbl, src, schema, type} = item;
+
+            let control = item.control;
+            let field = item.field;
+            let tbl = item.tbl;
+            let src = item.src;
+            let schema = item.schema;
+            let type = item.type;
+
             // console.log(schema)
             // console.log(15, item);
 
@@ -102,7 +113,9 @@ module.exports =  function (component){
                 return item;
             }).then((iter)=>{
                 // console.log(51, iter);
-                let {type, control} = iter;
+                // let {type, control} = iter;
+                let type = iter.type;
+                let control = iter.control;
                 if (!type){
                     type = 'others';
                 };
@@ -136,7 +149,11 @@ module.exports =  function (component){
         return prom;
     };
     form.plot = (config)=>{
-        let {data, container} = config;
+        // let {data, container} = config;
+
+        let data = config.data;
+        let container = config.container;
+
         if (!data && !container) { return };
         const query = (root, selector, callback)=>{
             if (!root){

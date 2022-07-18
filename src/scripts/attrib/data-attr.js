@@ -1,5 +1,8 @@
 const Utils = require('../utils');
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 module.exports = (async function(prop, newValue, prevValue, component, html){
     html = html || document;
     let st = this.storage.get(component, 'attr');
@@ -19,7 +22,18 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
     return Promise.all(configs.map(config=>{
         let  data;
-        let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue, incrementedSel,incrementId} = config;
+        // let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue, incrementedSel,incrementId} = config;
+
+        let hasNegate = config.hasNegate;
+        let bind = config.bind;
+        let testVal = config.testVal;
+        let attr = config.attr;
+        let ops = config.ops;
+        let sel = config.sel;
+        let attrkey = config.attrkey;
+        let attrvalue = config.attrvalue;
+        let incrementedSel = config.incrementedSel;
+        let incrementId = config.incrementId;
 
         bind = Utils.removeWhiteSpace(bind);
         attr = Utils.removeWhiteSpace(attr);

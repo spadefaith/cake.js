@@ -1,14 +1,11 @@
-if (!Object.keys) {
-
-    Object.keys = function(obj) {
-      var keys = [];
-  
-      for (var i in obj) {
-        if (obj.hasOwnProperty(i)) {
-          keys.push(i);
-        }
-      }
-  
-      return keys;
+const UTILS = require('./utils');
+const self = window || {};
+module.exports = {
+  Set:function(data){
+    if(self.Set){
+      return new Set(data);
+    } else {
+      return UTILS.unique(data);
     };
+  }
 }

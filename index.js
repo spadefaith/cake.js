@@ -4,8 +4,15 @@ const app = express();
 const port = 8794;
 
 
-app.use('/cfc.js', function(req, res, next){
+app.use('/cake.js', function(req, res, next){
+    res.sendFile(path.join(__dirname,'./dist/cfc.js'));
+});
 
+app.use('/parcel/legacy/cake.js', function(req, res, next){
+    res.sendFile(path.join(__dirname,'./dist/cfc.js'));
+});
+
+app.use('/parcel/modern/cake.js', function(req, res, next){
     res.sendFile(path.join(__dirname,'./dist/cfc.js'));
 });
 
@@ -13,6 +20,10 @@ app.use('/cfc.js', function(req, res, next){
 app.use('/home',express.static('./test/route'));
 app.use('/about/:id',express.static('./test/route'));
 app.use('/about',express.static('./test/route'));
+
+app.use('/asset/cake.js', function(req,res,next){
+    res.sendFile(path.join(__dirname, './dist/cfc.js'));
+}); 
 
 app.use('/asset/cake.js', function(req,res,next){
     res.sendFile(path.join(__dirname, './dist/cfc.js'));

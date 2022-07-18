@@ -1,5 +1,8 @@
 const Utils = require('../utils');
-const {getConfig, updateConfig, extendConfig} = require('./utils');
+const _utils = require('./utils');
+const getConfig =_utils.getConfig
+const updateConfig =_utils.updateConfig
+const extendConfig =_utils.extendConfig
 
 module.exports = (async function(prop, newValue, prevValue, component, html){
 
@@ -21,7 +24,16 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
     for (let c = 0; c < configs.length; c++){
         let config = configs[c], data;
-        let {hasNegate, bind, testVal,className, ops, sel,  incrementedSel,incrementId} = config;
+        // let {hasNegate, bind, testVal,className, ops, sel,  incrementedSel,incrementId} = config;
+
+        let hasNegate = config.hasNegate;
+        let bind = config.bind;
+        let testVal = config.testVal;
+        let className = config.className;
+        let ops = config.ops;
+        let sel = config.sel;
+        let incrementedSel = config.incrementedSel;
+        let incrementId = config.incrementId;
 
         bind = Utils.removeWhiteSpace(bind);
 

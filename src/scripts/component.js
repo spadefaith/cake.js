@@ -12,6 +12,7 @@ function Component(name, template, options){
     this.options = options;
     this.handlers = options.handlers;
     this.subscribe = options.subscribe;
+    this.renderqueue = options.renderqueue;
     this.data = {};
     this.root = options.root;
     this.items = false;
@@ -165,7 +166,11 @@ Component.prototype._bindSubscribe = function(){
                     }
                  */
                 let event = component;
-                let {components, handler} = subscribe;
+                // let {components, handler} = subscribe;
+
+                let components = subscribe.components;
+                let handler = subscribe.handler;
+
                 handler =  handler.bind(this);
                 handler.binded = this.name;
                 handler.original = event;
@@ -228,15 +233,14 @@ Component.prototype._bindSubscribe = function(){
     this.subscribe = flattened;
 };
 
-
+Component.prototype.getHTML = function(){
+    return this.html;
+}
 
 Component.prototype.doFor = function(prop, newValue){
-    // console.trace();
-    const getHTML = ()=>{
-        return this.html;
-    };
+
     if (newValue == null) return;
-    return this.$attrib.notifyFor(prop, newValue, null, this.name, getHTML());
+    return this.$attrib.notifyFor(prop, newValue, null, this.name, this.getHTML());
 };
 
 Component.prototype.doToggle = function(prop, newValue){
@@ -258,7 +262,11 @@ Component.prototype.$animate = function(moment){
         if ((!ata.length && !(ata instanceof Array)) || !da){return;}
         for (let a = 0; a < ata.length; a++){
             let at = ata[a];
-            let {ns:name, selector} = at;
+            // let {ns:name, selector} = at;
+
+            let name = at.ns;
+            let selector = at.selector;
+
             //declare name space in html, mapped to component animation declaration
             if (at.ns){
                 if (da[name]){
@@ -329,7 +337,6 @@ Component.prototype.createElement = function(){
                 this.html = this.Node(element);
                 // console.log(274,this.html);
                 this._parseHTML(this.isStatic).then(()=>{
-                    this._watchBindedItems()//these are the binded data declared in html;
                     res();
                 })
             } break;
@@ -379,15 +386,28 @@ Component.prototype._parseHTML = function(isStatic=false){
     });
 };
 
-Component.prototype.render = function(options){
+Component.prototype.render = function(options={}){
 
     if(this.isConnected){
-        console.error(`${this.name} is already rendered and connected to the DOM`);
+        if(this.renderqueue){
+            if(Utils.isArray(this.renderqueue)){
+                this.renderqueue.unshift({date:new Date(), id:new Date().getTime(), options});
+                console.log(`rendering ${this.name} has been queued`);
+            } else {
+                console.error(`renderqueue must be an array`);
+            };
+        } else {
+            console.error(`${this.name} is already rendered and connected to the DOM`);
+        };
         return Promise.resolve();
     };
 
-    let {root, cleaned, emit={}, data={}} = options || {};
+    // let {root, cleaned, emit={}, data={}} = options || {};
 
+    let root = options.root;
+    let cleaned = options.cleaned;
+    let emit = options.emit || {};
+    let DATA = options.data || {};
 
 
 
@@ -396,19 +416,17 @@ Component.prototype.render = function(options){
 
     let payload = {emit};
 
-    const getValue = (item)=>{
-        //get the initial value in state as it being cleared when the component is destroyed;
-        //or in the data attribute upon render;
-        return {...state,...data}[item] || null;
-    };
 
     return new Promise((res, rej)=>{
 
         (!!root) && (this.root = root);
         
 
+        // console.log(423, 'render', !this.isReady);
         if (!this.isReady){
+  
             this.createElement().then(()=>{
+                
                 // (hashed === true) && this.$hash.add(this.name);
 
                 return (!this.template) && this.fire.isConnected && this.fire.isConnected(payload, true);
@@ -428,14 +446,23 @@ Component.prototype.render = function(options){
                 //html restructure base on data;
                 //by mutation;
     
-                let forItems = this.$attrib.getWatchItemsByType(this.name, 'for');
+                // let forItems = this.$attrib.getWatchItemsByType(this.name, 'for');
+                let attrItems = this.$attrib.getWatchItems(this.name);
                 // for (let i = 0; i < forItems.length; i++){
                 //     let nv = getValue(forItems[i]);
                 //     this.doFor(forItems[i], nv);
                 // };
-                // console.log(forItems);
-                Promise.all(forItems.map(item=>{
-                    return this.doFor(item, getValue(item));
+
+                // this.$attrib.notifier(prop, newValue, null, this.name, this.getHTML());
+
+
+                
+                Promise.all(attrItems.map(item=>{
+                    if(DATA[item]){
+                        return this.$attrib.notifier(item, DATA[item], null, this.name, this.getHTML());
+                    }
+                    // console.log(453, item)
+                    // return this.doFor(item, value);
                 })).then(()=>{
                     // console.log(405, this.name, this.html);
                     res(this.html);
@@ -460,14 +487,14 @@ Component.prototype.render = function(options){
                     //static component, those already attached to DOM;
                 } else {
                     //replace the mustache here;
-                    let prom = (!data)?Promise.resolve():(()=>{
+                    let prom = (!DATA)?Promise.resolve():(()=>{
                         return new Promise((res)=>{
                             let el = element.getElement();
-                            el = this.$templating(data, el);
+                            el = this.$templating(DATA, el);
                             this.html = element = this.Node(el);
                             this.html.replaceDataSrc();
                             
-                            data = null;
+                            DATA = null;
                             res();
                         })
                     })();
@@ -563,6 +590,12 @@ Component.prototype.reset = function(){
                 return this._hardReset(this.name);
             }).then(()=>{
                 res();
+            }).then(()=>{
+                if(this.renderqueue && this.renderqueue.length){
+                    let conf = this.renderqueue.pop();
+                    let options = conf.options;
+                    return this.render(options);
+                };
             });
         });
     } else {
@@ -609,7 +642,12 @@ Component.prototype.addEvent = function (static, multiple){
             // };
   
             for (let item of cf){
-                let {sel, el, cb} = item;
+                // let {sel, el, cb} = item;
+
+                let sel = item.sel;
+                let el = item.el;
+                let cb = item.cb;
+
                 let _event = event;
                 
                 let place = event.substring(0,2);
@@ -704,7 +742,8 @@ Component.prototype.toggler = function(_this){
                 console.error(`${bind} is not found in toggle! choose from ${JSON.stringify(Object.keys(this.toggle))}`);
             } else {
                 if (attrToggle.length){
-                    let {ns} = config;
+                    // let {ns} = config;
+                    let ns = config.ns;
                     //toggle is use only for namespacing;
                     let f = attrToggle.find(item=>{return item.name == `ns-${ns}`});
                     f && (config.sel = `[data-toggle=${f.sel}]`);
@@ -715,7 +754,14 @@ Component.prototype.toggler = function(_this){
         _toggle(){
             let config = this.check(this.bind);
             if(!config){ return;}
-            let {basis='data-name', cls='is-active', mode='radio', sel, persist=true} = config;
+            // let {basis='data-name', cls='is-active', mode='radio', sel, persist=true} = config;
+
+            let basis = config.basis || 'data-name';
+            let cls = config.cls || 'is-active';
+            let mode = config.mode || 'radio';
+            let sel = config.sel;
+            let persist = config.persist == undefined? true : config.persist;
+
             let targets = this.html.querySelectorAll(sel);
             if (!targets.length) { return; };
 
@@ -783,7 +829,12 @@ Component.prototype.toggler = function(_this){
         _recall(){
             let config = this.check(this.bind);
             if(!config){ return;}
-            let {basis='data-name', cls='is-active',  sel} = config;
+            // let {basis='data-name', cls='is-active',  sel} = config;
+
+            let basis = config.basis || 'data-name';
+            let cls = config.cls || 'is-active';
+            let sel = config.sel;
+
             return this.cache.get(this.bind).then(result=>{
                 if (!result){
                     return result;
@@ -839,9 +890,7 @@ Component.prototype.findContainer = function(){
     // console.log('must trigger first',this.container);
 };
 
-Component.prototype._watchBindedItems = function(){
 
-};
 
 Component.prototype._validator = function(name, value){
     if(this.options.validate){
