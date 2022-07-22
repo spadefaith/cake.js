@@ -15,6 +15,7 @@ module.exports = function(models, component){
             this.unauthRoute = null;
             this.componentConf = null;
             this.authValidRoute = null;
+    
             this.authConfig = (function(){
                 if(!this.options){return;};
                 const confAuth = this.options.auth;
@@ -28,13 +29,15 @@ module.exports = function(models, component){
                     this.verifyComponent = verify[0];
                     this.verifyComponentHandler = verify[1];
                     this.unauthRoute = confAuth['401'];
-                    return confAuth;
+                    // return confAuth;
                 };
                 if(confAuth && confAuth.valid){
                     this.authValidRoute = confAuth.valid;
                 };
                 return null;
             }.bind(this))();
+
+
             this.authRedirectRoute = {};//route to redirect back when the token is still valid;
             this.route = this.compile(routes);
             this.prev = null;
@@ -138,14 +141,35 @@ module.exports = function(models, component){
             };
             
         }
-        login(cred){
+        login(cred, options){
             let role = cred.role;
             let token = cred.token;
             let data = cred.data;
             let created =RouterStore.createOrUpdate('role',{role,token, data});
 
+            let path = options && options.path;
+            let config = options && options.config;
 
-            return created
+            console.log(this.authValidRoute);
+
+            if(!role){
+                throw new Error(`role is not provided in router.login`);
+            };
+            if(!token){
+                throw new Error(`token is not provided in router.login`);
+            };
+            if(!data){
+                throw new Error(`data is not provided in router.login`);
+            };
+            if(path){
+                
+            } else if(this.authValidRoute && this.authValidRoute[role]){
+                path = this.authValidRoute[role];
+            } else {
+                throw new Error('provide route when login is successful');
+            };
+            this.goTo(path, config);
+            // return created
         }
         auth(){
             const auth = RouterStore.get('role', true);
@@ -387,7 +411,7 @@ module.exports = function(models, component){
                                 this.authRedirectRoute[value] = config;
                             };
                         };
-                    });
+                    }.bind(this));
 
                 };
 

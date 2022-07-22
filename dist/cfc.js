@@ -4691,7 +4691,6 @@
                 this.verifyComponent = verify[0];
                 this.verifyComponentHandler = verify[1];
                 this.unauthRoute = confAuth["401"];
-                return confAuth;
               }
               ;
               if (confAuth && confAuth.valid) {
@@ -4778,12 +4777,34 @@
             }
             ;
           }
-          login(cred) {
+          login(cred, options) {
             let role = cred.role;
             let token = cred.token;
             let data2 = cred.data;
             let created = RouterStore.createOrUpdate("role", { role, token, data: data2 });
-            return created;
+            let path = options && options.path;
+            let config = options && options.config;
+            console.log(this.authValidRoute);
+            if (!role) {
+              throw new Error(`role is not provided in router.login`);
+            }
+            ;
+            if (!token) {
+              throw new Error(`token is not provided in router.login`);
+            }
+            ;
+            if (!data2) {
+              throw new Error(`data is not provided in router.login`);
+            }
+            ;
+            if (path) {
+            } else if (this.authValidRoute && this.authValidRoute[role]) {
+              path = this.authValidRoute[role];
+            } else {
+              throw new Error("provide route when login is successful");
+            }
+            ;
+            this.goTo(path, config);
           }
           auth() {
             const auth = RouterStore.get("role", true);
@@ -4978,7 +4999,7 @@
                     ;
                   }
                   ;
-                });
+                }.bind(this));
               }
               ;
             }
