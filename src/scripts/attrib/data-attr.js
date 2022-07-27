@@ -18,8 +18,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     //     console.table(854, configs);
     // };
 
-    
-
     return Promise.all(configs.map(config=>{
         let  data;
         // let {hasNegate, bind, testVal,attr, ops, sel, attrkey, attrvalue, incrementedSel,incrementId} = config;

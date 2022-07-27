@@ -173,25 +173,26 @@ const OTHERS = {
         if(typeof string != 'string'){
             return string;
         };
-        let map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#x27;',
-            "/": '&#x2F;',
-        };
-        map = Object.keys(map).reduce((accu, key)=>{
-            if(!exclude.includes(key)){
-                accu[key] = map[key];
-            };
-            return accu;
-        },{});
+        // let map = {
+        //     '&': '&amp;',
+        //     '<': '&lt;',
+        //     '>': '&gt;',
+        //     '"': '&quot;',
+        //     "'": '&#x27;',
+        //     "/": '&#x2F;',
+        // };
+        // map = Object.keys(map).reduce((accu, key)=>{
+        //     if(!exclude.includes(key)){
+        //         accu[key] = map[key];
+        //     };
+        //     return accu;
+        // },{});
    
-        const reg = /[&<>"'/]/ig;
-        return string.replace(reg, (match)=>{
-            return map[match] || match;
-        });
+        // const reg = /[&<>"'/]/ig;
+        // return string.replace(reg, (match)=>{
+        //     return map[match] || match;
+        // });
+        return decodeURIComponent(string.replace(/<.*>/, ""));
     },
     toFormData:function(form, options={}){
         //trim, json, skipsanitize, sanitize = boolean

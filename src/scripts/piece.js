@@ -50,18 +50,18 @@ Piece.prototype.remove = function(){
     return true;
 };
 
+Piece.prototype.unRequired = function(){
+
+    return this.loop(function(index, el){
+        el.unRequired();
+    });
+};
+
 Piece.prototype.replaceDataSrc = function(){
 
     return this.loop(function(index, el){
         el.replaceDataSrc();
     });
-    // let els = this.el[0];
-    // let srcs = els.querySelectorAll('[data-src]');
-    // for (let s = 0; s < srcs.length; s++){
-    //     el = srcs[s];
-    //     el.setAttribute('src', el.dataset.src);
-    //     el.removeAttribute('data-src');
-    // };
 };
 
 Piece.cloneNode = function(el){
@@ -116,18 +116,23 @@ Piece.prototype.getAllElements = function(){
     return r;
 };
 
-Piece.prototype.appendTo = function(root, cleaned){
-    if (!root && !root.attributes){
-        throw new TypeError(`the ${root} is not an instance of Element`);
-    };
-
-    cleaned && (root.innerHTML = "");
-
-
-    for (let i = 0; i < this.el.length; i++){
-        let el = this.el[i];
-        root.appendChild(el);
-    };
+Piece.prototype.appendTo = function(roots, cleaned){
+    for (let i = 0; i < roots.length; i++){
+        let root = roots[i];
+        if (!root && !root.attributes){
+            throw new TypeError(`the ${root} is not an instance of Element`);
+        };
+    
+        // console.log(root);
+    
+        cleaned && (root.innerHTML = "");
+    
+    
+        for (let i = 0; i < this.el.length; i++){
+            let el = this.el[i];
+            root.appendChild(el);
+        };
+    }
 };
 Piece.prototype.getElementsByTagName = function(tag){
     let length = this.el.length;

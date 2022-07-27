@@ -322,7 +322,7 @@ Cake.prototype.create = function(name, template, options){
                 return component._root;
             }else {
                 let selector = root || '#app';
-                let query = document.querySelector(selector);
+                let query = document.querySelectorAll(selector);
                 if (query){
                     return query;
                 }
@@ -344,7 +344,12 @@ Cake.prototype.create = function(name, template, options){
 
             // let has = !!component.root.querySelector('FORM');
             const form = ()=>{
-                return component.root.querySelector(component.formSelector || 'FORM');
+
+                if(component.root.length){
+                    let root = component.root[0]; 
+                    return root.querySelector(component.formSelector || 'FORM');
+                };
+                return null;
             };
 
             for (let method in methods){

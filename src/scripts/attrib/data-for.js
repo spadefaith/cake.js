@@ -80,6 +80,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 //update other
                 ;(()=>{
                     let increment = 0;
+                    // console.log(83,sts, data);
                     Object.keys(sts).forEach(key=>{
                         if(!['for','evt','animate','switch'].includes(key)){
                            let conf = sts[key];
@@ -111,8 +112,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
                                 });
                                 hasReplaced.push(key);
-                            } else {
-
+                            
                             };
                         };
                     });
@@ -205,8 +205,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             const children = configs[0] && configs[0].children;
                             if(!children) return;
 
-                            
-        
                             children.forEach(child=>{
                                 const forAutoElement = create.querySelector(`[data-for=${child}]`);
 
@@ -251,11 +249,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         // };
                     });
 
-
+                    
 
                     res()
                 })();
             };
+
+            html.unRequired();
+ 
             data= null;
         } catch(err){
             rej(err);

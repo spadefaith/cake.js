@@ -251,6 +251,18 @@
         };
     };
 
+    HTMLElement.prototype.unRequired = function(){
+        let srcs = this.querySelectorAll('.cake-template [required]');
+        for (let i = 0; i < srcs.length; i++){
+            let el = srcs[i];
+            
+            if(el){
+                el.removeAttribute('required');
+            };
+        };
+
+    };
+
 
     Object.keep = function(path, data){
         let rawdirs = path.split(".");

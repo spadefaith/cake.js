@@ -299,6 +299,17 @@
           }
           ;
         };
+        HTMLElement.prototype.unRequired = function() {
+          let srcs = this.querySelectorAll(".cake-template [required]");
+          for (let i = 0; i < srcs.length; i++) {
+            let el = srcs[i];
+            if (el) {
+              el.removeAttribute("required");
+            }
+            ;
+          }
+          ;
+        };
         Object.keep = function(path, data2) {
           let rawdirs = path.split(".");
           let dirs = rawdirs.slice(1);
@@ -1200,6 +1211,7 @@
         let configs = getConfig(st, prop, newValue, prevValue, component2);
         if (!configs.length)
           return;
+        console.log(834, newValue);
         configs = extendConfig(configs);
         return Promise.all(configs.map((config) => {
           let data2;
@@ -1470,6 +1482,11 @@
         fg = null;
         return true;
       };
+      Piece.prototype.unRequired = function() {
+        return this.loop(function(index, el) {
+          el.unRequired();
+        });
+      };
       Piece.prototype.replaceDataSrc = function() {
         return this.loop(function(index, el) {
           el.replaceDataSrc();
@@ -1537,17 +1554,20 @@
         ;
         return r;
       };
-      Piece.prototype.appendTo = function(root, cleaned) {
-        if (!root && !root.attributes) {
-          throw new TypeError(`the ${root} is not an instance of Element`);
+      Piece.prototype.appendTo = function(roots, cleaned) {
+        for (let i = 0; i < roots.length; i++) {
+          let root = roots[i];
+          if (!root && !root.attributes) {
+            throw new TypeError(`the ${root} is not an instance of Element`);
+          }
+          ;
+          cleaned && (root.innerHTML = "");
+          for (let i2 = 0; i2 < this.el.length; i2++) {
+            let el = this.el[i2];
+            root.appendChild(el);
+          }
+          ;
         }
-        ;
-        cleaned && (root.innerHTML = "");
-        for (let i = 0; i < this.el.length; i++) {
-          let el = this.el[i];
-          root.appendChild(el);
-        }
-        ;
       };
       Piece.prototype.getElementsByTagName = function(tag) {
         let length2 = this.el.length;
@@ -1999,7 +2019,6 @@
                         conf.push(o2);
                       });
                       hasReplaced.push(key);
-                    } else {
                     }
                     ;
                   }
@@ -2113,6 +2132,7 @@
               })();
             }
             ;
+            html.unRequired();
             data2 = null;
           } catch (err) {
             rej(err);
@@ -6024,7 +6044,7 @@
               return component2._root;
             } else {
               let selector2 = root || "#app";
-              let query = document.querySelector(selector2);
+              let query = document.querySelectorAll(selector2);
               if (query) {
                 return query;
               }
@@ -6040,7 +6060,12 @@
           component2.role == "form" && (() => {
             const methods = Formy(component2);
             const form = () => {
-              return component2.root.querySelector(component2.formSelector || "FORM");
+              if (component2.root.length) {
+                let root2 = component2.root[0];
+                return root2.querySelector(component2.formSelector || "FORM");
+              }
+              ;
+              return null;
             };
             for (let method in methods) {
               if (methods.hasOwnProperty(method)) {
