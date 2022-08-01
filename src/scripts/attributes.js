@@ -304,7 +304,7 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
                 let event = _sp1[0];
                 let cb = _sp1[1];
                 event = event.trim();
-                cb = cb.trim();
+                cb = cb ? cb.trim(): cb;
                 this._register(component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;

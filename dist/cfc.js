@@ -2713,7 +2713,7 @@
               let event = _sp1[0];
               let cb2 = _sp1[1];
               event = event.trim();
-              cb2 = cb2.trim();
+              cb2 = cb2 ? cb2.trim() : cb2;
               this._register(component2, "evt", { event, sel: id2, cb: cb2 });
               el.dataset.event = id2;
               this.uiid++;
