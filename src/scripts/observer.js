@@ -16,7 +16,7 @@ Observer.prototype.notify = function(component, /*handler- name/fn*/event, e/*pa
     */
        
 
-
+    
 
     let _component = component;
     let _event = event;
@@ -44,6 +44,8 @@ Observer.prototype.notify = function(component, /*handler- name/fn*/event, e/*pa
             this.results[_component] = {};
         };
         let subscribe = Subscriber.get(_component, _event);
+
+
         if (subscribe){
             for (let s = 0; s < subscribe.length; s++){
                 let fn = subscribe[s];

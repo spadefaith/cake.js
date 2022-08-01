@@ -564,25 +564,7 @@
             return string;
           }
           ;
-          let map = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#x27;",
-            "/": "&#x2F;"
-          };
-          map = Object.keys(map).reduce((accu, key) => {
-            if (!exclude.includes(key)) {
-              accu[key] = map[key];
-            }
-            ;
-            return accu;
-          }, {});
-          const reg = /[&<>"'/]/ig;
-          return string.replace(reg, (match) => {
-            return map[match] || match;
-          });
+          return decodeURIComponent(string.replace(/<.*>/, ""));
         },
         toFormData: function(form, options = {}) {
           const controls = [];
@@ -591,7 +573,25 @@
           const selects = form.querySelectorAll("SELECT");
           function loop(arr, cont) {
             for (let i = 0; i < arr.length; i++) {
-              cont.push(arr[i]);
+              let test = true;
+              try {
+                test = arr[i].closest(".cake-template");
+              } catch (err) {
+              }
+              ;
+              try {
+                if (!test) {
+                  test = arr[i].classList.includes("cake-template");
+                }
+                ;
+              } catch (err) {
+              }
+              ;
+              if (test) {
+              } else {
+                cont.push(arr[i]);
+              }
+              ;
             }
             ;
           }
@@ -606,39 +606,54 @@
             if (key && ["{{", "((", "[[", "<<", "%%", "&&"].includes(key)) {
             } else {
               let type2;
-              const element = form[key];
+              let element = form[key];
               if (element) {
-                if (element.closest && !element.closest(".cake-template")) {
-                  const tag = element.tagName;
-                  if (tag == "SELECT") {
-                    value = element.value;
-                  } else if (tag == "INPUT" && element.getAttribute("type") == "checkbox") {
-                    value = element.checked;
-                  } else if (tag == "INPUT" && element.getAttribute("type") == "file") {
-                    value = element.files;
-                  } else {
-                    if (options.sanitize == false) {
-                      value = element.value;
-                    } else {
-                      value = this.sanitize(element.value, options.skipsanitize);
-                    }
-                  }
-                  ;
-                  if (options.json) {
-                    if (options.trim) {
-                      if (value != "") {
-                        o2[key] = value;
+                if (element.nodeType) {
+                } else if (element.length) {
+                  for (let i2 = 0; i2 < element.length; i2++) {
+                    let el = element[i2];
+                    if (el.nodeType == 1) {
+                      let test = el.closest(".cake-template");
+                      if (test) {
+                      } else {
+                        element = el;
+                        break;
                       }
                       ;
-                    } else {
+                    }
+                    ;
+                  }
+                  ;
+                }
+                ;
+                const tag = element.tagName;
+                if (tag == "SELECT") {
+                  value = element.value;
+                } else if (tag == "INPUT" && element.getAttribute("type") == "checkbox") {
+                  value = element.checked;
+                } else if (tag == "INPUT" && element.getAttribute("type") == "file") {
+                  value = element.files;
+                } else {
+                  if (options.sanitize == false) {
+                    value = element.value;
+                  } else {
+                    value = this.sanitize(element.value, options.skipsanitize);
+                  }
+                }
+                ;
+                if (options.json) {
+                  if (options.trim) {
+                    if (value != "") {
                       o2[key] = value;
                     }
                     ;
                   } else {
                     o2[key] = value;
                   }
+                  ;
+                } else {
+                  o2[key] = value;
                 }
-                ;
               }
               ;
             }
@@ -1211,7 +1226,6 @@
         let configs = getConfig(st, prop, newValue, prevValue, component2);
         if (!configs.length)
           return;
-        console.log(834, newValue);
         configs = extendConfig(configs);
         return Promise.all(configs.map((config) => {
           let data2;
@@ -1555,6 +1569,10 @@
         return r;
       };
       Piece.prototype.appendTo = function(roots, cleaned) {
+        if (roots.nodeType == 1) {
+          roots = [roots];
+        }
+        ;
         for (let i = 0; i < roots.length; i++) {
           let root = roots[i];
           if (!root && !root.attributes) {
@@ -2694,6 +2712,8 @@
               let _sp1 = splitted[s].split(":");
               let event = _sp1[0];
               let cb2 = _sp1[1];
+              event = event.trim();
+              cb2 = cb2.trim();
               this._register(component2, "evt", { event, sel: id2, cb: cb2 });
               el.dataset.event = id2;
               this.uiid++;
@@ -3064,7 +3084,6 @@
             ;
           }
           ;
-          console.timeEnd(component2);
           return Promise.all(r.length ? r : [r]);
         }).then(() => {
           return Promise.resolve();
@@ -4116,6 +4135,7 @@
                   throw new Error(`it might be theres no template in component - ${this.name}`);
                 }
                 element.cake_component = this.name;
+                console.timeEnd(this.name);
                 this.html = this.Node(element);
                 this._parseHTML(this.isStatic).then(() => {
                   res();
@@ -4556,17 +4576,21 @@
       };
       Component.prototype.findContainer = function() {
         return new Promise((res) => {
-          let containers = this.html.getContainers();
-          for (let c = 0; c < containers.length; c++) {
-            let el = containers[c];
-            let name2 = el.dataset.container;
-            if (name2) {
-              this.container[name2] = el;
+          try {
+            let containers = this.html.getContainers();
+            for (let c = 0; c < containers.length; c++) {
+              let el = containers[c];
+              let name2 = el.dataset.container;
+              if (name2) {
+                this.container[name2] = el;
+              }
+              ;
             }
             ;
+            res();
+          } catch (err) {
+            console.log(895, err);
           }
-          ;
-          res();
         });
       };
       Component.prototype._validator = function(name2, value2) {
@@ -4733,7 +4757,8 @@
                   goBack: this.goBack.bind(this),
                   auth: this.auth.bind(this),
                   logout: this.logout.bind(this),
-                  login: this.login.bind(this)
+                  login: this.login.bind(this),
+                  verify: this.verifyAuth.bind(this)
                 }, this.prev);
               },
               set(value2) {
@@ -4754,7 +4779,10 @@
           }
           verifyAuth(token) {
             return models.$loaded(this.verifyComponent).then((model) => {
-              return model.fire[this.verifyComponentHandler](token);
+              return model.fire[this.verifyComponentHandler](token).then((res) => {
+                this.isauth = res && res.status == 1;
+                return res;
+              });
             });
           }
           async authenticate(name2) {
@@ -5092,7 +5120,6 @@
               ;
             }
             ;
-            console.log(430, has, hash);
             if (!has) {
               if (this.route["404"]) {
                 let path2 = this.route["404"].callback();

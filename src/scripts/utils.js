@@ -205,7 +205,19 @@ const OTHERS = {
 
         function loop(arr, cont){
             for (let i = 0; i < arr.length; i++){
-                cont.push(arr[i]);
+                let test = true;
+                
+                try {
+                    test = arr[i].closest('.cake-template');
+                } catch(err){};
+                try {
+                    if(!test){
+                        test = arr[i].classList.includes('cake-template');
+                    };
+                } catch(err){};
+                if(test){} else {
+                    cont.push(arr[i]);
+                };
             };
         };
 
@@ -213,53 +225,66 @@ const OTHERS = {
         loop(inputs, controls);
         loop(selects, controls);
 
-
         let o = {};
 
         for (let i = 0; i < controls.length; i++){
             let control = controls[i];
             let key = control.name || control.id;
 
+
             if(key && ["{{","((","[[","<<","%%","&&"].includes(key)){
 
             } else {
                 let type;
-                const element = form[key];
+                let element = form[key];
 
                 
                 if(element){
 
-                    if(element.closest && !element.closest('.cake-template')){
-                        const tag = element.tagName;
-                        
-                        if (tag == 'SELECT'){
-                            value = element.value
-                        }  else if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
-                            value = element.checked;
-                        } else if(tag == 'INPUT' && element.getAttribute('type') == 'file'){
-                            value = element.files;
-                        } else {
-                            if(options.sanitize == false){
-                                value = element.value;
-                            } else {
-                                value = this.sanitize(element.value,options.skipsanitize);
-                            }
-                        };
-                        
-                        if(options.json){
-                            if(options.trim){
-                                if(value != ""){
-                                    o[key] = value;
+                    if(element.nodeType){
+
+                    } else if(element.length){
+                        for (let i = 0; i < element.length; i++){
+                            let el =  element[i];
+                            if(el.nodeType == 1){
+                                let test = el.closest('.cake-template');
+                                if(test){
+
+                                } else {
+                                    element = el;
+                                    break;
                                 };
-                            } else {
+                            };
+                        };     
+                    };
+
+                    const tag = element.tagName;
+                    
+                    if (tag == 'SELECT'){
+                        value = element.value
+                    }  else if(tag == 'INPUT' && element.getAttribute('type') == 'checkbox'){
+                        value = element.checked;
+                    } else if(tag == 'INPUT' && element.getAttribute('type') == 'file'){
+                        value = element.files;
+                    } else {
+                        if(options.sanitize == false){
+                            value = element.value;
+                        } else {
+                            value = this.sanitize(element.value,options.skipsanitize);
+                        }
+                    };
+                    
+                    if(options.json){
+                        if(options.trim){
+                            if(value != ""){
                                 o[key] = value;
-                            }; 
+                            };
                         } else {
                             o[key] = value;
-                        }
-
-
-                    };
+                        }; 
+                    } else {
+                        o[key] = value;
+                    }
     
                 };
             };

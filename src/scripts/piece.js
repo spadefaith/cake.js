@@ -87,6 +87,7 @@ Piece.prototype.dataset = function(data, cb){
     return true;
 };
 Piece.prototype.getContainers = function(){
+    // console.log('111111');
     return this.getElementsByDataset('container').container;
 };
 Piece.prototype.cloneNode = function(el){
@@ -117,6 +118,12 @@ Piece.prototype.getAllElements = function(){
 };
 
 Piece.prototype.appendTo = function(roots, cleaned){
+
+    if(roots.nodeType == 1){
+        roots = [roots];
+    };
+
+
     for (let i = 0; i < roots.length; i++){
         let root = roots[i];
         if (!root && !root.attributes){
@@ -287,6 +294,8 @@ Piece.prototype.getElementsByDataset = function(){
     length = arg.length;
     i = -1;
     a = -1;
+
+    // console.log(292, this.el);
     while(++i < this.el.length){
         el = this.el[i];
         while(++a < length){

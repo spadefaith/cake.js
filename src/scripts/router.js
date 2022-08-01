@@ -42,6 +42,8 @@ module.exports = function(models, component){
             this.route = this.compile(routes);
             this.prev = null;
             this.components = ComponentStorage;
+
+
             this.watch();
             this.persist();
             Object.defineProperty(component.prototype, '$router', {
@@ -53,6 +55,7 @@ module.exports = function(models, component){
                         auth:this.auth.bind(this),
                         logout:this.logout.bind(this),
                         login:this.login.bind(this),
+                        verify:this.verifyAuth.bind(this),
                         ...this.prev,
                     };
                 },
@@ -73,7 +76,10 @@ module.exports = function(models, component){
         }
         verifyAuth(token){
             return models.$loaded(this.verifyComponent).then(model=>{
-                return model.fire[this.verifyComponentHandler](token);
+                return model.fire[this.verifyComponentHandler](token).then(res=>{
+                    this.isauth = (res && res.status == 1);
+                    return res;
+                });
             });
         }
         async authenticate(name){
@@ -492,7 +498,7 @@ module.exports = function(models, component){
                 };
             };
 
-            console.log(430, has, hash);
+            // console.log(430, has, hash);
 
             if(!has){
                 // console.log(464, this.route, this.options);

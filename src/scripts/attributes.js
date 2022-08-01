@@ -298,10 +298,13 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
     return new Promise((res)=>{
         this._loopElements('event',events, component, isStatic, (function(el, id, target, gr, index){
             let splitted = gr;
+            
             for (let s = 0; s < splitted.length ; s++){
                 let _sp1 = splitted[s].split(':');
                 let event = _sp1[0];
                 let cb = _sp1[1];
+                event = event.trim();
+                cb = cb.trim();
                 this._register(component, 'evt', {event, sel:id, cb});
                 el.dataset.event = id;
                 this.uiid++;
@@ -774,7 +777,7 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
             };
         };
         
-        console.timeEnd(component);
+        // console.timeEnd(component);
         
         return Promise.all(r.length?r:[r]);
     }).then(()=>{

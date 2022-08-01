@@ -333,7 +333,7 @@ Component.prototype.createElement = function(){
                     throw new Error(`it might be theres no template in component - ${this.name}`);
                 }
                 element.cake_component = this.name;
-                // console.timeEnd(this.name)
+                console.timeEnd(this.name)
                 this.html = this.Node(element);
                 // console.log(274,this.html);
                 this._parseHTML(this.isStatic).then(()=>{
@@ -518,6 +518,7 @@ Component.prototype.render = function(options={}){
                 //     this.doSwitch(switchItems[i], getValue(switchItems[i]));
                 // };
             }).then(()=>{
+
                 return this.findContainer();
                 
             }).then(()=>{
@@ -528,6 +529,7 @@ Component.prototype.render = function(options={}){
                     console.log(440,err);
                 }
             }).then(()=>{
+                // console.log(532, this.name, this.html);
                 return this.findTarget();
             }).then(()=>{
                 // console.log(this.container);
@@ -875,15 +877,21 @@ Component.prototype.findContainer = function(){
 
 
     return new Promise((res)=>{
-        let containers = this.html.getContainers();
-        for (let c = 0; c < containers.length; c++){
-            let el = containers[c];
-            let name = el.dataset.container;
-            if (name){
-                this.container[name] = el;
+        try{
+
+            let containers = this.html.getContainers();
+
+            for (let c = 0; c < containers.length; c++){
+                let el = containers[c];
+                let name = el.dataset.container;
+                if (name){
+                    this.container[name] = el;
+                };
             };
-        };
-        res();
+            res();
+        } catch(err){
+            console.log(895, err);
+        }
     });
 
     // console.log('must trigger first',containers);
