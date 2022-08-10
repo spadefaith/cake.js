@@ -24,6 +24,8 @@ function Component(name, template, options){
     this.isReady = false;
     this.scope = options.scope;
 
+    this.animatecss = this.options.animatecss;
+
     this.formSelector = options.form;
 
     this.await = {};//storage of async handlers
@@ -333,7 +335,7 @@ Component.prototype.createElement = function(){
                     throw new Error(`it might be theres no template in component - ${this.name}`);
                 }
                 element.cake_component = this.name;
-                console.timeEnd(this.name)
+                // console.timeEnd(this.name)
                 this.html = this.Node(element);
                 // console.log(274,this.html);
                 this._parseHTML(this.isStatic).then(()=>{
@@ -409,6 +411,10 @@ Component.prototype.render = function(options={}){
     let emit = options.emit || {};
     let DATA = options.data || {};
 
+    if(typeof root == 'string'){
+        root = [document.querySelector(root)];
+    };
+
 
 
     let multiple = this.options.multiple;
@@ -417,6 +423,7 @@ Component.prototype.render = function(options={}){
     let payload = {emit};
 
 
+    this.isConnected = true;
     return new Promise((res, rej)=>{
 
         (!!root) && (this.root = root);
@@ -498,12 +505,16 @@ Component.prototype.render = function(options={}){
                             res();
                         })
                     })();
-  
+
+                    
+                    
+
                     return prom.then(()=>{
-                        
-    
+                        return this._animatecss('render');
+                    }).then(()=>{
                         element.appendTo(this.root, cleaned);
-                        this.isConnected = true;
+                        
+                        return true;
                     });
                 }
             }).
@@ -553,6 +564,57 @@ Component.prototype.render = function(options={}){
     })
 };
 
+Component.prototype._animatecss = function(moment){
+    try {
+        if (!this.animatecss){
+            return Promise.resolve();
+        };
+        let conf = this.animatecss[moment];
+        if(conf){
+            
+            return Promise.all(Object.keys(conf).map(key=>{
+                
+                
+                let value = 'animate__animated,';
+                value += conf[key];
+
+                let els = this.html.querySelectorAllIncluded(null,'data-animatecss',key);
+                if(els){
+                    //clear
+                    return Promise.all(els.map(el=>{
+                        let classList = el.classList;
+                        for (let c = 0; c < classList; c++){
+                            let cl = classList[c];
+                            if(cl.includes('animate_')){
+                                el.classList.remove(cl);
+                            };
+                        };
+
+                        //reapply
+                        value.split(',').forEach(item=>{
+                            el.classList.add(item.trim());
+                        });
+
+                        el.style.setProperty('--animate-duration', '0.3s');
+
+                        return new Promise((res, rej)=>{
+                            setTimeout(()=>{
+                                res();
+                            },500);
+                        });
+
+                    }));
+                } ;
+                return Promise.resolve();
+            }));
+        };
+        return Promise.resolve();
+    } catch(err){
+        console.error(err);
+        return Promise.resolve();
+    };
+};
+
 Component.prototype.renderAsync = function(options){
     this.render(options).then(()=>{
         this.$persist.append(this.name);
@@ -560,12 +622,10 @@ Component.prototype.renderAsync = function(options){
 };
 
 Component.prototype._smoothReset = function(){
-    this.isConnected = false;
     this.html = this.original.cloneNode();
 };
 
 Component.prototype._hardReset = function(name){
-    this.isConnected = false;
     this.$persist.remove(name);
     //remove the element first;
     //clone the element;
@@ -576,7 +636,6 @@ Component.prototype._hardReset = function(name){
 Component.prototype.reset = function(){
     let animate = this.$animate('remove');
     // console.log(this,this.html, animate);
-
 
     if (animate instanceof Promise){
         return this.await.animateRemove = new Promise((res)=>{
@@ -593,6 +652,7 @@ Component.prototype.reset = function(){
             }).then(()=>{
                 res();
             }).then(()=>{
+                this.isConnected = false;
                 if(this.renderqueue && this.renderqueue.length){
                     let conf = this.renderqueue.pop();
                     let options = conf.options;
@@ -606,7 +666,14 @@ Component.prototype.reset = function(){
             this.clearState();
             this.container = {};
             this._hardReset(this.name);
+            this.isConnected = false;
             res();
+        }).then(()=>{
+            if(this.renderqueue && this.renderqueue.length){
+                let conf = this.renderqueue.pop();
+                let options = conf.options;
+                return this.render(options);
+            };
         });
     }
 };
@@ -863,12 +930,25 @@ Component.prototype.toggler = function(_this){
                 return bases;
             });
         }
+        _get(){
+            let config = this.check(this.bind);
+            if(!config){ return;}
+            return this.cache.get(this.bind).then(result=>{
+                if (!result){
+                    return result;
+                };
+                return result;
+            });
+        }
     };
     let fn = (bind, bases)=>{
         return new cl(bind, bases, this.html, this)._toggle();
     };
     fn.recall = (bind)=>{
         return new cl(bind, false, this.html, this)._recall();
+    };
+    fn.get = (bind)=>{
+        return new cl(bind, false, this.html, this)._get();
     };
     return fn;
 };
@@ -880,7 +960,6 @@ Component.prototype.findContainer = function(){
         try{
 
             let containers = this.html.getContainers();
-
             for (let c = 0; c < containers.length; c++){
                 let el = containers[c];
                 let name = el.dataset.container;
@@ -919,7 +998,9 @@ Component.prototype._watchReactive = function(){
         const validator = this.options.validate;
         const form = this.$form();
 
-        if(form._reactive){
+        // console.log(this.name, form);
+
+        if(form && form._reactive){
             return ;
         };
   

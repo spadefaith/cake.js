@@ -7,84 +7,105 @@ module.exports = class {
     animate(moment){
         this.config = this.parse(this.cf);
 
-        return new Promise((res)=>{
-            for (let i = 0; i < this.config.length; i++){
-                let cf = this.config[i];
-                // console.log(cf)
+        let element = this.config[0].element;
+        let config = this.config[0][moment];
 
-                let element = cf.element;
-                //when there is no config for certain moment, render || remove
-                //safekeep
-                if (!cf[moment]){ res();break;};
-                let config = cf[moment];
-                if (!config.options && !(config.options && config.options.duration)){
-                    config.options = {duration : this.duration};
-                };
-                if (!config.keyframes && !element){continue;}
+        if(!config){
+            return Promise.resolve();
+        };
 
-                let keyframes = config.keyframes;
-                let index = 0;
-                let fr = [];
-                for (let k = 0; k < keyframes.length; k++){
-                    let kk = keyframes[k];
-                    switch(true){
-                        case typeof kk == 'string':{
-                            fr.push(this.dic(kk));
-                        } break;
-                        case (kk instanceof Object):{
-                            //maybe the offset is declared along with the keyframes;
-                            //name - refers to default animation
-                            // let {name, offset} = kk;
-                            let name = kk.name;
-                            let offset = kk.offset;
-                            if (name && offset){
-                                //support for element.animation - offset, equivalent to 10%-100% css @keyframes;
-                                let def = this.dic(name);
-                                def[def.length-1].offset = offset;
-                                fr.push(def);
-                            } else {
-                                fr.push(kk)
-                            }
-                        }
-                    };
+        // console.log(16, element);
+
+
+        return new Promise((res, rej)=>{
+            element.velocity(config.velocity,{
+                complete:function(){
+                    res();
                 }
-                keyframes = fr;
-                fr = null;
-                //to series calls of animation, one after the another;
-                // console.log(element, keyframes, config);
-                let recurseCall= ()=>{
-                    let kf = keyframes[index];
-                    let animate = element.animate(kf, (config.options || this.duration));
-                    // console.log(animate);
-                    if(animate.finished){
-                        animate.finished.then(()=>{
-                            if (index < keyframes.length -1){
-                                index += 1;
-                                recurseCall()
-                            } else {
-                                keyframes = [];
-                                // console.log(index, keyframes.length)
-                                res();
-                            }
-                        });
-                    } else {
-                        animate.onfinish =()=>{
-                            if (index < keyframes.length -1){
-                                index += 1;
-                                recurseCall()
-                            } else {
-                                keyframes = [];
-                                // console.log(index, keyframes.length)
-                                res();
-                            }
-                        };
-                    };
-
-
-                }; recurseCall();
-            };
-        });
+            })
+        })
     }
+    // animate(moment){
+    //     this.config = this.parse(this.cf);
+
+    //     return new Promise((res)=>{
+    //         for (let i = 0; i < this.config.length; i++){
+    //             let cf = this.config[i];
+    //             // console.log(cf)
+
+    //             let element = cf.element;
+    //             //when there is no config for certain moment, render || remove
+    //             //safekeep
+    //             if (!cf[moment]){ res();break;};
+    //             let config = cf[moment];
+    //             if (!config.options && !(config.options && config.options.duration)){
+    //                 config.options = {duration : this.duration};
+    //             };
+    //             if (!config.keyframes && !element){continue;}
+
+    //             let keyframes = config.keyframes;
+    //             let index = 0;
+    //             let fr = [];
+    //             for (let k = 0; k < keyframes.length; k++){
+    //                 let kk = keyframes[k];
+    //                 switch(true){
+    //                     case typeof kk == 'string':{
+    //                         fr.push(this.dic(kk));
+    //                     } break;
+    //                     case (kk instanceof Object):{
+    //                         //maybe the offset is declared along with the keyframes;
+    //                         //name - refers to default animation
+    //                         // let {name, offset} = kk;
+    //                         let name = kk.name;
+    //                         let offset = kk.offset;
+    //                         if (name && offset){
+    //                             //support for element.animation - offset, equivalent to 10%-100% css @keyframes;
+    //                             let def = this.dic(name);
+    //                             def[def.length-1].offset = offset;
+    //                             fr.push(def);
+    //                         } else {
+    //                             fr.push(kk)
+    //                         }
+    //                     }
+    //                 };
+    //             }
+    //             keyframes = fr;
+    //             fr = null;
+    //             //to series calls of animation, one after the another;
+    //             // console.log(element, keyframes, config);
+    //             let recurseCall= ()=>{
+    //                 let kf = keyframes[index];
+    //                 let animate = element.animate(kf, (config.options || this.duration));
+    //                 // console.log(animate);
+    //                 if(animate.finished){
+    //                     animate.finished.then(()=>{
+    //                         if (index < keyframes.length -1){
+    //                             index += 1;
+    //                             recurseCall()
+    //                         } else {
+    //                             keyframes = [];
+    //                             // console.log(index, keyframes.length)
+    //                             res();
+    //                         }
+    //                     });
+    //                 } else {
+    //                     animate.onfinish =()=>{
+    //                         if (index < keyframes.length -1){
+    //                             index += 1;
+    //                             recurseCall()
+    //                         } else {
+    //                             keyframes = [];
+    //                             // console.log(index, keyframes.length)
+    //                             res();
+    //                         }
+    //                     };
+    //                 };
+
+
+    //             }; recurseCall();
+    //         };
+    //     });
+    // }
     parse(config){
         let configs = [], length = config.length, i = -1;
         // console.log(config);

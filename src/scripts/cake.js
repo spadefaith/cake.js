@@ -249,7 +249,7 @@ Cake.prototype._defineProperty(Component.prototype, '$hash', function(){
 Cake.prototype.create = function(name, template, options){
     // console.time(name);
     //observer
-    console.time(name);
+    // console.time(name);
     let component = new Component(name, template, options);
     //after it has been pass to Cakem t ws assumed that the fn are binded to component holder;
     const scope = new Scope(name);
@@ -344,9 +344,10 @@ Cake.prototype.create = function(name, template, options){
 
             // let has = !!component.root.querySelector('FORM');
             const form = ()=>{
-
                 if(component.root.length){
-                    let root = component.root[0]; 
+                    let root = component.root[0];
+
+                    
                     return root.querySelector(component.formSelector || 'FORM');
                 };
                 return null;

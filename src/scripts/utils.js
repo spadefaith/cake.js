@@ -203,7 +203,8 @@ const OTHERS = {
         const selects = form.querySelectorAll('SELECT');
         
 
-        function loop(arr, cont){
+        function loop(arr, cont, sort){
+            let files = [];
             for (let i = 0; i < arr.length; i++){
                 let test = true;
                 
@@ -216,14 +217,24 @@ const OTHERS = {
                     };
                 } catch(err){};
                 if(test){} else {
-                    cont.push(arr[i]);
+                    if(arr[i].getAttribute('type') == 'file'){
+                        files.push(arr[i]);
+                    } else {
+                        cont.push(arr[i]);
+                    }
                 };
+            };
+            if(files.length){
+                files.forEach(item=>{
+                    cont.push(item);
+                });
+                files = [];
             };
         };
 
         loop(textareas, controls);
-        loop(inputs, controls);
         loop(selects, controls);
+        loop(inputs, controls, true);
 
         let o = {};
 

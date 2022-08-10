@@ -88,7 +88,8 @@ Piece.prototype.dataset = function(data, cb){
 };
 Piece.prototype.getContainers = function(){
     // console.log('111111');
-    return this.getElementsByDataset('container').container;
+    let container = this.getElementsByDataset('container').container;
+    return container
 };
 Piece.prototype.cloneNode = function(el){
     el = this.el;
@@ -305,9 +306,15 @@ Piece.prototype.getElementsByDataset = function(){
             } else {
                 o[sel] = [];
             }
-            query = el.querySelectorAll(`[data-${sel}]`);
+            let query = el.querySelectorAll(`[data-${sel}]`);
             if (query.length){
-                o[sel] = o[sel].concat([...query]);
+                for (let q = 0; q < query.length; q++){
+                    let qe = query[q];
+                    let istemp = qe.closest('.cake-template');
+                    if(!istemp){
+                        o[sel].push(qe);
+                    };
+                };
             };
         };
     };

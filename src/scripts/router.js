@@ -84,6 +84,7 @@ module.exports = function(models, component){
         }
         async authenticate(name){
 
+            
             /*
                 happens when the current page is in the unAuthRoute
                 usually the login page,
@@ -102,18 +103,17 @@ module.exports = function(models, component){
                 try {
 
 
-                    const config = RouterStore.get('role', true);
+                    const config = RouterStore.get('role', true) || {};
 
                     // console.log(config);
 
                     const token = config.token;
                     const isverified = await this.verifyAuth(token);
+
                     
                     if(isverified.status == 0){
                         this.logout();
                     };
-
-                 
 
                     if(config){
                         if(initialize){
@@ -138,6 +138,7 @@ module.exports = function(models, component){
                         }
                     };
                 } catch(err){
+                    alert(JSON.stringify(err.message));
                     if(initialize){
                     } else {
                         this.logout();
@@ -273,6 +274,7 @@ module.exports = function(models, component){
                     let loc = `${location.origin}${location.pathname}#${path}`;
                     // console.log(180,loc, !Utils.isFirefox());
                     // console.log(!Utils.isFirefox());
+                    console.log(276, Utils.isChrome() && !Utils.isFirefox(), loc);
                     Utils.isChrome() && !Utils.isFirefox() && history.replaceState(undefined, undefined, loc);
                     location.replace(loc);
                 } else {
@@ -425,7 +427,6 @@ module.exports = function(models, component){
             con.length = Object.keys(routes).length;
             con.keys = Object.keys(routes);
 
-            // console.log(con);
             return con;
         }
         parse(){
@@ -469,6 +470,7 @@ module.exports = function(models, component){
                 const overlay = route.overlay;
                 const display = route.display;
                 const onrender = route.onrender;
+                const controller = route.controller;
 
                 if (params){
                     let _path = String(path);
@@ -492,7 +494,7 @@ module.exports = function(models, component){
                         this.authenticate(routeName);
                     };
 
-                    this.prev = {components, state,path, name, prev:this.prev, overlay, display, onrender};
+                    this.prev = {components, state,path, name, prev:this.prev, overlay, display, onrender,controller};
                     has = true;
                     break;
                 };

@@ -571,7 +571,8 @@
           const textareas = form.querySelectorAll("TEXTAREA");
           const inputs = form.querySelectorAll("INPUT");
           const selects = form.querySelectorAll("SELECT");
-          function loop(arr, cont) {
+          function loop(arr, cont, sort) {
+            let files = [];
             for (let i = 0; i < arr.length; i++) {
               let test = true;
               try {
@@ -589,16 +590,27 @@
               ;
               if (test) {
               } else {
-                cont.push(arr[i]);
+                if (arr[i].getAttribute("type") == "file") {
+                  files.push(arr[i]);
+                } else {
+                  cont.push(arr[i]);
+                }
               }
               ;
+            }
+            ;
+            if (files.length) {
+              files.forEach((item2) => {
+                cont.push(item2);
+              });
+              files = [];
             }
             ;
           }
           ;
           loop(textareas, controls);
-          loop(inputs, controls);
           loop(selects, controls);
+          loop(inputs, controls, true);
           let o2 = {};
           for (let i = 0; i < controls.length; i++) {
             let control = controls[i];
@@ -1532,7 +1544,8 @@
         return true;
       };
       Piece.prototype.getContainers = function() {
-        return this.getElementsByDataset("container").container;
+        let container = this.getElementsByDataset("container").container;
+        return container;
       };
       Piece.prototype.cloneNode = function(el) {
         el = this.el;
@@ -1788,9 +1801,17 @@
             } else {
               o[sel] = [];
             }
-            query = el.querySelectorAll(`[data-${sel}]`);
-            if (query.length) {
-              o[sel] = o[sel].concat([...query]);
+            let query2 = el.querySelectorAll(`[data-${sel}]`);
+            if (query2.length) {
+              for (let q = 0; q < query2.length; q++) {
+                let qe = query2[q];
+                let istemp = qe.closest(".cake-template");
+                if (!istemp) {
+                  o[sel].push(qe);
+                }
+                ;
+              }
+              ;
             }
             ;
           }
@@ -3647,79 +3668,18 @@
         }
         animate(moment) {
           this.config = this.parse(this.cf);
-          return new Promise((res) => {
-            for (let i = 0; i < this.config.length; i++) {
-              let cf = this.config[i];
-              let element = cf.element;
-              if (!cf[moment]) {
+          let element = this.config[0].element;
+          let config = this.config[0][moment];
+          if (!config) {
+            return Promise.resolve();
+          }
+          ;
+          return new Promise((res, rej) => {
+            element.velocity(config.velocity, {
+              complete: function() {
                 res();
-                break;
               }
-              ;
-              let config = cf[moment];
-              if (!config.options && !(config.options && config.options.duration)) {
-                config.options = { duration: this.duration };
-              }
-              ;
-              if (!config.keyframes && !element) {
-                continue;
-              }
-              let keyframes = config.keyframes;
-              let index = 0;
-              let fr = [];
-              for (let k = 0; k < keyframes.length; k++) {
-                let kk = keyframes[k];
-                switch (true) {
-                  case typeof kk == "string":
-                    {
-                      fr.push(this.dic(kk));
-                    }
-                    break;
-                  case kk instanceof Object: {
-                    let name2 = kk.name;
-                    let offset = kk.offset;
-                    if (name2 && offset) {
-                      let def = this.dic(name2);
-                      def[def.length - 1].offset = offset;
-                      fr.push(def);
-                    } else {
-                      fr.push(kk);
-                    }
-                  }
-                }
-                ;
-              }
-              keyframes = fr;
-              fr = null;
-              let recurseCall = () => {
-                let kf = keyframes[index];
-                let animate = element.animate(kf, config.options || this.duration);
-                if (animate.finished) {
-                  animate.finished.then(() => {
-                    if (index < keyframes.length - 1) {
-                      index += 1;
-                      recurseCall();
-                    } else {
-                      keyframes = [];
-                      res();
-                    }
-                  });
-                } else {
-                  animate.onfinish = () => {
-                    if (index < keyframes.length - 1) {
-                      index += 1;
-                      recurseCall();
-                    } else {
-                      keyframes = [];
-                      res();
-                    }
-                  };
-                }
-                ;
-              };
-              recurseCall();
-            }
-            ;
+            });
           });
         }
         parse(config) {
@@ -3885,6 +3845,7 @@
         this.role = options.role;
         this.isReady = false;
         this.scope = options.scope;
+        this.animatecss = this.options.animatecss;
         this.formSelector = options.form;
         this.await = {};
         this.state = options.state;
@@ -4135,7 +4096,6 @@
                   throw new Error(`it might be theres no template in component - ${this.name}`);
                 }
                 element.cake_component = this.name;
-                console.timeEnd(this.name);
                 this.html = this.Node(element);
                 this._parseHTML(this.isStatic).then(() => {
                   res();
@@ -4202,9 +4162,14 @@
         let cleaned = options.cleaned;
         let emit = options.emit || {};
         let DATA = options.data || {};
+        if (typeof root == "string") {
+          root = [document.querySelector(root)];
+        }
+        ;
         let multiple = this.options.multiple;
         let state = this.state || {};
         let payload = { emit };
+        this.isConnected = true;
         return new Promise((res, rej) => {
           !!root && (this.root = root);
           if (!this.isReady) {
@@ -4256,8 +4221,10 @@
                   });
                 })();
                 return prom.then(() => {
+                  return this._animatecss("render");
+                }).then(() => {
                   element.appendTo(this.root, cleaned);
-                  this.isConnected = true;
+                  return true;
                 });
               }
             }).then(() => {
@@ -4287,17 +4254,61 @@
           });
         });
       };
+      Component.prototype._animatecss = function(moment) {
+        try {
+          if (!this.animatecss) {
+            return Promise.resolve();
+          }
+          ;
+          let conf = this.animatecss[moment];
+          if (conf) {
+            return Promise.all(Object.keys(conf).map((key) => {
+              let value2 = "animate__animated,";
+              value2 += conf[key];
+              let els = this.html.querySelectorAllIncluded(null, "data-animatecss", key);
+              if (els) {
+                return Promise.all(els.map((el) => {
+                  let classList = el.classList;
+                  for (let c = 0; c < classList; c++) {
+                    let cl = classList[c];
+                    if (cl.includes("animate_")) {
+                      el.classList.remove(cl);
+                    }
+                    ;
+                  }
+                  ;
+                  value2.split(",").forEach((item2) => {
+                    el.classList.add(item2.trim());
+                  });
+                  el.style.setProperty("--animate-duration", "0.3s");
+                  return new Promise((res, rej) => {
+                    setTimeout(() => {
+                      res();
+                    }, 500);
+                  });
+                }));
+              }
+              ;
+              return Promise.resolve();
+            }));
+          }
+          ;
+          return Promise.resolve();
+        } catch (err) {
+          console.error(err);
+          return Promise.resolve();
+        }
+        ;
+      };
       Component.prototype.renderAsync = function(options) {
         this.render(options).then(() => {
           this.$persist.append(this.name);
         });
       };
       Component.prototype._smoothReset = function() {
-        this.isConnected = false;
         this.html = this.original.cloneNode();
       };
       Component.prototype._hardReset = function(name2) {
-        this.isConnected = false;
         this.$persist.remove(name2);
         this.html = this.original.cloneNode();
         return true;
@@ -4317,6 +4328,7 @@
             }).then(() => {
               res();
             }).then(() => {
+              this.isConnected = false;
               if (this.renderqueue && this.renderqueue.length) {
                 let conf = this.renderqueue.pop();
                 let options = conf.options;
@@ -4331,7 +4343,15 @@
             this.clearState();
             this.container = {};
             this._hardReset(this.name);
+            this.isConnected = false;
             res();
+          }).then(() => {
+            if (this.renderqueue && this.renderqueue.length) {
+              let conf = this.renderqueue.pop();
+              let options = conf.options;
+              return this.render(options);
+            }
+            ;
           });
         }
       };
@@ -4565,12 +4585,28 @@
               return bases;
             });
           }
+          _get() {
+            let config = this.check(this.bind);
+            if (!config) {
+              return;
+            }
+            return this.cache.get(this.bind).then((result) => {
+              if (!result) {
+                return result;
+              }
+              ;
+              return result;
+            });
+          }
         };
         let fn2 = (bind2, bases) => {
           return new cl(bind2, bases, this.html, this)._toggle();
         };
         fn2.recall = (bind2) => {
           return new cl(bind2, false, this.html, this)._recall();
+        };
+        fn2.get = (bind2) => {
+          return new cl(bind2, false, this.html, this)._get();
         };
         return fn2;
       };
@@ -4607,7 +4643,7 @@
         if (this.role == "form" && this.options.watch === true) {
           const validator = this.options.validate;
           const form = this.$form();
-          if (form._reactive) {
+          if (form && form._reactive) {
             return;
           }
           ;
@@ -4789,7 +4825,7 @@
             const initialize = this.unauthRoute == name2;
             if (this.unauthRoute) {
               try {
-                const config = RouterStore.get("role", true);
+                const config = RouterStore.get("role", true) || {};
                 const token = config.token;
                 const isverified = await this.verifyAuth(token);
                 if (isverified.status == 0) {
@@ -4816,6 +4852,7 @@
                 }
                 ;
               } catch (err) {
+                alert(JSON.stringify(err.message));
                 if (initialize) {
                 } else {
                   this.logout();
@@ -4934,6 +4971,7 @@
               ;
               if (isreplace) {
                 let loc = `${location.origin}${location.pathname}#${path}`;
+                console.log(276, Utils.isChrome() && !Utils.isFirefox(), loc);
                 Utils.isChrome() && !Utils.isFirefox() && history.replaceState(void 0, void 0, loc);
                 location.replace(loc);
               } else {
@@ -5092,6 +5130,7 @@
               const overlay = route.overlay;
               const display = route.display;
               const onrender = route.onrender;
+              const controller = route.controller;
               if (params) {
                 let _path = String(path);
                 _path = _path.slice(1);
@@ -5113,7 +5152,7 @@
                   this.authenticate(routeName);
                 }
                 ;
-                this.prev = { components: components2, state, path, name: name2, prev: this.prev, overlay, display, onrender };
+                this.prev = { components: components2, state, path, name: name2, prev: this.prev, overlay, display, onrender, controller };
                 has = true;
                 break;
               }
@@ -6024,7 +6063,6 @@
         return Cake2.Hasher;
       });
       Cake2.prototype.create = function(name2, template, options) {
-        console.time(name2);
         let component2 = new Component(name2, template, options);
         const scope = new Scope(name2);
         component2.scope && (() => {
