@@ -414,7 +414,8 @@ module.exports = function(models, component){
 
                         if(value == config.name){
                             if(this.authRedirectRoute[value]){
-                                throw new Error(`auth ${item} is found in other route`);
+                                this.authRedirectRoute[value] = config;
+                                console.error(`auth ${value} is found in other route`);
                             } else {
                                 this.authRedirectRoute[value] = config;
                             };

@@ -347,8 +347,8 @@ Cake.prototype.create = function(name, template, options){
                 if(component.root.length){
                     let root = component.root[0];
 
-                    
-                    return root.querySelector(component.formSelector || 'FORM');
+                    let sel = `${(component.formSelector || 'FORM')}:not(.cake-template)`;
+                    return root.querySelector(sel);
                 };
                 return null;
             };
@@ -438,6 +438,7 @@ Cake.prototype.create = function(name, template, options){
                         return Cake.Observer.results[component.name][name];
                     });
                     component.await[name] = notify;
+
                     return component.await[name];
                 };
                 console.error(`the param in fire is not an instance of function`);

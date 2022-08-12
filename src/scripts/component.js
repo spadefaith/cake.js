@@ -14,7 +14,8 @@ function Component(name, template, options){
     this.subscribe = options.subscribe;
     this.renderqueue = options.renderqueue;
     this.data = {};
-    this.root = options.root;
+    this.root = options.root?`${options.root}:not(.cake-template)`:options.root;
+
     this.items = false;
     this.type = options.type || 'view';
     this.toggle = options.toggle;
@@ -31,10 +32,19 @@ function Component(name, template, options){
     this.await = {};//storage of async handlers
     
     this.state = options.state;
-    this.originalState = {};
+    this.originalState = [];
 
 
     this.utils = Utils;
+
+    this.renderQueing = [];
+
+    if(!this.handlers){
+        console.error(`${this.name} has no handlers`);
+    };
+    if(!this.subscribe){
+        console.error(`${this.name} has no subscribe`);
+    };
 
 
 
@@ -388,21 +398,45 @@ Component.prototype._parseHTML = function(isStatic=false){
     });
 };
 
-Component.prototype.render = function(options={}){
+Component.prototype.renderQue = function(options={}){
+    let hasNoId = options.id == undefined && options.id != null;
+    if(hasNoId){
+        throw new Error(`renderQue method requires an id.`);
+    };
+    let id = options.id;
+    if(id){
+        options.hasqued = true;
+        this.renderQueing.push({date:new Date(), id, options});
+    };
+    return this.render(options);
+};
 
-    if(this.isConnected){
-        if(this.renderqueue){
-            if(Utils.isArray(this.renderqueue)){
-                this.renderqueue.unshift({date:new Date(), id:new Date().getTime(), options});
-                console.log(`rendering ${this.name} has been queued`);
-            } else {
-                console.error(`renderqueue must be an array`);
-            };
-        } else {
+
+
+Component.prototype.render = function(options={}){
+    if(options.hasqued){
+        // console.log(`rendering ${this.name} has been queued`);
+    } else {
+        if(this.isConnected){
             console.error(`${this.name} is already rendered and connected to the DOM`);
         };
+    };
+
+    if(options.revokeque){
+        //TODO why the this.wait.destroy is hanging when renderQue
+        this.await.destroy = Promise.resolve();
+    };
+
+    
+
+
+    if(this.isConnected){
+
         return Promise.resolve();
     };
+
+
+
 
     // let {root, cleaned, emit={}, data={}} = options || {};
 
@@ -412,8 +446,11 @@ Component.prototype.render = function(options={}){
     let DATA = options.data || {};
 
     if(typeof root == 'string'){
-        root = [document.querySelector(root)];
+        let sel = `${root}:not(.cake-template)`;
+        root = [document.querySelector(sel)];
     };
+
+
 
 
 
@@ -446,7 +483,9 @@ Component.prototype.render = function(options={}){
             res();
         };
     }).then(()=>{
+
         return this.await.destroy.then(()=>{
+
             return this.await.animateRemove;
         }).then(()=>{
             return new Promise((res, rej)=>{
@@ -463,10 +502,9 @@ Component.prototype.render = function(options={}){
                 // this.$attrib.notifier(prop, newValue, null, this.name, this.getHTML());
 
 
-                
                 Promise.all(attrItems.map(item=>{
                     if(DATA[item]){
-                        return this.$attrib.notifier(item, DATA[item], null, this.name, this.getHTML());
+                        return this.$attrib.notifier(item, DATA[item], null, this.name);
                     }
                     // console.log(453, item)
                     // return this.doFor(item, value);
@@ -480,6 +518,8 @@ Component.prototype.render = function(options={}){
 
             }).then((element)=>{
                 payload = {element, emit};
+
+  
                 
                 return new Promise((res, rej)=>{
                     try {
@@ -529,17 +569,19 @@ Component.prototype.render = function(options={}){
                 //     this.doSwitch(switchItems[i], getValue(switchItems[i]));
                 // };
             }).then(()=>{
-
+                
                 return this.findContainer();
                 
             }).then(()=>{
                 try {
                     // console.log('setting attributes', this.name);
+
                     return  this.fire.isConnected && this.fire.isConnected(payload, true);
                 }catch(err){
                     console.log(440,err);
                 }
             }).then(()=>{
+                
                 // console.log(532, this.name, this.html);
                 return this.findTarget();
             }).then(()=>{
@@ -633,7 +675,18 @@ Component.prototype._hardReset = function(name){
     return true;
 };
 
-Component.prototype.reset = function(){
+Component.prototype.reset = function(options={}){
+    let hasNoId = options.id == undefined && options.id != null;
+    if(hasNoId){
+        throw new Error(`renderQue method requires an id.`);
+    };
+    let id = options.id;
+    if(id){
+        this.renderQueing = this.renderQueing.filter(item=>{
+            return item.id != id;
+        });
+    };
+
     let animate = this.$animate('remove');
     // console.log(this,this.html, animate);
 
@@ -653,10 +706,13 @@ Component.prototype.reset = function(){
                 res();
             }).then(()=>{
                 this.isConnected = false;
-                if(this.renderqueue && this.renderqueue.length){
-                    let conf = this.renderqueue.pop();
-                    let options = conf.options;
-                    return this.render(options);
+                if(this.renderQueing && this.renderQueing.length){
+                    let conf = this.renderQueing.pop();
+                    if(conf){
+                        let options = conf.options;
+                        options.revokeque = true;
+                        return this.render(options);
+                    };
                 };
             });
         });
@@ -669,10 +725,13 @@ Component.prototype.reset = function(){
             this.isConnected = false;
             res();
         }).then(()=>{
-            if(this.renderqueue && this.renderqueue.length){
-                let conf = this.renderqueue.pop();
-                let options = conf.options;
-                return this.render(options);
+            if(this.renderQueing && this.renderQueing.length){
+                let conf = this.renderQueing.pop();
+                if(conf){
+                    let options = conf.options;
+                    options.revokeque = true;
+                    return this.render(options);
+                };
             };
         });
     }

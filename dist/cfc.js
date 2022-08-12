@@ -600,8 +600,8 @@
             }
             ;
             if (files.length) {
-              files.forEach((item2) => {
-                cont.push(item2);
+              files.forEach((item) => {
+                cont.push(item);
               });
               files = [];
             }
@@ -680,8 +680,8 @@
               if (o2.hasOwnProperty(key)) {
                 let value2 = o2[key];
                 if (value2.constructor.name == "FileList") {
-                  LOOP.each(value2, function(item2, index) {
-                    fd.append(key, item2, item2.name);
+                  LOOP.each(value2, function(item, index) {
+                    fd.append(key, item, item.name);
                   });
                 } else {
                   fd.append(key, value2);
@@ -813,15 +813,15 @@
             return [...new Set(arr)];
           } else {
             let a = {};
-            Loop.each(arr, function(item2, index) {
-              if (prop && TYPES.isObject(item2)) {
-                let p = OBJECT.dictionary(item2, prop);
+            Loop.each(arr, function(item, index) {
+              if (prop && TYPES.isObject(item)) {
+                let p = OBJECT.dictionary(item, prop);
                 if (p) {
                   a[p] = true;
                 }
                 ;
               } else {
-                a[item2] = true;
+                a[item] = true;
               }
               ;
             });
@@ -962,8 +962,8 @@
           let sel = "";
           let splitted = styles.split("}");
           for (let sp = 0; sp < splitted.length; sp++) {
-            let item2 = splitted[sp];
-            let _sp1 = item2.split("{");
+            let item = splitted[sp];
+            let _sp1 = item.split("{");
             let sel2 = _sp1[0];
             let style2 = _sp1[1];
             if (!!sel2) {
@@ -972,18 +972,18 @@
                 let s = "";
                 let splitted2 = style2.split("");
                 for (let sp2 = 0; sp2 < splitted2.length; sp2++) {
-                  let item3 = splitted2[sp2];
-                  if (item3 == "\n") {
+                  let item2 = splitted2[sp2];
+                  if (item2 == "\n") {
                     n = true;
-                  } else if (item3 == " ") {
+                  } else if (item2 == " ") {
                     if (n) {
                     } else {
-                      s += item3;
+                      s += item2;
                     }
                     ;
                   } else {
                     n = false;
-                    s += item3;
+                    s += item2;
                   }
                   ;
                 }
@@ -1019,8 +1019,8 @@
               let query = element.querySelectorAll(selector2);
               let css = styles[selector2];
               for (let q = 0; q < query.length; q++) {
-                let item2 = query[q];
-                item2.setAttribute("style", css);
+                let item = query[q];
+                item.setAttribute("style", css);
               }
               ;
             }
@@ -1151,9 +1151,9 @@
           let s = st;
           if (s && s.length) {
             for (let i = 0; i < s.length; i++) {
-              let item2 = s[i];
-              if (item2.bind == prop) {
-                ctx2.push(__spreadProps(__spreadValues({}, item2), { component: component2 }));
+              let item = s[i];
+              if (item.bind == prop) {
+                ctx2.push(__spreadProps(__spreadValues({}, item), { component: component2 }));
               }
               ;
             }
@@ -1177,10 +1177,10 @@
           if (config && config.length) {
             let ctx2 = [];
             for (let i = 0; i < config.length; i++) {
-              let item2 = config[i];
-              let test = item2.bind == prop && (sel ? item2.sel == sel : true);
+              let item = config[i];
+              let test = item.bind == prop && (sel ? item.sel == sel : true);
               if (test) {
-                Object.assign(item2, update);
+                Object.assign(item, update);
               } else {
               }
               ;
@@ -1198,9 +1198,9 @@
         const cloned = [];
         for (let i = 0; i < configs.length; i++) {
           const cl = {};
-          const item2 = configs[i];
-          for (let key in item2) {
-            cl[key] = item2[key];
+          const item = configs[i];
+          for (let key in item) {
+            cl[key] = item[key];
           }
           ;
           cloned.push(cl);
@@ -1865,7 +1865,7 @@
                   let i = -1;
                   l = dataForIteration.length;
                   while (++i < l) {
-                    let item2 = dataForIteration[i];
+                    let item = dataForIteration[i];
                     let index = i;
                     for (let lt = 0; lt < this.logicalType.length; lt++) {
                       let type2 = this.logicalType[lt];
@@ -1880,16 +1880,16 @@
                           if (bind3.includes(".")) {
                             let split = bind3.split(".");
                             binded = split[0];
-                            for (let key in item2) {
-                              let value2 = item2[key];
+                            for (let key in item) {
+                              let value2 = item[key];
                               let _key = `${binded}.${key}`;
-                              item2[_key] = value2;
+                              item[_key] = value2;
                             }
                             ;
                           }
                           ;
                           if (sel2) {
-                            attrPayload.push(__spreadProps(__spreadValues({ _type: type2 }, item2), { incrementedSel, sel: sel2, bind: bind3, incrementId: index, component: component2 }));
+                            attrPayload.push(__spreadProps(__spreadValues({ _type: type2 }, item), { incrementedSel, sel: sel2, bind: bind3, incrementId: index, component: component2 }));
                           }
                           ;
                         }
@@ -1898,7 +1898,7 @@
                       ;
                     }
                     ;
-                    let create = templating.createElement(item2, template, false);
+                    let create = templating.createElement(item, template, false);
                     create.classList.remove("cake-template");
                     create.removeAttribute("data-for-template");
                     target.insertAdjacentElement("beforebegin", create);
@@ -2000,8 +2000,8 @@
             let switchConfig = getConfig(this.storage.get(component2, "switch"), prop, newValue, prevValue, component2);
             if (!configs.length)
               return;
-            let data2 = newValue.reduce((accu, item2) => {
-              accu.push(item2);
+            let data2 = newValue.reduce((accu, item) => {
+              accu.push(item);
               return accu;
             }, []);
             newValue = null;
@@ -2017,15 +2017,15 @@
               let cloned = target.cloneNode(true);
               ;
               (() => {
-                data2 = data2.map((item2) => {
-                  for (let key in item2) {
-                    if (item2.hasOwnProperty(key)) {
-                      item2[`${iter}.${key}`] = item2[key];
+                data2 = data2.map((item) => {
+                  for (let key in item) {
+                    if (item.hasOwnProperty(key)) {
+                      item[`${iter}.${key}`] = item[key];
                     }
                     ;
                   }
                   ;
-                  return item2;
+                  return item;
                 });
               })();
               let hasReplaced = [];
@@ -2038,9 +2038,9 @@
                     let temp = conf[0];
                     let bind3 = temp && temp.bind || void 0;
                     if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
-                      data2.forEach((item2, index) => {
+                      data2.forEach((item, index) => {
                         let o2 = {};
-                        o2.bind = templating.replaceString(item2, bind3);
+                        o2.bind = templating.replaceString(item, bind3);
                         o2.sel = `${temp.sel}-${increment}`;
                         o2.rawsel = temp.sel;
                         increment += 1;
@@ -2078,7 +2078,7 @@
                 ;
                 let i = -1;
                 l = data2.length;
-                data2.forEach((item2, index) => {
+                data2.forEach((item, index) => {
                   let template = target.cloneNode(true);
                   (() => {
                     if (switchConfig && !switchConfig.length)
@@ -2087,13 +2087,13 @@
                     let map = switchConfig[0].map;
                     let sel2 = switchConfig[0].sel;
                     let cases = switchConfig[0].cases;
-                    const mapping = item2[map];
+                    const mapping = item[map];
                     const switchElement = template.querySelector(`[data-switch=${sel2}]`);
-                    let hitCase = cases.find((item3) => {
-                      let _id = item3._id;
-                      let bind4 = item3.bind;
+                    let hitCase = cases.find((item2) => {
+                      let _id = item2._id;
+                      let bind4 = item2.bind;
                       if (bind4.includes("|")) {
-                        return bind4.split("|").map((item4) => item4.trim()).some((item4) => item4 == mapping);
+                        return bind4.split("|").map((item3) => item3.trim()).some((item3) => item3 == mapping);
                       } else {
                         return bind4 == mapping;
                       }
@@ -2103,14 +2103,14 @@
                     find.classList.remove("cake-template");
                     switchElement.innerHTML = find.outerHTML;
                   })();
-                  let create = templating.createElement(item2, template, false);
+                  let create = templating.createElement(item, template, false);
                   ;
                   (() => {
                     Object.keys(sts).forEach((key) => {
                       if (hasReplaced.includes(key)) {
                         let conf = sts[key];
                         let cf = conf.find((cf2) => {
-                          return cf2.sel == item2.__sel;
+                          return cf2.sel == item.__sel;
                         });
                         if (cf) {
                           let rawsel = cf.rawsel;
@@ -2142,7 +2142,7 @@
                         const dataBindKey = forAutoElement.dataset.forAutoBindKey;
                         const dataBindValue = forAutoElement.dataset.forAutoBindValue;
                         const iteration = forAutoElement.dataset.forIter;
-                        const datas = item2[iteration];
+                        const datas = item[iteration];
                         if (datas) {
                           for (let d = 0; d < datas.length; d++) {
                             let data3 = datas[d];
@@ -2571,8 +2571,8 @@
           let red = UTILS.reduce(_st, { wt: [], forWt: [] }, function(obj, accu, index) {
             let type2 = obj.key;
             let tst = obj.value;
-            UTILS.each(tst, function(item2, index2) {
-              let bind2 = item2.bind;
+            UTILS.each(tst, function(item, index2) {
+              let bind2 = item.bind;
               if (bind2) {
                 if (type2 == "for") {
                   accu.forWt.push(bind2);
@@ -2602,8 +2602,8 @@
           let tst = _st[type2] || [];
           let wt = /* @__PURE__ */ new Set();
           for (let t = 0; t < tst.length; t++) {
-            let item2 = tst[t];
-            let bind2 = item2.bind;
+            let item = tst[t];
+            let bind2 = item.bind;
             switch (!!bind2) {
               case true:
                 {
@@ -2618,7 +2618,7 @@
                         wt = [];
                       }
                       ;
-                      wt.push(item2);
+                      wt.push(item);
                     }
                   }
                   ;
@@ -2640,8 +2640,8 @@
         if (!target) {
           let array = this.storage.get(component2, type2);
           ;
-          let find = array.find((item2) => {
-            return item2.sel == sel;
+          let find = array.find((item) => {
+            return item.sel == sel;
           });
           target = find ? find : false;
           Object.caching("watchItemsBySel").set(id2, target);
@@ -2911,8 +2911,8 @@
           this._loopElements("animate", anims, component2, isStatic, function(el, id2, target, gr, index) {
             let o2 = {};
             for (let a = 0; a < gr.length; a++) {
-              let item2 = gr[a];
-              let _sp1 = item2.split(":");
+              let item = gr[a];
+              let _sp1 = item.split(":");
               let ctx2 = _sp1[0];
               let anims2 = _sp1[1];
               if (ctx2 == "ns") {
@@ -3160,13 +3160,13 @@
         var hasInArray = function(src, id2) {
           var has = null;
           for (var i = 0; i < src.length; i++) {
-            var item2 = src[i];
+            var item = src[i];
             if (typeOf(id2) == "object") {
               var obj = id2;
               var key = Object.keys(id2)[0];
               var value2 = obj[key];
-              if (typeOf(item2) == "object") {
-                var test = item2[key] == value2;
+              if (typeOf(item) == "object") {
+                var test = item[key] == value2;
                 if (test) {
                   has = i;
                   break;
@@ -3175,7 +3175,7 @@
               }
               ;
             } else if (typeOf(id2) != "array") {
-              var test = id2 == item2;
+              var test = id2 == item;
               if (test) {
                 has = i;
                 break;
@@ -3836,7 +3836,7 @@
         this.subscribe = options.subscribe;
         this.renderqueue = options.renderqueue;
         this.data = {};
-        this.root = options.root;
+        this.root = options.root ? `${options.root}:not(.cake-template)` : options.root;
         this.items = false;
         this.type = options.type || "view";
         this.toggle = options.toggle;
@@ -3849,8 +3849,17 @@
         this.formSelector = options.form;
         this.await = {};
         this.state = options.state;
-        this.originalState = {};
+        this.originalState = [];
         this.utils = Utils;
+        this.renderQueing = [];
+        if (!this.handlers) {
+          console.error(`${this.name} has no handlers`);
+        }
+        ;
+        if (!this.subscribe) {
+          console.error(`${this.name} has no subscribe`);
+        }
+        ;
         (name2 == "app" || options.role == "app") && (() => {
           this.staticComponent = options.static || [];
         })();
@@ -4141,20 +4150,34 @@
           this._isParsed = true;
         });
       };
+      Component.prototype.renderQue = function(options = {}) {
+        let hasNoId = options.id == void 0 && options.id != null;
+        if (hasNoId) {
+          throw new Error(`renderQue method requires an id.`);
+        }
+        ;
+        let id2 = options.id;
+        if (id2) {
+          options.hasqued = true;
+          this.renderQueing.push({ date: new Date(), id: id2, options });
+        }
+        ;
+        return this.render(options);
+      };
       Component.prototype.render = function(options = {}) {
-        if (this.isConnected) {
-          if (this.renderqueue) {
-            if (Utils.isArray(this.renderqueue)) {
-              this.renderqueue.unshift({ date: new Date(), id: new Date().getTime(), options });
-              console.log(`rendering ${this.name} has been queued`);
-            } else {
-              console.error(`renderqueue must be an array`);
-            }
-            ;
-          } else {
+        if (options.hasqued) {
+        } else {
+          if (this.isConnected) {
             console.error(`${this.name} is already rendered and connected to the DOM`);
           }
           ;
+        }
+        ;
+        if (options.revokeque) {
+          this.await.destroy = Promise.resolve();
+        }
+        ;
+        if (this.isConnected) {
           return Promise.resolve();
         }
         ;
@@ -4163,7 +4186,8 @@
         let emit = options.emit || {};
         let DATA = options.data || {};
         if (typeof root == "string") {
-          root = [document.querySelector(root)];
+          let sel = `${root}:not(.cake-template)`;
+          root = [document.querySelector(sel)];
         }
         ;
         let multiple = this.options.multiple;
@@ -4189,9 +4213,9 @@
           }).then(() => {
             return new Promise((res, rej) => {
               let attrItems = this.$attrib.getWatchItems(this.name);
-              Promise.all(attrItems.map((item2) => {
-                if (DATA[item2]) {
-                  return this.$attrib.notifier(item2, DATA[item2], null, this.name, this.getHTML());
+              Promise.all(attrItems.map((item) => {
+                if (DATA[item]) {
+                  return this.$attrib.notifier(item, DATA[item], null, this.name);
                 }
               })).then(() => {
                 res(this.html);
@@ -4277,8 +4301,8 @@
                     ;
                   }
                   ;
-                  value2.split(",").forEach((item2) => {
-                    el.classList.add(item2.trim());
+                  value2.split(",").forEach((item) => {
+                    el.classList.add(item.trim());
                   });
                   el.style.setProperty("--animate-duration", "0.3s");
                   return new Promise((res, rej) => {
@@ -4313,7 +4337,19 @@
         this.html = this.original.cloneNode();
         return true;
       };
-      Component.prototype.reset = function() {
+      Component.prototype.reset = function(options = {}) {
+        let hasNoId = options.id == void 0 && options.id != null;
+        if (hasNoId) {
+          throw new Error(`renderQue method requires an id.`);
+        }
+        ;
+        let id2 = options.id;
+        if (id2) {
+          this.renderQueing = this.renderQueing.filter((item) => {
+            return item.id != id2;
+          });
+        }
+        ;
         let animate = this.$animate("remove");
         if (animate instanceof Promise) {
           return this.await.animateRemove = new Promise((res) => {
@@ -4329,10 +4365,14 @@
               res();
             }).then(() => {
               this.isConnected = false;
-              if (this.renderqueue && this.renderqueue.length) {
-                let conf = this.renderqueue.pop();
-                let options = conf.options;
-                return this.render(options);
+              if (this.renderQueing && this.renderQueing.length) {
+                let conf = this.renderQueing.pop();
+                if (conf) {
+                  let options2 = conf.options;
+                  options2.revokeque = true;
+                  return this.render(options2);
+                }
+                ;
               }
               ;
             });
@@ -4346,10 +4386,14 @@
             this.isConnected = false;
             res();
           }).then(() => {
-            if (this.renderqueue && this.renderqueue.length) {
-              let conf = this.renderqueue.pop();
-              let options = conf.options;
-              return this.render(options);
+            if (this.renderQueing && this.renderQueing.length) {
+              let conf = this.renderQueing.pop();
+              if (conf) {
+                let options2 = conf.options;
+                options2.revokeque = true;
+                return this.render(options2);
+              }
+              ;
             }
             ;
           });
@@ -4376,10 +4420,10 @@
         for (let event in this.targets) {
           if (this.targets.hasOwnProperty(event)) {
             let cf = this.targets[event];
-            for (let item2 of cf) {
-              let sel = item2.sel;
-              let el = item2.el;
-              let cb2 = item2.cb;
+            for (let item of cf) {
+              let sel = item.sel;
+              let el = item.el;
+              let cb2 = item.cb;
               let _event = event;
               let place = event.substring(0, 2);
               let isPreventDefault = place.includes("~");
@@ -4416,14 +4460,14 @@
       Component.prototype.findTarget = function() {
         let q = this.$attrib.getEventTarget(this.name);
         return new Promise((res) => {
-          for (let item2 of q) {
-            let els = this.html.querySelectorAllIncluded(`[data-event=${item2.sel}]`);
+          for (let item of q) {
+            let els = this.html.querySelectorAllIncluded(`[data-event=${item.sel}]`);
             for (let e = 0; e < els.length; e++) {
-              if (!this.targets[item2.event]) {
-                this.targets[item2.event] = [];
+              if (!this.targets[item.event]) {
+                this.targets[item.event] = [];
               }
               ;
-              this.targets[item2.event].push(__spreadValues({ el: els[e] }, item2));
+              this.targets[item.event].push(__spreadValues({ el: els[e] }, item));
             }
             ;
           }
@@ -4448,8 +4492,8 @@
             } else {
               if (attrToggle.length) {
                 let ns = config.ns;
-                let f = attrToggle.find((item2) => {
-                  return item2.name == `ns-${ns}`;
+                let f = attrToggle.find((item) => {
+                  return item.name == `ns-${ns}`;
                 });
                 f && (config.sel = `[data-toggle=${f.sel}]`);
               }
@@ -5042,14 +5086,14 @@
               }
               ;
               regex = regex.split("/");
-              regex = regex.map((item2, index) => {
-                let param = item2.includes(":");
+              regex = regex.map((item, index) => {
+                let param = item.includes(":");
                 let a = "";
                 index == 0 ? a += "^/" : a += "/";
-                param ? a += "(([^/#?]+?))" : a += item2;
+                param ? a += "(([^/#?]+?))" : a += item;
                 index == len - 1 ? a += "/?$" : a += "";
                 if (param) {
-                  const paramKey = item2.replace(":", "");
+                  const paramKey = item.replace(":", "");
                   if (!con[key]) {
                     con[key] = {};
                   }
@@ -5078,7 +5122,8 @@
                   let value2 = obj.value;
                   if (value2 == config.name) {
                     if (this.authRedirectRoute[value2]) {
-                      throw new Error(`auth ${item} is found in other route`);
+                      this.authRedirectRoute[value2] = config;
+                      console.error(`auth ${value2} is found in other route`);
                     } else {
                       this.authRedirectRoute[value2] = config;
                     }
@@ -5425,8 +5470,8 @@
                 if (!(result && !result.length))
                   return;
                 for (let r = 0; r < result.length; r++) {
-                  let item2 = result[r];
-                  let component2 = components2.get(item2);
+                  let item = result[r];
+                  let component2 = components2.get(item);
                   component2.isConnected = false;
                   if (component2) {
                     !component2.isConnected && component2.render.bind(component2)();
@@ -5727,18 +5772,18 @@
           }
           ;
           let isgroup = options.length > 1;
-          let prom = Promise.all(options.map((item2) => {
-            let control = item2.control;
-            let field = item2.field;
-            let tbl = item2.tbl;
-            let src = item2.src;
-            let schema = item2.schema;
-            let type2 = item2.type;
+          let prom = Promise.all(options.map((item) => {
+            let control = item.control;
+            let field = item.field;
+            let tbl = item.tbl;
+            let src = item.src;
+            let schema = item.schema;
+            let type2 = item.type;
             return component2.fire(src, { tbl, field, params }).then((opts) => {
               opts = opts || [];
-              item2.query = opts;
-              opts = opts.map((item3) => {
-                return schema(item3);
+              item.query = opts;
+              opts = opts.map((item2) => {
+                return schema(item2);
               });
               if (type2 != "input") {
                 let scheme = schema({});
@@ -5751,8 +5796,8 @@
                 ;
                 opts.unshift(scheme);
               }
-              item2.options = opts;
-              return item2;
+              item.options = opts;
+              return item;
             }).then((iter) => {
               let type3 = iter.type;
               let control2 = iter.control;
@@ -6127,7 +6172,8 @@
             const form = () => {
               if (component2.root.length) {
                 let root2 = component2.root[0];
-                return root2.querySelector(component2.formSelector || "FORM");
+                let sel = `${component2.formSelector || "FORM"}:not(.cake-template)`;
+                return root2.querySelector(sel);
               }
               ;
               return null;

@@ -95,9 +95,11 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
             };
         };
         hits = Object.keys(hits);
+
         Object.caching('AttribProp').set(prop, hits);
         return hits;
     })();
+
 
     return new Promise((res, rej)=>{
         try {

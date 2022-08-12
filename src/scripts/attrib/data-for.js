@@ -22,8 +22,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
             
             let switchConfig = getConfig(this.storage.get(component,'switch'), prop, newValue, prevValue, component);
-
-            // console.log(27, switchConfig);
             
            
             
@@ -58,6 +56,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 let cloned = target.cloneNode(true);
 
 
+  
 
                 //manipulate data;
                 ;(()=>{
@@ -159,9 +158,11 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 };
                             });
 
+                            
+
                             const find = cloned.querySelector(`[data-case=${sel}-${hitCase._id}]`);
 
-                     
+                            
 
                             find.classList.remove('cake-template');
                             switchElement.innerHTML = find.outerHTML;
@@ -172,6 +173,8 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         let create = templating.createElement(item, template, false);
                         
                         //replace the templated data-*;
+
+                        
                         ;(()=>{
                             Object.keys(sts).forEach(key=>{
                                 if(hasReplaced.includes(key)){
@@ -199,6 +202,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             create.removeAttribute('data-for-template');
                             target.insertAdjacentElement('beforebegin', create);
                         })();
+
 
                         //auto
                         ;(()=>{
@@ -237,16 +241,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         })();
 
                         create.replaceDataSrc();
-                        // let safeSrc = create.replaceDataSrc();
-                        // if (safeSrc){
-        
-                        //     for (let s = 0; s < safeSrc.length; s++){
-                        //         let el = safeSrc[s];
-                        //         el.src = el.dataset.src;
-                        //         el.removeAttribute('data-src');
-        
-                        //     };
-                        // };
                     });
 
                     
