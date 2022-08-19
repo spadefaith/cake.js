@@ -3651,6 +3651,9 @@
               }));
             });
           }
+          removeCache(key) {
+            return this.session.remove(key);
+          }
         }
         return Scope;
       };
