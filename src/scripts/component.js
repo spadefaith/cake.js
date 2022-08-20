@@ -406,7 +406,7 @@ Component.prototype.renderQue = function(options={}){
     let id = options.id;
     if(id){
         options.hasqued = true;
-        this.renderQueing.push({date:new Date(), id, options});
+        this.renderQueing.push({date:new Date().toString(), id, options});
     };
     return this.render(options);
 };
@@ -680,15 +680,17 @@ Component.prototype.reset = function(options={}){
     if(hasNoId){
         throw new Error(`renderQue method requires an id.`);
     };
-    let id = options.id;
+    let id = options.id, conf;
     if(id){
-        this.renderQueing = this.renderQueing.filter(item=>{
+        conf = this.renderQueing.filter(item=>{
+            return item.id == id;
+        });
+        this.renderQueing = JSON.parse(JSON.stringify(this.renderQueing)).filter(item=>{
             return item.id != id;
         });
     };
 
     let animate = this.$animate('remove');
-    // console.log(this,this.html, animate);
 
     if (animate instanceof Promise){
         return this.await.animateRemove = new Promise((res)=>{
@@ -707,9 +709,11 @@ Component.prototype.reset = function(options={}){
             }).then(()=>{
                 this.isConnected = false;
                 if(this.renderQueing && this.renderQueing.length){
-                    let conf = this.renderQueing.pop();
                     if(conf){
                         let options = conf.options;
+                        if(!options){
+                            options = {};
+                        };
                         options.revokeque = true;
                         return this.render(options);
                     };
@@ -726,9 +730,11 @@ Component.prototype.reset = function(options={}){
             res();
         }).then(()=>{
             if(this.renderQueing && this.renderQueing.length){
-                let conf = this.renderQueing.pop();
                 if(conf){
                     let options = conf.options;
+                    if(!options){
+                        options = {};
+                    };
                     options.revokeque = true;
                     return this.render(options);
                 };

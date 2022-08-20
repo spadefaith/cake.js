@@ -4162,7 +4162,7 @@
         let id2 = options.id;
         if (id2) {
           options.hasqued = true;
-          this.renderQueing.push({ date: new Date(), id: id2, options });
+          this.renderQueing.push({ date: new Date().toString(), id: id2, options });
         }
         ;
         return this.render(options);
@@ -4346,9 +4346,12 @@
           throw new Error(`renderQue method requires an id.`);
         }
         ;
-        let id2 = options.id;
+        let id2 = options.id, conf;
         if (id2) {
-          this.renderQueing = this.renderQueing.filter((item) => {
+          conf = this.renderQueing.filter((item) => {
+            return item.id == id2;
+          });
+          this.renderQueing = JSON.parse(JSON.stringify(this.renderQueing)).filter((item) => {
             return item.id != id2;
           });
         }
@@ -4369,9 +4372,12 @@
             }).then(() => {
               this.isConnected = false;
               if (this.renderQueing && this.renderQueing.length) {
-                let conf = this.renderQueing.pop();
                 if (conf) {
                   let options2 = conf.options;
+                  if (!options2) {
+                    options2 = {};
+                  }
+                  ;
                   options2.revokeque = true;
                   return this.render(options2);
                 }
@@ -4390,9 +4396,12 @@
             res();
           }).then(() => {
             if (this.renderQueing && this.renderQueing.length) {
-              let conf = this.renderQueing.pop();
               if (conf) {
                 let options2 = conf.options;
+                if (!options2) {
+                  options2 = {};
+                }
+                ;
                 options2.revokeque = true;
                 return this.render(options2);
               }
