@@ -157,7 +157,7 @@ module.exports = function(models, component){
             let path = options && options.path;
             let config = options && options.config;
 
-            console.log(this.authValidRoute);
+            // console.log(this.authValidRoute);
 
             if(!role){
                 throw new Error(`role is not provided in router.login`);

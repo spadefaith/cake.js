@@ -2475,7 +2475,6 @@
         const equiv = {
           for: "For",
           forUpdate: "ForUpdate",
-          toggle: "Toggle",
           bind: "Bind",
           if: "If",
           class: "Class",
@@ -2598,32 +2597,19 @@
         let target = Object.caching("getWatchItemsByType").get(id2);
         if (!target) {
           let _st = this.storage.get(component2);
-          ;
           let tst = _st[type2] || [];
           let wt = /* @__PURE__ */ new Set();
+          if (type2 == "animate" || type2 == "toggle") {
+            wt = [];
+          }
+          ;
           for (let t = 0; t < tst.length; t++) {
             let item = tst[t];
             let bind2 = item.bind;
-            switch (!!bind2) {
-              case true:
-                {
-                  wt.add(bind2);
-                }
-                break;
-              default:
-                {
-                  switch (true) {
-                    case (type2 == "animate" || type2 == "toggle"): {
-                      if (wt.constructor.name = "Set") {
-                        wt = [];
-                      }
-                      ;
-                      wt.push(item);
-                    }
-                  }
-                  ;
-                }
-                ;
+            if (type2 == "animate" || type2 == "toggle") {
+              wt.push(item);
+            } else {
+              !!bind2 && wt.add(bind2);
             }
             ;
           }
@@ -4489,6 +4475,7 @@
       };
       Component.prototype.toggler = function(_this) {
         let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
+        let n = this.name;
         let cl = class {
           constructor(bind2, bases, html, _this2) {
             this.toggle = _this2.toggle;
@@ -4925,7 +4912,6 @@
             let created = RouterStore.createOrUpdate("role", { role, token, data: data2 });
             let path = options && options.path;
             let config = options && options.config;
-            console.log(this.authValidRoute);
             if (!role) {
               throw new Error(`role is not provided in router.login`);
             }

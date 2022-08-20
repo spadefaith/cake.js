@@ -59,7 +59,7 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
         for:'For',
         forUpdate:'ForUpdate',
         // switch:'Switch',
-        toggle:'Toggle',
+        // toggle:'Toggle',
         bind:'Bind',
         // model:'Model',
         if:'If',
@@ -185,33 +185,38 @@ Attrib.prototype.getWatchItems = function(component){
 Attrib.prototype.getWatchItemsByType = function(component, type){
     let id = `${component}-${type}`;
     let target =  Object.caching('getWatchItemsByType').get(id);
+    
     if (!target){
-        let _st = this.storage.get(component);;
+        let _st = this.storage.get(component);
+
+        // console.log(219, component, _st);
+  
+
         let tst = _st[type] || [];
         let wt = new Set();
+
+        if(type == 'animate' || type == 'toggle'){
+            wt = [];
+        };
+
         for (let t = 0; t < tst.length; t++){
+
             let item = tst[t];
             // let {bind} = item;
             let bind = item.bind;
-            switch(!!bind){
-                case true:{
-                    wt.add(bind);
-                } break;
-                default:{
-                    switch(true){
-                        case (type == 'animate' || type == 'toggle'):{
-                            if (wt.constructor.name = "Set"){
-                                wt = [];
-                            };
-                            wt.push(item);
-                        }
-                    };
-                };
+            
+
+
+            if(type == 'animate' || type == 'toggle'){
+                wt.push(item);
+            } else {
+                !!bind && wt.add(bind);
             };
         };
         target = [...wt];
         Object.caching('getWatchItemsByType').set(id, target);
     };
+
     return target;
 };
 
@@ -320,7 +325,6 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
 Attrib.prototype._compileToggle = function(toggles, component, isStatic){
     return new Promise((res)=>{
         let c = {};
-        // console.log(316, toggles);
         this._loopElements('toggle',toggles, component, isStatic, (function(el, id, target, gr, index){
             let ns = target;
             if (c[ns]){
