@@ -35,7 +35,7 @@
   "targets": {
     "modern": {
       "engines": {
-        "browsers": "Chrome 80"
+        "browsers": "Chrome 65"
       }
     },
     "legacy": {
