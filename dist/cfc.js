@@ -4475,7 +4475,6 @@
       };
       Component.prototype.toggler = function(_this) {
         let attrToggle = this.$attrib.getWatchItemsByType(this.name, "toggle");
-        let n = this.name;
         let cl = class {
           constructor(bind2, bases, html, _this2) {
             this.toggle = _this2.toggle;
