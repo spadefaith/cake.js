@@ -819,6 +819,7 @@ Component.prototype.addEvent = function (static, multiple){
 
 Component.prototype.findTarget = function(){
     let q = this.$attrib.getEventTarget(this.name);
+
     return new Promise((res)=>{
         for (let item of q){
             let els = this.html.querySelectorAllIncluded(`[data-event=${item.sel}]`);

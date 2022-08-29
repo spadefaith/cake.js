@@ -312,6 +312,8 @@ Cake.prototype.create = function(name, template, options){
         const root = _obj.root;
         // Cake.Observer.registerHandlers(handlers, component.name);
 
+        // console.log(root);
+
  
         Handler.set(handlers, component.name);
 
@@ -344,11 +346,15 @@ Cake.prototype.create = function(name, template, options){
 
             // let has = !!component.root.querySelector('FORM');
             const form = ()=>{
+
                 if(component.root.length){
                     let root = component.root[0];
 
                     let sel = `${(component.formSelector || 'FORM')}:not(.cake-template)`;
                     return root.querySelector(sel);
+                } else {
+                    let form = component.html.querySelector(component.formSelector || 'FORM');
+                    return form;
                 };
                 return null;
             };

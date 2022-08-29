@@ -294,6 +294,7 @@ Attrib.prototype._static = function(component){
 Attrib.prototype._loopElements = function(attr, els, component, isStatic,cb){
     if (!els.length) {return false;};
     els = this._static(component)(els, isStatic);
+
     if (!els.length){return false;};
     for (let i = 0; i < els.length; i++){
         let el = els[i];
@@ -318,6 +319,7 @@ Attrib.prototype._loopElements = function(attr, els, component, isStatic,cb){
 
 Attrib.prototype._compileEvents = function(events,component, isStatic){
     return new Promise((res)=>{
+
         this._loopElements('event',events, component, isStatic, (function(el, id, target, gr, index){
             let splitted = gr;
             
