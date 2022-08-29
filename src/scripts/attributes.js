@@ -1,6 +1,9 @@
 
 const Templating = require('./templating');
 
+const RouterStorage = require('./storage/router-storage');
+
+
 const notifyAttr = require('./attrib/data-attr');
 const notifyBind = require('./attrib/data-bind');
 const notifyClass = require('./attrib/data-class');
@@ -9,6 +12,7 @@ const notifyFor = require('./attrib/data-for');
 const notifyIf = require('./attrib/data-if');
 const notifyModel = require('./attrib/data-model');
 const notifyToggle = require('./attrib/data-toggle');
+const notifyRoute = require('./attrib/data-route');
 const AttribConfigStorage = require('./storage/AttribConfigStorage');
 const UTILS = require('./utils');
 // const notifyForAuto = require('./attrib/data-for-auto');
@@ -34,6 +38,7 @@ Attrib.prototype.notifyAttr = notifyAttr;
 Attrib.prototype.notifyIf = notifyIf;
 Attrib.prototype.notifyModel = notifyModel;
 Attrib.prototype.notifyToggle = notifyToggle;
+Attrib.prototype.notifyRoute = notifyRoute;
 
 /*
     watch for the (name) which is registered to the scope
@@ -65,6 +70,7 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
         if:'If',
         class:'Class',
         attr:'Attr',
+        route:'Route',
 
         // disabled:'Disabled',
         // readonly:'Readonly',
@@ -83,11 +89,16 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
         for (let a = 0; a < actions.length; a++){
             const action = actions[a];
             const vals = configs[action];
+
             if(vals){
+
                 for (let v = 0; v < vals.length; v++){
                     const val = vals[v];
                     // const {bind} = val;
                     const bind = val.bind;
+
+
+
                     if(bind == prop){
                         hits[action] = true;
                     };
@@ -100,6 +111,7 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
         return hits;
     })();
 
+   
 
     return new Promise((res, rej)=>{
         try {
@@ -109,6 +121,9 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
                 if(l > index){
                     let attr = hits[index];
                     const name = equiv[attr];
+
+                  
+
                     index += 1;
                     this[`notify${name}`](prop, val, prevValue, component).then(()=>{
                         rec();
@@ -147,7 +162,7 @@ Attrib.prototype.getRouterTarget = function(component){
     let target =  Object.caching('getRouterTarget').get(id);
     if(!target){
         let cf = this.storage.get(component);
-        target = (cf && cf.router)?cf.router:[];
+        target = (cf && cf.route)?cf.route:[];
         Object.caching('getRouterTarget').set(id, target);
     };
     return target;
@@ -559,63 +574,6 @@ Attrib.prototype._compileIf = function(ifs, component, isStatic){
 
         }).bind(this));
 
-
-        // if (!ifs.length) {res();return;};
-        // let els = this._static(component)(ifs, isStatic);
-        // if (!els.length){res();return;}
-        // const regex = new RegExp('<|>|===|==|!==|!=');
-        // for (let s = 0; s < els.length; s++){
-        //     let id = `ci${this.uiid}`;
-        //     let el = els[s];
-        //     let _if = el.dataset.if;
-        //     let _ifBind = el.dataset.ifBind;
-        //     let gr = _if.split(',');
-        //     for (let g = 0; g < gr.length; g++){
-        //         let val = gr[g];
-
-        //         let attr = val.substring(0,val.indexOf('='));
-        //         let exp = val.substring(val.indexOf('=')+1, val.length);
-
-
-        //         exp = exp.split(new RegExp('[()]')).join("");
-                
-        //         // let [test, r] = exp.split('?');
-
-        //         let _sp2 = exp.split('?');
-        //         let test = _sp2[0];
-        //         let r = _sp2[1];
-
-
-        //         let hasNegate = test[0] == '!';
-        //         hasRegularLog = test.match(regex);
-
-        //         let bind, testVal, ops;
-        //         if(hasRegularLog){
-        //             let splitted = test.split(regex);
-        //             bind = splitted[0].trim();
-        //             testVal = splitted[1].trim();
-        //             ops = hasRegularLog[0];
-        //         } else {
-        //             bind = test;
-        //         };
-
-        //         if(hasNegate){
-        //             bind = bind.slice(1);
-        //         };
-                
-        //         let _sp1 = r.split(':');
-        //         let _true = _sp1[0];
-        //         let _false = _sp1[1];
-        //         // let [_true, _false] = r.split(':');
-
-
-        //         this._register(component, 'if', {hasNegate, attr, ops, bind, testval:testVal || null, _true, _false, sel:id, ifBind:_ifBind});
-
-                
-        //     }
-        //     this.uiid++;
-        //     el.dataset.if = id;
-        // };
         res();
     });
 };
@@ -752,9 +710,28 @@ Attrib.prototype._compileModel = function(elModels, component, isStatic){
     });
 }
 
+Attrib.prototype._compileRoute = function(elRoutes, component, isStatic){
+    return new Promise((res)=>{
+
+        this._loopElements('route',elRoutes, component, isStatic, (function(el, id, target, gr, index){
+            for (let g = 0; g < gr.length; g++){
+                let val = gr[g].split(" ").join("");
+                let isFromFor = el.closest('[data-for]');
+
+
+                this._register(component, 'route', {bind:val,sel:id,for:!!isFromFor});
+            };
+            this.uiid++;
+            el.dataset.route = id;
+        }).bind(this));
+
+        res();
+    });
+};
+
 Attrib.prototype.inject = function(el, component, isStatic=false){
     return new Promise((res)=>{
-        let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','attr');
+        let query = el.getElementsByDataset('bind', 'for', 'for-update', 'switch', 'toggle', 'event', 'animate','if','class','attr','route');
         res(query);
     }).then((query)=>{
         let r = [];
@@ -769,6 +746,7 @@ Attrib.prototype.inject = function(el, component, isStatic=false){
             'for-update':this._compileForUpdate,
             'event':this._compileEvents,
             'animate':this._compileAnimate,
+            'route':this._compileRoute,
             // 'model':this._compileModel,
 
             // 'model':"",

@@ -3,7 +3,7 @@ const Piece = require('./piece');
 const Utils = require('./utils');
 const Templating = require('./templating');
 const Plugin = require('./plugin');
-
+const RouterStorage = require('./storage/router-storage');
 // const {pushState} = require('./router')();
 
 function Component(name, template, options){
@@ -32,8 +32,9 @@ function Component(name, template, options){
     this.await = {};//storage of async handlers
     
     this.state = options.state;
-    this.originalState = [];
+    this.originalState = {};
 
+    
 
     this.utils = Utils;
 
@@ -107,6 +108,7 @@ Component.prototype.clearState = function(){
         return;
     };
     this.state = JSON.parse(JSON.stringify(this.originalState));
+    
 
     this.$state = (()=>{
         return this.state;
@@ -557,10 +559,10 @@ Component.prototype.render = function(options={}){
                         return true;
                     });
                 }
+            })
+            .then(()=>{
+                return this.findRouterLink();
             }).
-            // .then(()=>{
-            //     return this.findRouterLink();
-            // }).
             then(()=>{
                 //switch
                 // let switchItems = this.$attrib.getWatchItemsByType(this.name, 'switch');
@@ -831,23 +833,44 @@ Component.prototype.findTarget = function(){
     });
 }; 
 
-// Component.prototype.findRouterLink = function(){
-//     let q = this.$attrib.getRouterTarget(this.name);
-//     let e = JSON.parse(JSON.stringify(q));//deep cloning
+Component.prototype.findRouterLink = function(){
+    let q = this.$attrib.getRouterTarget(this.name);
+    
+    if(q && q.length){
+        for (let a = 0; a < q.length; a++){
+            let item = q[a];
+            if(item.for == false){
+                let sel = item.sel;
+                let bind = item.bind;
+                let rconfig = RouterStorage.get(bind);
+                if(rconfig){
+                    let el = this.html.querySelector(`[data-route=${sel}]`);
+                    if(el){
+                        el.href = `#!${rconfig.path}`;
+                    };
+                };
+                continue;
+            } else {continue};
+        };
 
-//     for (let item of e){
+    };
+
+
+    // let e = JSON.parse(JSON.stringify(q));//deep cloning
+
+    // for (let item of e){
         
-//         item.el = document.querySelector(`[data-event=${item.sel}]`);
-//         if (!item.el.__router){
-//             // item.el.addEventListener('click',(e)=>{
-//             //     e.preventDefault();
-//             //     e.stopPropagation();
-//             //     pushState(item.value, null, e.target.href);
-//             // });
-//             item.el.__router = 1;
-//         };
-//     };
-// }; 
+    //     item.el = document.querySelector(`[data-event=${item.sel}]`);
+    //     if (!item.el.__router){
+    //         // item.el.addEventListener('click',(e)=>{
+    //         //     e.preventDefault();
+    //         //     e.stopPropagation();
+    //         //     pushState(item.value, null, e.target.href);
+    //         // });
+    //         item.el.__router = 1;
+    //     };
+    // };
+}; 
 
 Component.prototype.toggler = function(_this){
     /*

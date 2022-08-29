@@ -2,6 +2,7 @@ const Utils = require('../utils');
 const Templating = require('../templating');
 const Plugin = require('../plugin');
 const ComponentStorage = require('../storage/components-store');
+const RouterStorage = require('../storage/router-storage');
 const _utils = require('./utils');
 const getConfig =_utils.getConfig
 const updateConfig =_utils.updateConfig
@@ -20,10 +21,9 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     return new Promise((res, rej)=>{
         try {
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
-            
             let switchConfig = getConfig(this.storage.get(component,'switch'), prop, newValue, prevValue, component);
             
-           
+            
             
             if (!configs.length) return;
 
@@ -79,12 +79,12 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 //update other
                 ;(()=>{
                     let increment = 0;
-                    // console.log(83,sts, data);
                     Object.keys(sts).forEach(key=>{
                         if(!['for','evt','animate','switch'].includes(key)){
                            let conf = sts[key];
                            let temp = conf[0];
                         //    let {bind} = temp || {};
+
 
                            let bind = temp && temp.bind || undefined;
 
@@ -129,9 +129,11 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                     };
 
                     let i = -1; l = data.length;
-        
-                    
-                    data.forEach((item, index)=>{
+                    let routeElements = [];
+                    for (let d = 0; d < data.length; d++){
+                        let item = data[d];
+                        let index = d;
+
                         let template = target.cloneNode(true);
                         //switch;
                         (()=>{
@@ -240,8 +242,38 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             });
                         })();
 
+                        //route;
+                        (()=>{
+                            let routeConfig = this.storage.get(component,'route');
+
+                            if(routeConfig && !routeConfig.length)return;
+                            
+                            for (let r = 0; r < routeConfig.length; r++){
+                                let rconfig = routeConfig[r];
+                                let bind = rconfig.bind;
+                                let sel = rconfig.sel;
+                                let isFor = rconfig.for;
+                                if(!isFor){
+                                    continue;
+                                };
+                                const routeElement = create.querySelector(`[data-route=${sel}]`);
+                                if(routeElement){
+                                    const routes = RouterStorage.get(bind);
+
+                                    if(routes){
+                                        let href = routes.path;
+                                        routeElement.href = `#!${href}`;
+                                    };
+                                } else {
+                                    continue;
+                                }
+                            };
+
+                        })();
+
                         create.replaceDataSrc();
-                    });
+                    };
+                    
 
                     
 

@@ -1,5 +1,6 @@
 const Utils = require('./utils');
 const StorageKit = require('./storage')();
+const RouterStorage = require('./storage/router-storage');
 const ComponentStorage = require('./storage/components-store');
 const RouterStore = new StorageKit({
     child:'object',
@@ -43,6 +44,7 @@ module.exports = function(models, component){
             this.prev = null;
             this.components = ComponentStorage;
 
+            
 
             this.watch();
             this.persist();
@@ -357,6 +359,7 @@ module.exports = function(models, component){
             // console.log(167, this);
             let con = {};
             for (let key in routes){
+                
                 let config = routes[key];
                 // console.log(281, config);
                 key = String(key);
@@ -424,6 +427,8 @@ module.exports = function(models, component){
 
                 };
 
+                RouterStorage.set(key,con[key]);
+
             };
             con.length = Object.keys(routes).length;
             con.keys = Object.keys(routes);
@@ -434,8 +439,36 @@ module.exports = function(models, component){
             // console.log(330,this.route);
             let hash = window.location.hash, scheme, routeName;
             if(hash){
-                scheme = hash.includes('#!/')?2:hash.includes('#/')?1:null;
-                hash =  hash.slice(scheme);
+                let test1 = hash.includes('#!/');
+                let test2 = hash.includes('#/');
+                if(test1 || test2){
+                    scheme = true;
+                    if(test1){
+                        hash = hash.split('#!').join("");
+                    } else if(test2){
+                        scheme = true;
+                        hash = hash.split('#').join("");
+                    };
+                    let h = "";
+                    let p = "";
+                    for (let i = 0; i < hash.length; i++){
+                        let v = hash[i];
+
+                        if(v == '/' && p == '/'){
+                            continue;
+                        };
+                        if(v == '/'&& !p){
+                            p = '/'
+                            h += '/';
+                        };
+                        if(v && v != '/'){
+                            h += v;
+                            p = "";
+                        };
+                    };
+                    hash = h;
+                    h = "";
+                };
             } else {
                 hash = '/';
                 scheme = true;
@@ -451,13 +484,13 @@ module.exports = function(models, component){
 
             const keys = this.route.keys;
             const state = {};
+            const PARAMS ={};
             if (search){
                 new URLSearchParams(search).forEach((value, key)=>{
                     state[key] = value;
                 });
             };
 
-            
 
             let has = false;
             for (let i = 0; i < keys.length; i++){
@@ -482,12 +515,11 @@ module.exports = function(models, component){
                         const value = param[1];
 
                         if (_path[value]){
-                            state[key] = _path[value];
+                            PARAMS[key] = _path[value];
                         };
                     });
                 };
                 const test = regex.test(path);
-                // console.log(test, path, regex);
                 if (test){
                     routeName = name;
                     
@@ -495,13 +527,12 @@ module.exports = function(models, component){
                         this.authenticate(routeName);
                     };
 
-                    this.prev = {components, state,path, name, prev:this.prev, overlay, display, onrender,controller};
+                    this.prev = {components, params:PARAMS, state,path, name, prev:this.prev, overlay, display, onrender,controller};
                     has = true;
                     break;
                 };
             };
 
-            // console.log(430, has, hash);
 
             if(!has){
                 // console.log(464, this.route, this.options);
