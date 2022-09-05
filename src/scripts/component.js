@@ -577,13 +577,11 @@ Component.prototype.render = function(options={}){
             }).then(()=>{
                 try {
                     // console.log('setting attributes', this.name);
-
                     return  this.fire.isConnected && this.fire.isConnected(payload, true);
                 }catch(err){
                     console.log(440,err);
                 }
             }).then(()=>{
-                
                 // console.log(532, this.name, this.html);
                 return this.findTarget();
             }).then(()=>{
@@ -766,8 +764,6 @@ Component.prototype.addEvent = function (static, multiple){
             Cake.Observer.notify(component, event, e);
         };
     };
-    // this.name == 'product_list' && console.log(this.targets);
-    // console.log(547,this.name, this.targets);
     if (!this.targets) return;
     for (let event in this.targets){
         if (this.targets.hasOwnProperty(event)){

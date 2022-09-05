@@ -529,8 +529,8 @@ Cake.prototype.create = function(name, template, options){
         //update the binding of data, trigger, and utils option of component;
         component.options.router && Cake.Router.subscribe(component.options.router.bind(component));
         component.options.data && component.options.data.bind(component.data)(component);
-        component.options.init && component.options.init.bind(component)();
         component.options.utils && component.options.utils.bind(component.utils)(component);
+        component.options.init && component.options.init.bind(component)();
 
     }).then(()=>{
 

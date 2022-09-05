@@ -4509,6 +4509,9 @@
         let component2 = this.name;
         function notify(event, component3, isPreventDefault, isStopPropagation) {
           return function(e) {
+            if (this.name == "form") {
+              console.log(768, isPreventDefault);
+            }
             if (!isPreventDefault) {
               e.preventDefault();
             }
@@ -6483,8 +6486,8 @@
         }).then(() => {
           component2.options.router && Cake2.Router.subscribe(component2.options.router.bind(component2));
           component2.options.data && component2.options.data.bind(component2.data)(component2);
-          component2.options.init && component2.options.init.bind(component2)();
           component2.options.utils && component2.options.utils.bind(component2.utils)(component2);
+          component2.options.init && component2.options.init.bind(component2)();
         }).then(() => {
           if (component2.type == "model") {
             Cake2.Models[name2] = component2;

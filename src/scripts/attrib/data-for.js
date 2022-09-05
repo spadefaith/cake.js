@@ -15,14 +15,12 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     let sts = this.storage.get(component);
   
 
-    // console.log(18, st);
 
     let templating = new Templating(Plugin('templating'));
     return new Promise((res, rej)=>{
         try {
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
             let switchConfig = getConfig(this.storage.get(component,'switch'), prop, newValue, prevValue, component);
-            
             
             
             if (!configs.length) return;
@@ -163,8 +161,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             
 
                             const find = cloned.querySelector(`[data-case=${sel}-${hitCase._id}]`);
-
-                            
 
                             find.classList.remove('cake-template');
                             switchElement.innerHTML = find.outerHTML;
