@@ -1049,7 +1049,16 @@ Component.prototype.findContainer = function(){
                 let el = containers[c];
                 let name = el.dataset.container;
                 if (name){
-                    this.container[name] = el;
+                    if(this.container[name]){
+                        if(Utils.isArray(this.container[name])){
+                            this.container[name].push(el);
+                        } else {
+                            this.container[name] = [this.container[name],el];
+                        };
+
+                    } else {
+                        this.container[name] = el;
+                    };
                 };
             };
             res();
