@@ -20,8 +20,10 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     return new Promise((res, rej)=>{
         try {
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
-            let switchConfig = getConfig(this.storage.get(component,'switch'), prop, newValue, prevValue, component);
-            
+            let switchConfig = this.storage.get(component,'switch');
+
+            // console.log(141,switchConfig);
+            // console.log(141,this.storage.get(component,'switch'), prop, newValue, prevValue, component);
             
             if (!configs.length) return;
 
@@ -48,6 +50,9 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 // html = Cake.Components[component].html;
                 html = ComponentStorage.get(component).html;
 
+
+                
+                
 
                 
                 let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
@@ -77,7 +82,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 //update other
                 ;(()=>{
                     let increment = 0;
-                    Object.keys(sts).forEach(key=>{
+                    Object.keys(sts).forEach((key,index)=>{
                         if(!['for','evt','animate','switch'].includes(key)){
                            let conf = sts[key];
                            let temp = conf[0];
@@ -87,10 +92,12 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                            let bind = temp && temp.bind || undefined;
 
                            if(bind && bind.match(new RegExp(templating.lefttag),'g')){
+
+
                                 data.forEach((item, index)=>{
                                     let o = {};
                                     o.bind =  templating.replaceString(item, bind);
-                                    o.sel = `${temp.sel}-${increment}`;
+                                    o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
                                     o.rawsel = temp.sel;
                                     increment += 1;
 
@@ -111,6 +118,8 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 hasReplaced.push(key);
                             
                             };
+
+     
                         };
                     });
 
@@ -135,32 +144,44 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         let template = target.cloneNode(true);
                         //switch;
                         (()=>{
-                            if(switchConfig && !switchConfig.length)return;
+    
+                            if(!(switchConfig && switchConfig.length)){return};
+             
+                            let config = switchConfig.find(item=>{
+                                return item.parentForSel == sel;
+                            });
+
+                            if(!config){return};
+                            
+   
                             // const [{bind, map, sel, cases}] = switchConfig;
 
-                            let bind = switchConfig[0].bind;
-                            let map = switchConfig[0].map;
-                            let sel = switchConfig[0].sel;
-                            let cases = switchConfig[0].cases;
+                            let bind = config.bind;
+                            let ssel = config.sel;
+                            let cases = config.cases;
 
-                            const mapping = item[map];
-                            const switchElement = template.querySelector(`[data-switch=${sel}]`);
+                            const mapping = item[bind];
+
+                            const switchElement = template.querySelector(`[data-switch=${ssel}]`);
                             let hitCase = cases.find(item=>{
 
                            
                                 let _id = item._id;
-                                let bind = item.bind;
-                                
-                                if(bind.includes('|')){
-                                    return bind.split('|').map(item=>item.trim()).some(item=>item==mapping);
+                                let caseBind = item.bind;
+                        
+
+
+                                if(caseBind.includes('|')){
+                                    return caseBind.split('|').map(item=>item.trim()).some(item=>item==mapping);
                                 } else {
-                                    return bind == mapping
+                                    return caseBind == mapping;
                                 };
                             });
 
+                            if(!hitCase){return};
                             
 
-                            const find = cloned.querySelector(`[data-case=${sel}-${hitCase._id}]`);
+                            const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
 
                             find.classList.remove('cake-template');
                             switchElement.innerHTML = find.outerHTML;

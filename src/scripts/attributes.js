@@ -16,7 +16,7 @@ const notifyRoute = require('./attrib/data-route');
 const AttribConfigStorage = require('./storage/AttribConfigStorage');
 const UTILS = require('./utils');
 // const notifyForAuto = require('./attrib/data-for-auto');
-// const notifySwitch = require('./attrib/data-switch');
+const notifySwitch = require('./attrib/data-switch');
 
 // const st = {};
 // 
@@ -32,6 +32,7 @@ function Attrib(){
 Attrib.prototype.notifyFor = notifyFor;
 Attrib.prototype.notifyForUpdate = notifyForUpdate;
 
+Attrib.prototype.notifySwitch = notifySwitch;
 Attrib.prototype.notifyClass = notifyClass;
 Attrib.prototype.notifyBind = notifyBind;
 Attrib.prototype.notifyAttr = notifyAttr;
@@ -63,7 +64,7 @@ Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     const equiv = {
         for:'For',
         forUpdate:'ForUpdate',
-        // switch:'Switch',
+        switch:'Switch',
         // toggle:'Toggle',
         bind:'Bind',
         // model:'Model',
@@ -456,6 +457,14 @@ Attrib.prototype._compileForUpdate = function(fors, component, isStatic){
 Attrib.prototype._compileSwitch = function(switchs, component, isStatic){
     return new Promise((res)=>{
         this._loopElements('switch',switchs, component, isStatic, (function(el, id, target, gr, index){
+            let parentFor = el.closest('[data-for]');
+
+            if(!parentFor){
+                el.style.display  = 'none';
+                el.classList.add('cake-template');
+                console.log('compiling switch');
+            }
+
             let bind = el.dataset.switch, map='def';
             if (bind.includes('.')){
                 const _sp1 = el.dataset.switch.split('.');
@@ -477,7 +486,12 @@ Attrib.prototype._compileSwitch = function(switchs, component, isStatic){
                     this.uiid++;
                 };
             };
-            this._register(component, 'switch', {bind, sel:id, map, cases:casesId});
+            let cnf = {bind, sel:id, map, cases:casesId};
+            if(!!parentFor){
+                cnf.parentFor = !!parentFor;
+                cnf.parentForSel = parentFor.dataset.for;
+            };
+            this._register(component, 'switch', cnf);
             this.uiid++;
         }).bind(this));
         res()

@@ -2016,7 +2016,7 @@
         return new Promise((res, rej) => {
           try {
             let configs = getConfig(this.storage.get(component2, "for"), prop, newValue, prevValue, component2);
-            let switchConfig = getConfig(this.storage.get(component2, "switch"), prop, newValue, prevValue, component2);
+            let switchConfig = this.storage.get(component2, "switch");
             if (!configs.length)
               return;
             let data2 = newValue.reduce((accu, item) => {
@@ -2051,19 +2051,19 @@
               ;
               (() => {
                 let increment = 0;
-                Object.keys(sts).forEach((key) => {
+                Object.keys(sts).forEach((key, index) => {
                   if (!["for", "evt", "animate", "switch"].includes(key)) {
                     let conf = sts[key];
                     let temp = conf[0];
                     let bind3 = temp && temp.bind || void 0;
                     if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
-                      data2.forEach((item, index) => {
+                      data2.forEach((item, index2) => {
                         let o2 = {};
                         o2.bind = templating.replaceString(item, bind3);
-                        o2.sel = `${temp.sel}-${increment}`;
+                        o2.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random() * 10)}`;
                         o2.rawsel = temp.sel;
                         increment += 1;
-                        data2[index].__sel = o2.sel;
+                        data2[index2].__sel = o2.sel;
                         for (let key2 in temp) {
                           if (temp.hasOwnProperty(key2)) {
                             if (!o2[key2]) {
@@ -2103,25 +2103,37 @@
                   let index = d;
                   let template = target.cloneNode(true);
                   (() => {
-                    if (switchConfig && !switchConfig.length)
+                    if (!(switchConfig && switchConfig.length)) {
                       return;
-                    let bind3 = switchConfig[0].bind;
-                    let map = switchConfig[0].map;
-                    let sel2 = switchConfig[0].sel;
-                    let cases = switchConfig[0].cases;
-                    const mapping = item[map];
-                    const switchElement = template.querySelector(`[data-switch=${sel2}]`);
+                    }
+                    ;
+                    let config = switchConfig.find((item2) => {
+                      return item2.parentForSel == sel;
+                    });
+                    if (!config) {
+                      return;
+                    }
+                    ;
+                    let bind3 = config.bind;
+                    let ssel = config.sel;
+                    let cases = config.cases;
+                    const mapping = item[bind3];
+                    const switchElement = template.querySelector(`[data-switch=${ssel}]`);
                     let hitCase = cases.find((item2) => {
                       let _id = item2._id;
-                      let bind4 = item2.bind;
-                      if (bind4.includes("|")) {
-                        return bind4.split("|").map((item3) => item3.trim()).some((item3) => item3 == mapping);
+                      let caseBind = item2.bind;
+                      if (caseBind.includes("|")) {
+                        return caseBind.split("|").map((item3) => item3.trim()).some((item3) => item3 == mapping);
                       } else {
-                        return bind4 == mapping;
+                        return caseBind == mapping;
                       }
                       ;
                     });
-                    const find = cloned.querySelector(`[data-case=${sel2}-${hitCase._id}]`);
+                    if (!hitCase) {
+                      return;
+                    }
+                    ;
+                    const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
                     find.classList.remove("cake-template");
                     switchElement.innerHTML = find.outerHTML;
                   })();
@@ -2522,6 +2534,72 @@
     }
   });
 
+  // src/scripts/attrib/data-switch.js
+  var require_data_switch = __commonJS({
+    "src/scripts/attrib/data-switch.js"(exports, module) {
+      var Utils = require_utils();
+      var _utils = require_utils2();
+      var getConfig = _utils.getConfig;
+      var updateConfig = _utils.updateConfig;
+      var extendConfig = _utils.extendConfig;
+      module.exports = async function(prop, newValue, prevValue, component2, html) {
+        html = html || document;
+        let st = this.storage.get(component2, "switch");
+        let configs = getConfig(st, prop, newValue, prevValue, component2);
+        if (!configs.length)
+          return;
+        for (let c = 0; c < configs.length; c++) {
+          let config = configs[c], data2;
+          let parentFor = config.parentFor;
+          if (parentFor) {
+            return;
+          }
+          ;
+          if (!!newValue.incrementedSel) {
+            data2 = newValue[bind2];
+          } else {
+            data2 = newValue;
+          }
+          ;
+          let bind2 = config.bind;
+          let sel = config.sel;
+          let cases = config.cases;
+          const mapping = data2;
+          if (prop != bind2) {
+            return;
+          }
+          ;
+          let els = html.querySelectorAll(`[data-switch=${sel}]`);
+          for (let p = 0; p < els.length; p++) {
+            let switchElement = els[p];
+            let hitCase = cases.find((item) => {
+              let _id = item._id;
+              let caseBind = item.bind;
+              if (caseBind.includes("|")) {
+                return caseBind.split("|").map((item2) => item2.trim()).some((item2) => item2 == mapping);
+              } else {
+                return caseBind == mapping;
+              }
+              ;
+            });
+            if (!hitCase) {
+              return;
+            }
+            ;
+            const find = switchElement.querySelector(`[data-case=${sel}-${hitCase._id}]`);
+            find.classList.remove("cake-template");
+            switchElement.style.removeProperty("display");
+            switchElement.classList.remove("cake-template");
+            switchElement.innerHTML = find.outerHTML;
+          }
+          ;
+        }
+        ;
+        newValue = null;
+      };
+    }
+  });
+
   // src/scripts/attributes.js
   var require_attributes = __commonJS({
     "src/scripts/attributes.js"(exports, module) {
@@ -2538,6 +2616,7 @@
       var notifyRoute = require_data_route();
       var AttribConfigStorage = require_AttribConfigStorage();
       var UTILS = require_utils();
+      var notifySwitch = require_data_switch();
       function Attrib() {
         this.uiid = 0;
         this.notify = {};
@@ -2547,6 +2626,7 @@
       }
       Attrib.prototype.notifyFor = notifyFor;
       Attrib.prototype.notifyForUpdate = notifyForUpdate;
+      Attrib.prototype.notifySwitch = notifySwitch;
       Attrib.prototype.notifyClass = notifyClass;
       Attrib.prototype.notifyBind = notifyBind;
       Attrib.prototype.notifyAttr = notifyAttr;
@@ -2563,6 +2643,7 @@
         const equiv = {
           for: "For",
           forUpdate: "ForUpdate",
+          switch: "Switch",
           bind: "Bind",
           if: "If",
           class: "Class",
@@ -2929,6 +3010,12 @@
       Attrib.prototype._compileSwitch = function(switchs, component2, isStatic) {
         return new Promise((res) => {
           this._loopElements("switch", switchs, component2, isStatic, function(el, id2, target, gr, index) {
+            let parentFor = el.closest("[data-for]");
+            if (!parentFor) {
+              el.style.display = "none";
+              el.classList.add("cake-template");
+              console.log("compiling switch");
+            }
             let bind2 = el.dataset.switch, map = "def";
             if (bind2.includes(".")) {
               const _sp1 = el.dataset.switch.split(".");
@@ -2953,7 +3040,13 @@
               ;
             }
             ;
-            this._register(component2, "switch", { bind: bind2, sel: id2, map, cases: casesId });
+            let cnf = { bind: bind2, sel: id2, map, cases: casesId };
+            if (!!parentFor) {
+              cnf.parentFor = !!parentFor;
+              cnf.parentForSel = parentFor.dataset.for;
+            }
+            ;
+            this._register(component2, "switch", cnf);
             this.uiid++;
           }.bind(this));
           res();
@@ -4509,9 +4602,6 @@
         let component2 = this.name;
         function notify(event, component3, isPreventDefault, isStopPropagation) {
           return function(e) {
-            if (this.name == "form") {
-              console.log(768, isPreventDefault);
-            }
             if (!isPreventDefault) {
               e.preventDefault();
             }
@@ -4798,7 +4888,17 @@
               let el = containers[c];
               let name2 = el.dataset.container;
               if (name2) {
-                this.container[name2] = el;
+                if (this.container[name2]) {
+                  if (Utils.isArray(this.container[name2])) {
+                    this.container[name2].push(el);
+                  } else {
+                    this.container[name2] = [this.container[name2], el];
+                  }
+                  ;
+                } else {
+                  this.container[name2] = el;
+                }
+                ;
               }
               ;
             }
