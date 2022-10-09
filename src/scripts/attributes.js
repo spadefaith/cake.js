@@ -323,7 +323,6 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
 
         this._loopElements('event',events, component, isStatic, (function(el, id, target, gr, index){
             let splitted = gr;
-            
             for (let s = 0; s < splitted.length ; s++){
                 let _sp1 = splitted[s].split(':');
                 let event = _sp1[0];
@@ -372,7 +371,6 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
 
             let el = els[f];
             let fr = el.dataset.for;
-            let autoBind = el.dataset.forAutoBind;
             let isCleaned = el.dataset.forCleaned==undefined || el.dataset.forCleaned=="true"; 
             // let [a, b, c] = fr.split(" ");
             let _sp1 = fr.split(" ");
@@ -380,22 +378,6 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             let b = _sp1[1];
             let c = _sp1[2];
 
-            if(autoBind){
-                let iteration = el.dataset.forIter;
-
-                let split = autoBind.split(':');
-                let autoBindKey = split[0] && split[0].trim();
-                let autoBindValue = split[1] && split[1].trim();
-
-                o[id] = {iteration};
-
-                // console.log(342, iter);
-
-                el.dataset.forAutoBindKey = autoBindKey;
-                el.dataset.forAutoBindValue = autoBindValue;
-                el.removeAttribute('data-for-auto-bind');
-            }
-            
             el.style.display  = 'none';
             el.classList.add('cake-template');
             el.dataset.for = id;
@@ -407,6 +389,7 @@ Attrib.prototype._compileFor = function(fors, component, isStatic, el){
             ++this.uiid;
             if (f != 0){
                 let parent = el.parentElement && el.parentElement.closest('[data-for]');
+                // console.log(409,parent);
                 if (!parent) { continue}
                 let parentIsFor = !!parent.dataset.for;
                 if (target.contains(parent) && parentIsFor){

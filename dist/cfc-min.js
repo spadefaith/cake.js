@@ -2031,6 +2031,7 @@
               let ins = configs[c].ins;
               let component3 = configs[c].component;
               let cleaned = configs[c].cleaned;
+              const children = configs[c].children;
               html = ComponentStorage.get(component3).html;
               let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
               let cloned = target.cloneNode(true);
@@ -2129,13 +2130,14 @@
                       }
                       ;
                     });
-                    if (!hitCase) {
-                      return;
+                    if (hitCase) {
+                      const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
+                      find.classList.remove("cake-template");
+                      switchElement.parentNode.innerHTML = find.outerHTML.replace("<script", "");
+                    } else {
+                      switchElement.remove();
                     }
                     ;
-                    const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
-                    find.classList.remove("cake-template");
-                    switchElement.innerHTML = find.outerHTML;
                   })();
                   let create = templating.createElement(item, template, false);
                   ;
@@ -2150,7 +2152,7 @@
                           let rawsel = cf.rawsel;
                           if (rawsel) {
                             let get = create.querySelector(`[data-${key}=${rawsel}]`);
-                            get.dataset[key] = cf.sel;
+                            get && (get.dataset[key] = cf.sel);
                           }
                           ;
                         }
@@ -2167,17 +2169,28 @@
                   })();
                   ;
                   (() => {
-                    const children = configs[0] && configs[0].children;
                     if (!children)
                       return;
                     children.forEach((child) => {
+                      let config = (sts && sts.for || []).find((item2) => item2.sel == child);
+                      console.log(228, config);
                       const forAutoElement = create.querySelector(`[data-for=${child}]`);
                       if (forAutoElement) {
-                        const dataBindKey = forAutoElement.dataset.forAutoBindKey;
-                        const dataBindValue = forAutoElement.dataset.forAutoBindValue;
-                        const iteration = forAutoElement.dataset.forIter;
-                        const datas = item[iteration];
+                        let datas = item[config.bind];
                         if (datas) {
+                          ;
+                          (() => {
+                            datas = datas.map((item2) => {
+                              for (let key in item2) {
+                                if (item2.hasOwnProperty(key)) {
+                                  item2[`${config.iter}.${key}`] = item2[key];
+                                }
+                                ;
+                              }
+                              ;
+                              return item2;
+                            });
+                          })();
                           for (let d2 = 0; d2 < datas.length; d2++) {
                             let data3 = datas[d2];
                             let template2 = forAutoElement.cloneNode(true);
@@ -2936,22 +2949,11 @@
             o2[id2] = {};
             let el2 = els[f];
             let fr = el2.dataset.for;
-            let autoBind = el2.dataset.forAutoBind;
             let isCleaned = el2.dataset.forCleaned == void 0 || el2.dataset.forCleaned == "true";
             let _sp1 = fr.split(" ");
             let a = _sp1[0];
             let b = _sp1[1];
             let c = _sp1[2];
-            if (autoBind) {
-              let iteration = el2.dataset.forIter;
-              let split = autoBind.split(":");
-              let autoBindKey = split[0] && split[0].trim();
-              let autoBindValue = split[1] && split[1].trim();
-              o2[id2] = { iteration };
-              el2.dataset.forAutoBindKey = autoBindKey;
-              el2.dataset.forAutoBindValue = autoBindValue;
-              el2.removeAttribute("data-for-auto-bind");
-            }
             el2.style.display = "none";
             el2.classList.add("cake-template");
             el2.dataset.for = id2;

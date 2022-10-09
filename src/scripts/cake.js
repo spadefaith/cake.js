@@ -314,7 +314,6 @@ Cake.prototype.create = function(name, template, options){
 
         // console.log(root);
 
- 
         Handler.set(handlers, component.name);
 
 

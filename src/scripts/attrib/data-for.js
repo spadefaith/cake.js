@@ -22,7 +22,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
             let switchConfig = this.storage.get(component,'switch');
 
-            // console.log(141,switchConfig);
+            // console.log(141,sts);
             // console.log(141,this.storage.get(component,'switch'), prop, newValue, prevValue, component);
             
             if (!configs.length) return;
@@ -46,20 +46,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 let ins = configs[c].ins;
                 let component = configs[c].component;
                 let cleaned = configs[c].cleaned;
+                const children = configs[c].children;
         
                 // html = Cake.Components[component].html;
                 html = ComponentStorage.get(component).html;
 
-
-                
-                
-
                 
                 let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
                 let cloned = target.cloneNode(true);
-
-
-  
 
                 //manipulate data;
                 ;(()=>{
@@ -162,15 +156,13 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
                             const mapping = item[bind];
 
+
+                            
+
                             const switchElement = template.querySelector(`[data-switch=${ssel}]`);
                             let hitCase = cases.find(item=>{
-
-                           
                                 let _id = item._id;
                                 let caseBind = item.bind;
-                        
-
-
                                 if(caseBind.includes('|')){
                                     return caseBind.split('|').map(item=>item.trim()).some(item=>item==mapping);
                                 } else {
@@ -178,21 +170,23 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 };
                             });
 
-                            if(!hitCase){return};
-                            
+                            if(hitCase){
 
-                            const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
+                                const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
+                                find.classList.remove('cake-template');
+                                switchElement.parentNode.innerHTML = find.outerHTML.replace('<script',"");
 
-                            find.classList.remove('cake-template');
-                            switchElement.innerHTML = find.outerHTML;
+                                // find && switchElement.parentNode.replaceChild(find,switchElement);
 
-                            // switchElement.parentNode.replaceChild(find, switchElement);
+                            } else {
+                                switchElement.remove();
+                            };
+
                         })();
 
                         let create = templating.createElement(item, template, false);
                         
                         //replace the templated data-*;
-
                         
                         ;(()=>{
                             Object.keys(sts).forEach(key=>{
@@ -205,7 +199,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                         let rawsel = cf.rawsel;
                                         if(rawsel){
                                             let get = create.querySelector(`[data-${key}=${rawsel}]`);
-                                            get.dataset[key] = cf.sel;
+                                            get && (get.dataset[key] = cf.sel);
                                         };
                                     }
                                 };
@@ -225,22 +219,44 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
                         //auto
                         ;(()=>{
-                            const children = configs[0] && configs[0].children;
+                            
                             if(!children) return;
 
                             children.forEach(child=>{
+
+                                let config = (sts && sts.for || []).find(item=>item.sel == child);
+                                console.log(228,config);
                                 const forAutoElement = create.querySelector(`[data-for=${child}]`);
 
                                 if(forAutoElement){
-                                    const dataBindKey = forAutoElement.dataset.forAutoBindKey;
-                                    const dataBindValue = forAutoElement.dataset.forAutoBindValue;
-                                    const iteration = forAutoElement.dataset.forIter;
 
-                                    const datas = item[iteration];
+                                    // const iteration = forAutoElement.dataset.forIter;
+                                    // const splitted = forAutoElement.dataset.for.split(" ");
+                                    // const iter = splitted[1];
+                                    // const iteration = splitted[2];
+
+                                    // console.log(242,children);
+                                    // console.log(239,item);
+                                    let datas = item[config.bind];
 
                                     if(datas){
+                                        //manipulate data;
+                                        ;(()=>{
+                                            datas = datas.map(item=>{
+                                                for (let key in item){
+
+                                                    if (item.hasOwnProperty(key)){
+                                                        item[`${config.iter}.${key}`] = item[key];
+                                                    };
+                                                };
+                                                return item;
+                                            });
+                                        })();
+
                                         for (let d = 0; d < datas.length; d++){
                                             let data = datas[d];
+                                            // console.log(261,data);
+
                                             let template = forAutoElement.cloneNode(true);
 
                                             let create = templating.createElement(data, template, false);
