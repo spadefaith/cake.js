@@ -225,7 +225,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             children.forEach(child=>{
 
                                 let config = (sts && sts.for || []).find(item=>item.sel == child);
-                                console.log(228,config);
+                                // console.log(228,config);
                                 const forAutoElement = create.querySelector(`[data-for=${child}]`);
 
                                 if(forAutoElement){

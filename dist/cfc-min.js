@@ -2173,7 +2173,6 @@
                       return;
                     children.forEach((child) => {
                       let config = (sts && sts.for || []).find((item2) => item2.sel == child);
-                      console.log(228, config);
                       const forAutoElement = create.querySelector(`[data-for=${child}]`);
                       if (forAutoElement) {
                         let datas = item[config.bind];
