@@ -246,8 +246,10 @@
         let srcs = this.querySelectorAllIncluded(null, 'data-src',null);
         for (let s = 0; s < srcs.length; s++){
             let el = srcs[s];
-            el.setAttribute('src', el.dataset.src);
-            el.removeAttribute('data-src');
+            if(el.closest && el.closest('.cake-template')){} else {
+                el.setAttribute('src', el.dataset.src);
+                el.removeAttribute('data-src');
+            };
         };
     };
 

@@ -413,13 +413,20 @@ Component.prototype.renderQue = function(options={}){
     return this.render(options);
 };
 
-
+Component.prototype.initialize = function(){
+    if(this.type == 'model'){
+        return this.fire.initialize();
+    };
+    throw new Error('initialize handler is for type model.');
+};
 
 Component.prototype.render = function(options={}){
     if(options.hasqued){
         // console.log(`rendering ${this.name} has been queued`);
     } else {
         if(this.isConnected){
+            // console.log('is connected');
+            // console.trace();
             console.error(`${this.name} is already rendered and connected to the DOM`);
         };
     };

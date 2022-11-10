@@ -294,8 +294,12 @@
           let srcs = this.querySelectorAllIncluded(null, "data-src", null);
           for (let s = 0; s < srcs.length; s++) {
             let el = srcs[s];
-            el.setAttribute("src", el.dataset.src);
-            el.removeAttribute("data-src");
+            if (el.closest && el.closest(".cake-template")) {
+            } else {
+              el.setAttribute("src", el.dataset.src);
+              el.removeAttribute("data-src");
+            }
+            ;
           }
           ;
         };
@@ -2010,6 +2014,10 @@
       var getConfig = _utils.getConfig;
       var updateConfig = _utils.updateConfig;
       var extendConfig = _utils.extendConfig;
+      var forCached = {
+        targets: {},
+        parents: {}
+      };
       module.exports = async function(prop, newValue, prevValue, component2, html) {
         let sts = this.storage.get(component2);
         let templating = new Templating(Plugin("templating"));
@@ -2025,6 +2033,7 @@
             }, []);
             newValue = null;
             for (let c = 0; c < configs.length; c++) {
+              let islast = configs.length - 1 == c;
               let bind2 = configs[c].bind;
               let sel = configs[c].sel;
               let iter = configs[c].iter;
@@ -2034,6 +2043,13 @@
               const children = configs[c].children;
               html = ComponentStorage.get(component3).html;
               let target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
+              if (target) {
+                forCached.targets[sel] = target;
+              } else {
+                forCached.parents[sel].appendChild(forCached.targets[sel]);
+                target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
+              }
+              ;
               let cloned = target.cloneNode(true);
               ;
               (() => {
@@ -2088,6 +2104,12 @@
               (() => {
                 if (cleaned) {
                   let parent = target.parentElement;
+                  if (parent) {
+                    forCached.parents[sel] = parent;
+                  } else {
+                    parent = forCached.parents[sel];
+                  }
+                  ;
                   parent.children.toArray().forEach((child) => {
                     if (child.dataset.for && !child.classList.contains("cake-template")) {
                       child.remove();
@@ -2102,6 +2124,7 @@
                 for (let d = 0; d < data2.length; d++) {
                   let item = data2[d];
                   let index = d;
+                  let cloned2 = target.cloneNode(true);
                   let template = target.cloneNode(true);
                   (() => {
                     if (!(switchConfig && switchConfig.length)) {
@@ -2131,9 +2154,9 @@
                       ;
                     });
                     if (hitCase) {
-                      const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
+                      const find = cloned2.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
                       find.classList.remove("cake-template");
-                      switchElement.parentNode.innerHTML = find.outerHTML.replace("<script", "");
+                      switchElement.parentNode.replaceChild(find, switchElement);
                     } else {
                       switchElement.remove();
                     }
@@ -2192,12 +2215,17 @@
                           })();
                           for (let d2 = 0; d2 < datas.length; d2++) {
                             let data3 = datas[d2];
+                            let islast2 = datas.length - 1 == d2;
                             let template2 = forAutoElement.cloneNode(true);
                             let create2 = templating.createElement(data3, template2, false);
                             create2.style.removeProperty("display");
                             create2.classList.remove("cake-template");
                             create2.removeAttribute("data-for-template");
                             forAutoElement.insertAdjacentElement("beforebegin", create2);
+                            if (islast2) {
+                              forAutoElement.remove();
+                            }
+                            ;
                           }
                           ;
                         }
@@ -2243,6 +2271,18 @@
                 ;
                 res();
               })();
+              (() => {
+                const isoption = target.tagName == "OPTION";
+                if (isoption) {
+                  const select = target.closest("SELECT") || target.closest("DATALIST");
+                  select && (select.selectedIndex = 0);
+                }
+                ;
+              })();
+              if (islast) {
+                target.remove();
+              }
+              ;
             }
             ;
             html.unRequired();
@@ -4353,6 +4393,13 @@
         ;
         return this.render(options);
       };
+      Component.prototype.initialize = function() {
+        if (this.type == "model") {
+          return this.fire.initialize();
+        }
+        ;
+        throw new Error("initialize handler is for type model.");
+      };
       Component.prototype.render = function(options = {}) {
         if (options.hasqued) {
         } else {
@@ -5103,12 +5150,26 @@
               });
             });
           }
-          async authenticate(name2) {
+          async authenticate(name2, isauth) {
+            let authUser = Utils.isArray(isauth) && isauth.length && isauth || null;
+            if (!(isauth == true || authUser)) {
+              return;
+            }
+            ;
             const initialize = this.unauthRoute == name2;
             if (this.unauthRoute) {
               try {
                 const config = RouterStore.get("role", true) || {};
+                const role = config.role;
                 const token = config.token;
+                if (authUser) {
+                  if (!authUser.includes(config.role)) {
+                    this.goTo(this.unauthRoute, { replace: true });
+                    location.reload();
+                  }
+                  ;
+                }
+                ;
                 const isverified = await this.verifyAuth(token);
                 if (isverified.status == 0) {
                   this.logout();
@@ -5116,9 +5177,9 @@
                 ;
                 if (config) {
                   if (initialize) {
-                    const role = config.role;
+                    const role2 = config.role;
                     const data2 = config.data;
-                    const route = this.authRedirectRoute[role];
+                    const route = this.authRedirectRoute[role2];
                     if (route) {
                       const name3 = route.name;
                       this.goTo(name3);
@@ -5465,10 +5526,7 @@
               const test = regex.test(path);
               if (test) {
                 routeName = name2;
-                if (auth == true) {
-                  this.authenticate(routeName);
-                }
-                ;
+                this.authenticate(routeName, auth);
                 this.prev = { components: components2, params: PARAMS, state, path, name: name2, prev: this.prev, overlay, display, onrender, controller };
                 has = true;
                 break;
@@ -5476,34 +5534,37 @@
               ;
             }
             ;
+            this.redirect404(has);
+          }
+          redirect404(has) {
             if (!has) {
               if (this.route["404"]) {
-                let path2 = this.route["404"].callback();
+                let path = this.route["404"].callback();
                 let origin = location.origin;
                 let pathname = location.pathname;
-                if (this.route[path2]) {
-                  if (path2 == "/") {
-                    path2 = `${origin}${pathname}`;
+                if (this.route[path]) {
+                  if (path == "/") {
+                    path = `${origin}${pathname}`;
                   } else {
                     if (pathname.slice(-1) == "/") {
-                      path2 = `${origin}${pathname}#!${path2}`;
+                      path = `${origin}${pathname}#!${path}`;
                     } else {
-                      path2 = `${origin}${pathname}/#!${path2}`;
+                      path = `${origin}${pathname}/#!${path}`;
                     }
                     ;
                   }
                   ;
-                  location.replace(path2);
-                } else if (!!path2 && !this.route[path2]) {
+                  location.replace(path);
+                } else if (!!path && !this.route[path]) {
                   if (origin.slice(-1) == "/") {
-                    if (path2[0] == "/") {
-                      path2 = path2.slice(1);
+                    if (path[0] == "/") {
+                      path = path.slice(1);
                     }
                     ;
                   }
                   ;
-                  path2 = `${origin}${path2}`;
-                  location.replace(path2);
+                  path = `${origin}${path}`;
+                  location.replace(path);
                 }
                 ;
               }
@@ -5532,6 +5593,10 @@
                           let componentName = component3;
                           let isunload = this.getComponent(component3, path);
                           component3 = this.components.get(component3);
+                          if (!component3) {
+                            component3 = models[componentName];
+                          }
+                          ;
                           if (component3) {
                             if (component3.isConnected && !isunload) {
                               if (component3.fire.softReload) {
@@ -5543,6 +5608,12 @@
                                 recur();
                               }
                               ;
+                            } else if (component3.type == "model") {
+                              component3.initialize().then(() => {
+                                recur();
+                              }).catch((err) => {
+                                throw err;
+                              });
                             } else {
                               component3.render(__spreadValues({ emit: { route: this.prev } }, onrender[componentName] || {})).then(() => {
                                 if (component3.await.isConnected) {

@@ -8,7 +8,7 @@ const RouterStore = new StorageKit({
     name:`_cake_router_cf`,
 });
 module.exports = function(models, component){
-
+  
     const hooks = [];
     return class {
         constructor(routes, options){
@@ -84,8 +84,11 @@ module.exports = function(models, component){
                 });
             });
         }
-        async authenticate(name){
-
+        async authenticate(name,isauth){
+            let authUser = Utils.isArray(isauth) && isauth.length && isauth || null; 
+            if(!(isauth == true || authUser)){
+                return;
+            };
             
             /*
                 happens when the current page is in the unAuthRoute
@@ -106,10 +109,20 @@ module.exports = function(models, component){
 
 
                     const config = RouterStore.get('role', true) || {};
-
-                    // console.log(config);
-
+                    const role = config.role;
                     const token = config.token;
+
+                    // console.log(113,config,authUser);
+
+                    if(authUser){
+                        if(!authUser.includes(config.role)){
+                            // this.redirect401(null);
+                            this.goTo(this.unauthRoute,{replace:true});
+                            location.reload();
+                        };
+                    };
+
+
                     const isverified = await this.verifyAuth(token);
 
                     
@@ -230,6 +243,7 @@ module.exports = function(models, component){
                     const name = config.name;
 
 
+
                     if(name == routeName){
                         hash = route;
                         break;
@@ -324,6 +338,8 @@ module.exports = function(models, component){
                     event = 'deviceready';
                 };
                 document.addEventListener(event, (e)=>{
+                    // console.log('is ready');
+                    // console.trace();
                     this.parse();
                     this.notify().then(()=>{
                         return this.navigate(true);
@@ -407,8 +423,6 @@ module.exports = function(models, component){
                         ...config,
                     }
                 };
-                // console.log(key, con[key],config);
-
 
                 if(this.authValidRoute){
                     Utils.each(this.authValidRoute, function(obj, i){
@@ -523,9 +537,7 @@ module.exports = function(models, component){
                 if (test){
                     routeName = name;
                     
-                    if(auth == true){
-                        this.authenticate(routeName);
-                    };
+                    this.authenticate(routeName,auth);
 
                     this.prev = {components, params:PARAMS, state,path, name, prev:this.prev, overlay, display, onrender,controller};
                     has = true;
@@ -533,7 +545,9 @@ module.exports = function(models, component){
                 };
             };
 
-
+            this.redirect404(has);
+        }
+        redirect404(has){
             if(!has){
                 // console.log(464, this.route, this.options);
                 // console.log(465, this.route['404']);
@@ -590,7 +604,7 @@ module.exports = function(models, component){
                 // };
 
 
-                // console.log(425, components);
+                // console.log(425, 'components to render',components);
 
                 try {
 
@@ -603,7 +617,7 @@ module.exports = function(models, component){
                             const l = components.length;
                             let i = 0;
 
-
+                            
                             if(l){
                                 const recur = ()=>{
                                     let component = components[i];
@@ -616,9 +630,18 @@ module.exports = function(models, component){
                                         // component = this.components[component];
                                         
                                         let isunload = this.getComponent(component,path);
+                                        
                                         component = this.components.get(component);
 
+                                        if(!component){
+                                            component = models[componentName];
+                                        };
+
+
+                                        
+
                                         if(component){
+                                            // console.log(638,component);
                                             if(component.isConnected && !isunload){
                                                 if(component.fire.softReload){
                                                     component.fire.softReload();
@@ -628,6 +651,12 @@ module.exports = function(models, component){
                                                 } else {
                                                     recur();
                                                 };
+                                            } else if(component.type == 'model'){
+                                                component.initialize().then(()=>{
+                                                    recur();
+                                                }).catch(err=>{
+                                                    throw err;
+                                                });
                                             } else {
                                                 component.render({emit:{route:this.prev},...(onrender[componentName] || {})}).then(()=>{
                                                     if(component.await.isConnected){
