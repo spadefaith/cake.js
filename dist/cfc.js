@@ -763,30 +763,31 @@
           }(!window["safari"] || safari.pushNotification);
           var isIE = !!document.documentMode;
           var isEdge = !isIE && !!window.StyleMedia;
-          var isChrome = !!window.chrome && !!window.chrome.webstore || !!window.cordova;
+          var isChrome = !!window.chrome || !!window.cordova;
           var isBlink = (isChrome || isOpera) && !!window.CSS;
+          console.log(394, isChrome);
           return window._browser = isOpera ? "Opera" : isFirefox ? "Firefox" : isSafari ? "Safari" : isChrome ? "Chrome" : isIE ? "IE" : isEdge ? "Edge" : isBlink ? "Blink" : "Don't know";
         },
         isOpera() {
-          return this.browser == "Opera";
+          return this.browser() == "Opera";
         },
         isFirefox() {
           return this.browser() == "Firefox";
         },
         isSafari() {
-          return this.browser == "Safari";
+          return this.browser() == "Safari";
         },
         isChrome() {
-          return this.browser == "Chrome";
+          return this.browser() == "Chrome";
         },
         isIE() {
-          return this.browser == "IE";
+          return this.browser() == "IE";
         },
         isEdge() {
-          return this.browser == "Edge";
+          return this.browser() == "Edge";
         },
         isBlink() {
-          return this.browser == "Blink";
+          return this.browser() == "Blink";
         },
         device() {
           if (navigator.userAgent.includes("Android")) {
@@ -5259,9 +5260,9 @@
               if (!routeName) {
                 const auth = RouterStore.get("role", true);
                 const role = auth.role;
-                const route = this.authRedirectRoute[role];
+                const route = this.authValidRoute[role];
                 if (route) {
-                  routeName = route.name;
+                  routeName = route.name || route;
                 }
                 ;
               }
@@ -5354,11 +5355,8 @@
               window.addEventListener("popstate", (e) => {
                 this.parse();
                 this.notify().then(() => {
-                  console.log("notified");
                   return this.clear().then(() => {
-                    console.log("cleared");
                     return this.navigate().then(() => {
-                      console.log("navigated");
                     });
                   });
                 });
@@ -5527,6 +5525,25 @@
               if (test) {
                 routeName = name2;
                 this.authenticate(routeName, auth);
+                if (!auth) {
+                  const config = RouterStore.get("role", true) || {};
+                  const role = config.role;
+                  const token = config.token;
+                  if (token) {
+                    this.verifyAuth(token).then((res) => {
+                      if (res && res.status) {
+                        this.goTo();
+                        window.location.reload && window.location.reload();
+                      } else {
+                        this.logout();
+                      }
+                      ;
+                    });
+                  } else {
+                  }
+                  ;
+                }
+                ;
                 this.prev = { components: components2, params: PARAMS, state, path, name: name2, prev: this.prev, overlay, display, onrender, controller };
                 has = true;
                 break;
@@ -5648,7 +5665,6 @@
             }
           }
           static pushState(data2, notused, path) {
-            console.log(path);
             window.history.pushState(data2, notused, path);
             let promise = Promise.resolve();
             if (this.prev) {

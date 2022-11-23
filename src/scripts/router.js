@@ -32,9 +32,11 @@ module.exports = function(models, component){
                     this.unauthRoute = confAuth['401'];
                     // return confAuth;
                 };
+                
                 if(confAuth && confAuth.valid){
                     this.authValidRoute = confAuth.valid;
                 };
+
                 return null;
             }.bind(this))();
 
@@ -86,6 +88,7 @@ module.exports = function(models, component){
         }
         async authenticate(name,isauth){
             let authUser = Utils.isArray(isauth) && isauth.length && isauth || null; 
+
             if(!(isauth == true || authUser)){
                 return;
             };
@@ -100,8 +103,12 @@ module.exports = function(models, component){
                 the path is reset to '/';
             */
 
+                // console.log(103, this.unauthRoute , name);
+
             const initialize = (this.unauthRoute == name);
             // const initialize = this.unauthRoute[name];
+
+
 
 
             if(this.unauthRoute){//has 401;
@@ -132,6 +139,8 @@ module.exports = function(models, component){
 
                     if(config){
                         if(initialize){
+
+         
                             const role = config.role;
                             const data = config.data;
 
@@ -146,6 +155,7 @@ module.exports = function(models, component){
     
                         }
                     } else {
+                        
                         if(initialize){
 
                         } else {
@@ -154,6 +164,7 @@ module.exports = function(models, component){
                     };
                 } catch(err){
                     alert(JSON.stringify(err.message));
+ 
                     if(initialize){
                     } else {
                         this.logout();
@@ -220,14 +231,14 @@ module.exports = function(models, component){
                 let hash = null;
                 const raw = Object.entries(routes);
 
-                // console.log(108, routeName,config,isreplace, raw);
+
 
                 if(!routeName){
                     const auth = RouterStore.get('role', true);
                     const role = auth.role;
-                    const route = this.authRedirectRoute[role];//redirect back to a page;
+                    const route = this.authValidRoute[role];//redirect back to a page;
                     if(route){
-                        routeName = route.name;
+                        routeName = route.name || route;
                     };
                 };
 
@@ -356,11 +367,11 @@ module.exports = function(models, component){
                     // console.log(236, e);
                     this.parse();
                     this.notify().then(()=>{
-                        console.log('notified');
+                        // console.log('notified');
                         return this.clear().then(()=>{
-                            console.log('cleared');
+                            // console.log('cleared');
                             return this.navigate().then(()=>{
-                                console.log('navigated');
+                                // console.log('navigated');
                             });
                         });
                     })
@@ -515,6 +526,7 @@ module.exports = function(models, component){
                 const params = route.params;
                 const name = route.name;
                 const auth = route.auth;
+                // const entry = route.entry;
                 const overlay = route.overlay;
                 const display = route.display;
                 const onrender = route.onrender;
@@ -534,12 +546,37 @@ module.exports = function(models, component){
                     });
                 };
                 const test = regex.test(path);
+
+                // console.log(545,test,name,auth,entry);
+                // alert(1);
                 if (test){
                     routeName = name;
                     
                     this.authenticate(routeName,auth);
+                    if(!auth){
+                        // console.log('check if still logged in');
+                        const config = RouterStore.get('role', true) || {};
+                        const role = config.role;
+                        const token = config.token;
 
-                    this.prev = {components, params:PARAMS, state,path, name, prev:this.prev, overlay, display, onrender,controller};
+                        if(token){
+                            this.verifyAuth(token).then(res=>{
+                                if(res && res.status){
+                                    // console.log(563, token, config);
+                                    this.goTo();
+                                    window.location.reload && window.location.reload();
+                                } else {
+                                    this.logout();
+                                };
+                            });
+                        } else {
+
+                        };
+
+
+                    };
+
+                    this.prev = {components, params:PARAMS,state,path, name, prev:this.prev, overlay, display, onrender,controller};
                     has = true;
                     break;
                 };
@@ -548,6 +585,7 @@ module.exports = function(models, component){
             this.redirect404(has);
         }
         redirect404(has){
+            // console.log("redirect404", !has);
             if(!has){
                 // console.log(464, this.route, this.options);
                 // console.log(465, this.route['404']);
@@ -701,7 +739,7 @@ module.exports = function(models, component){
             }
         }
         static pushState(data, notused, path){
-            console.log(path);
+            // console.log(path);
             window.history.pushState(data, notused, path);
             let promise = Promise.resolve();
             if (this.prev){

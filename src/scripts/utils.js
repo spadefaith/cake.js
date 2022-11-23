@@ -387,9 +387,12 @@ const OTHERS = {
         // Edge 20+
         var isEdge = !isIE && !!window.StyleMedia;
         // Chrome 1+
-        var isChrome = !!window.chrome && !!window.chrome.webstore || !!window.cordova;
+        var isChrome = !!window.chrome  || !!window.cordova;
         // Blink engine detection
         var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+        console.log(394,isChrome);
+
         return window._browser =
             isOpera ? 'Opera' :
             isFirefox ? 'Firefox' :
@@ -401,25 +404,25 @@ const OTHERS = {
             "Don't know";
     },
     isOpera(){
-        return this.browser == 'Opera';
+        return this.browser() == 'Opera';
     },
     isFirefox(){
         return this.browser() == 'Firefox';
     },
     isSafari(){
-        return this.browser == 'Safari';
+        return this.browser() == 'Safari';
     },
     isChrome(){
-        return this.browser == 'Chrome';
+        return this.browser() == 'Chrome';
     },
     isIE(){
-        return this.browser == 'IE';
+        return this.browser() == 'IE';
     },
     isEdge(){
-        return this.browser == 'Edge';
+        return this.browser() == 'Edge';
     },
     isBlink(){
-        return this.browser == 'Blink';
+        return this.browser() == 'Blink';
     },
     device(){
         if(navigator.userAgent.includes('Android')){
