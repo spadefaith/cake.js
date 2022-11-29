@@ -2051,7 +2051,6 @@
                 target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
               }
               ;
-              let cloned = target.cloneNode(true);
               ;
               (() => {
                 data2 = data2.map((item) => {
@@ -2112,7 +2111,7 @@
                   }
                   ;
                   parent.children.toArray().forEach((child) => {
-                    if (child.dataset.for && !child.classList.contains("cake-template")) {
+                    if (child.dataset.for && child.dataset.for == sel && !child.classList.contains("cake-template")) {
                       child.remove();
                     }
                     ;
@@ -2125,7 +2124,7 @@
                 for (let d = 0; d < data2.length; d++) {
                   let item = data2[d];
                   let index = d;
-                  let cloned2 = target.cloneNode(true);
+                  let cloned = target.cloneNode(true);
                   let template = target.cloneNode(true);
                   (() => {
                     if (!(switchConfig && switchConfig.length)) {
@@ -2155,7 +2154,7 @@
                       ;
                     });
                     if (hitCase) {
-                      const find = cloned2.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
+                      const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
                       find.classList.remove("cake-template");
                       switchElement.parentNode.replaceChild(find, switchElement);
                     } else {

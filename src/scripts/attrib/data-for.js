@@ -73,7 +73,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                     target = html.querySelectorIncluded(`[data-for-template=${sel}]`);
                 };
 
-                let cloned = target.cloneNode(true);
+
 
                 //manipulate data;
                 ;(()=>{
@@ -151,7 +151,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             parent = forCached.parents[sel]
                         };
                         parent.children.toArray().forEach(child=>{
-                            if(child.dataset.for && !child.classList.contains('cake-template')){
+                            if(child.dataset.for && child.dataset.for == sel && !child.classList.contains('cake-template')){
                                 child.remove();
                             };
                         });
@@ -189,7 +189,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                     return caseBind == mapping;
                                 };
                             });
-
 
                             if(hitCase){
                                 const find = cloned.querySelector(`[data-case=${ssel}-${hitCase._id}]`);
