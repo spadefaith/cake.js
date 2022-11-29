@@ -25,9 +25,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
 
     let sts = this.storage.get(component);
-  
-
-
     let templating = new Templating(Plugin('templating'));
     return new Promise((res, rej)=>{
         try {
@@ -45,7 +42,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
             }, []);
 
             newValue = null;
-
 
 
 
@@ -99,42 +95,38 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                     Object.keys(sts).forEach((key,index)=>{
 
                         if(!['for','evt','animate','switch'].includes(key)){
-                           let conf = sts[key];
-                           let temp = conf[0];
-                        //    let {bind} = temp || {};
+                            let conf = sts[key];
 
-
-                           let bind = temp && temp.bind || undefined;
-
-
-
-                           if(bind && bind.match(new RegExp(templating.lefttag),'g')){
-
-
-                                data.forEach((item, index)=>{
-                                    let o = {};
-                                    o.bind =  templating.replaceString(item, bind);
-                                    o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
-                                    o.rawsel = temp.sel;
-                                    increment += 1;
-
-                                    //data binding to the element selector;
-                                    data[index].__sel = o.sel;
-                                    
-                                    for (let key in temp){
-                                        if (temp.hasOwnProperty(key)){
-                                            if(!o[key]){
-                                                o[key] = temp[key];
+                            conf.forEach(temp=>{
+                                let bind = temp && temp.bind || undefined;
+        
+                                   if(bind && bind.match(new RegExp(templating.lefttag),'g')){
+                                        data.forEach((item, index)=>{
+                                            let o = {};
+                                            o.bind =  templating.replaceString(item, bind);
+                                            o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
+                                            o.rawsel = temp.sel;
+                                            increment += 1;
+        
+                                            //data binding to the element selector;
+                                            data[index].__sel = o.sel;
+                                            
+                                            for (let key in temp){
+                                                if (temp.hasOwnProperty(key)){
+                                                    if(!o[key]){
+                                                        o[key] = temp[key];
+                                                    };
+                                                };
                                             };
-                                        };
+        
+                                            conf.push(o);
+        
+                                        });
+                                        hasReplaced.push(key);
+                                    
                                     };
-
-                                    conf.push(o);
-
-                                });
-                                hasReplaced.push(key);
-                            
-                            };
+                            })
+   
 
      
                         };

@@ -494,6 +494,15 @@
           return String(str).split(" ").join("");
         }
       };
+      function _log() {
+        console.log(...arguments);
+      }
+      _log.if = function(condition) {
+        return condition ? function() {
+          console.log(...arguments);
+        } : () => {
+        };
+      };
       var OTHERS = {
         perf: function(fn2) {
           console.time("test");
@@ -810,7 +819,8 @@
         },
         escapeRegExp(text) {
           return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-        }
+        },
+        log: _log
       };
       var ARRAY = {
         unique: function(arr, prop) {
@@ -2071,31 +2081,32 @@
                 Object.keys(sts).forEach((key, index) => {
                   if (!["for", "evt", "animate", "switch"].includes(key)) {
                     let conf = sts[key];
-                    let temp = conf[0];
-                    let bind3 = temp && temp.bind || void 0;
-                    if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
-                      data2.forEach((item, index2) => {
-                        let o2 = {};
-                        o2.bind = templating.replaceString(item, bind3);
-                        o2.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random() * 10)}`;
-                        o2.rawsel = temp.sel;
-                        increment += 1;
-                        data2[index2].__sel = o2.sel;
-                        for (let key2 in temp) {
-                          if (temp.hasOwnProperty(key2)) {
-                            if (!o2[key2]) {
-                              o2[key2] = temp[key2];
+                    conf.forEach((temp) => {
+                      let bind3 = temp && temp.bind || void 0;
+                      if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
+                        data2.forEach((item, index2) => {
+                          let o2 = {};
+                          o2.bind = templating.replaceString(item, bind3);
+                          o2.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random() * 10)}`;
+                          o2.rawsel = temp.sel;
+                          increment += 1;
+                          data2[index2].__sel = o2.sel;
+                          for (let key2 in temp) {
+                            if (temp.hasOwnProperty(key2)) {
+                              if (!o2[key2]) {
+                                o2[key2] = temp[key2];
+                              }
+                              ;
                             }
                             ;
                           }
                           ;
-                        }
-                        ;
-                        conf.push(o2);
-                      });
-                      hasReplaced.push(key);
-                    }
-                    ;
+                          conf.push(o2);
+                        });
+                        hasReplaced.push(key);
+                      }
+                      ;
+                    });
                   }
                   ;
                 });

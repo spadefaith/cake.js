@@ -122,6 +122,13 @@ const STRING = {
     },
 }
 
+function _log(){
+    console.log(...arguments);
+}
+_log.if = function(condition){
+    return condition ? function(){console.log(...arguments)} : ()=>{};
+}
+
 const OTHERS = {
     perf:function(fn){
         console.time('test');
@@ -444,7 +451,8 @@ const OTHERS = {
     },
     escapeRegExp(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-    }
+    },
+    log:_log,
 };
 
 const ARRAY = {
