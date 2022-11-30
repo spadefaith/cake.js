@@ -2030,6 +2030,7 @@
         parents: {}
       };
       module.exports = async function(prop, newValue, prevValue, component2, html) {
+        let condition = component2 == "static_form" && prop == "controlsPeriod";
         let sts = this.storage.get(component2);
         let templating = new Templating(Plugin("templating"));
         return new Promise((res, rej) => {
@@ -2087,10 +2088,14 @@
                         data2.forEach((item, index2) => {
                           let o2 = {};
                           o2.bind = templating.replaceString(item, bind3);
-                          o2.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random() * 10)}`;
+                          o2.sel = `${temp.sel}-${increment}-${index2}`;
                           o2.rawsel = temp.sel;
                           increment += 1;
-                          data2[index2].__sel = o2.sel;
+                          if (!data2[index2].__sel) {
+                            data2[index2].__sel = [];
+                          }
+                          ;
+                          data2[index2].__sel.push(o2.sel);
                           for (let key2 in temp) {
                             if (temp.hasOwnProperty(key2)) {
                               if (!o2[key2]) {
@@ -2179,17 +2184,19 @@
                     Object.keys(sts).forEach((key) => {
                       if (hasReplaced.includes(key)) {
                         let conf = sts[key];
-                        let cf = conf.find((cf2) => {
-                          return cf2.sel == item.__sel;
-                        });
-                        if (cf) {
-                          let rawsel = cf.rawsel;
-                          if (rawsel) {
-                            let get = create.querySelector(`[data-${key}=${rawsel}]`);
-                            get && (get.dataset[key] = cf.sel);
+                        item.__sel && item.__sel.forEach && item.__sel.forEach((i2) => {
+                          let cf = conf.find((cf2) => {
+                            return i2 == cf2.sel;
+                          });
+                          if (cf) {
+                            let rawsel = cf.rawsel;
+                            if (rawsel) {
+                              let get = create.querySelector(`[data-${key}=${rawsel}]`);
+                              get && (get.dataset[key] = cf.sel);
+                            }
+                            ;
                           }
-                          ;
-                        }
+                        });
                       }
                       ;
                     });

@@ -24,6 +24,8 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
         
 
 
+    let condition = component == 'static_form' && prop == "controlsPeriod";
+
     let sts = this.storage.get(component);
     let templating = new Templating(Plugin('templating'));
     return new Promise((res, rej)=>{
@@ -99,32 +101,46 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
 
                             conf.forEach(temp=>{
                                 let bind = temp && temp.bind || undefined;
-        
-                                   if(bind && bind.match(new RegExp(templating.lefttag),'g')){
-                                        data.forEach((item, index)=>{
-                                            let o = {};
-                                            o.bind =  templating.replaceString(item, bind);
-                                            o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
-                                            o.rawsel = temp.sel;
-                                            increment += 1;
-        
-                                            //data binding to the element selector;
-                                            data[index].__sel = o.sel;
-                                            
-                                            for (let key in temp){
-                                                if (temp.hasOwnProperty(key)){
-                                                    if(!o[key]){
-                                                        o[key] = temp[key];
-                                                    };
+
+
+                                if(bind && bind.match(new RegExp(templating.lefttag),'g')){
+                                    
+                                    data.forEach((item, index)=>{
+
+                                        // Utils.log.if(condition)(101,item);
+                                        
+                                        let o = {};
+                                        o.bind =  templating.replaceString(item, bind);
+                                        // o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
+                                        o.sel = `${temp.sel}-${increment}-${index}`;
+                                        o.rawsel = temp.sel;
+                                        increment += 1;
+
+                                        // Utils.log.if(condition)(102,item);
+                                        
+                                        //data binding to the element selector;
+
+                                        if(!data[index].__sel){
+                                            data[index].__sel = [];
+                                        };
+                                        data[index].__sel.push(o.sel);
+                                        
+                                        // Utils.log.if(condition)(103,prop,index,bind, o.bind);
+
+                                        for (let key in temp){
+                                            if (temp.hasOwnProperty(key)){
+                                                if(!o[key]){
+                                                    o[key] = temp[key];
                                                 };
                                             };
+                                        };
+    
+                                        conf.push(o);
         
-                                            conf.push(o);
-        
-                                        });
-                                        hasReplaced.push(key);
+                                    });
+                                    hasReplaced.push(key);
                                     
-                                    };
+                                };
                             })
    
 
@@ -209,16 +225,23 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                             Object.keys(sts).forEach(key=>{
                                 if(hasReplaced.includes(key)){
                                     let conf = sts[key];
-                                    let cf = conf.find(cf=>{
-                                        return cf.sel == item.__sel;
-                                    });
-                                    if(cf){
-                                        let rawsel = cf.rawsel;
-                                        if(rawsel){
-                                            let get = create.querySelector(`[data-${key}=${rawsel}]`);
-                                            get && (get.dataset[key] = cf.sel);
-                                        };
-                                    }
+
+                                    // Utils.log.if(condition)(231, item.__sel, conf);
+
+                                    item.__sel && item.__sel.forEach && item.__sel.forEach(i=>{
+
+                                        let cf = conf.find(cf=>{
+                                            return i == cf.sel;
+                                        });
+                                        if(cf){
+                                            let rawsel = cf.rawsel;
+                                            if(rawsel){
+                                                let get = create.querySelector(`[data-${key}=${rawsel}]`);
+                                                get && (get.dataset[key] = cf.sel);
+                                            };
+                                        }
+                                    })
+
                                 };
                             });
     
