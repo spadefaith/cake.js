@@ -25,6 +25,8 @@ function Component(name, template, options){
     this.isReady = false;
     this.scope = options.scope;
 
+
+
     this.animatecss = this.options.animatecss;
 
     this.formSelector = options.form;
@@ -421,10 +423,12 @@ Component.prototype.initialize = function(){
 };
 
 Component.prototype.render = function(options={}){
+    let multiple = this.options.multiple;
     if(options.hasqued){
         // console.log(`rendering ${this.name} has been queued`);
     } else {
-        if(this.isConnected){
+
+        if(this.isConnected && !multiple){
             // console.log('is connected');
             // console.trace();
             console.error(`${this.name} is already rendered and connected to the DOM`);
@@ -439,7 +443,7 @@ Component.prototype.render = function(options={}){
     
 
 
-    if(this.isConnected){
+    if(this.isConnected && !multiple){
 
         return Promise.resolve();
     };
@@ -449,21 +453,21 @@ Component.prototype.render = function(options={}){
 
     // let {root, cleaned, emit={}, data={}} = options || {};
 
-    let root = options.root;
+    let root = options.root || this.root;
     let cleaned = options.cleaned;
     let emit = options.emit || {};
     let DATA = options.data || {};
+    let CSS = options.css;
+
+    // console.log(462,root);
+
+
 
     if(typeof root == 'string'){
         let sel = `${root}:not(.cake-template)`;
         root = [document.querySelector(sel)];
     };
-
-
-
-
-
-    let multiple = this.options.multiple;
+    
     let state = this.state || {};
 
     let payload = {emit};
@@ -472,7 +476,9 @@ Component.prototype.render = function(options={}){
     this.isConnected = true;
     return new Promise((res, rej)=>{
 
-        (!!root) && (this.root = root);
+
+    
+        // (!!root) && (this.root = root);
         
 
         // console.log(423, 'render', !this.isReady);
@@ -497,12 +503,12 @@ Component.prototype.render = function(options={}){
 
             return this.await.animateRemove;
         }).then(()=>{
-            return new Promise((res, rej)=>{
+            return new Promise(async (res, rej)=>{
                 //html restructure base on data;
                 //by mutation;
     
                 // let forItems = this.$attrib.getWatchItemsByType(this.name, 'for');
-                let attrItems = this.$attrib.getWatchItems(this.name);
+                
                 // for (let i = 0; i < forItems.length; i++){
                 //     let nv = getValue(forItems[i]);
                 //     this.doFor(forItems[i], nv);
@@ -510,8 +516,22 @@ Component.prototype.render = function(options={}){
 
                 // this.$attrib.notifier(prop, newValue, null, this.name, this.getHTML());
 
+                if(this.options.onRender 
+                    && this.options.onRender.constructor 
+                    && ["Function","AsyncFunction"].includes(this.options.onRender.constructor.name)){
+                    this.onRenderConfig = await this.options.onRender.bind(this)(this);
+            
+                    let data = this.onRenderConfig.data;
+                    if(data){
+                        DATA = Object.assign(DATA, data);
+                    };
+                };
 
-                Promise.all(attrItems.map(item=>{
+
+                let attrItems = await this.$attrib.getWatchItems(this.name);
+
+
+                await Promise.all(attrItems.map(item=>{
                     if(DATA[item]){
                         return this.$attrib.notifier(item, DATA[item], null, this.name);
                     }
@@ -519,6 +539,12 @@ Component.prototype.render = function(options={}){
                     // return this.doFor(item, value);
                 })).then(()=>{
                     // console.log(405, this.name, this.html);
+
+
+
+
+                    CSS && this.html.css(CSS);
+
                     res(this.html);
 
                 });
@@ -561,7 +587,7 @@ Component.prototype.render = function(options={}){
                     return prom.then(()=>{
                         return this._animatecss('render');
                     }).then(()=>{
-                        element.appendTo(this.root, cleaned);
+                        element.appendTo(root, cleaned);
                         
                         return true;
                     });
@@ -1098,8 +1124,10 @@ Component.prototype._watchReactive = function(){
     if(this.role == 'form' && this.options.watch === true){
         const validator = this.options.validate;
         const form = this.$form();
-
         // console.log(this.name, form);
+        if(!form){
+            return;
+        }
 
         if(form && form._reactive){
             return ;

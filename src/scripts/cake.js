@@ -345,14 +345,15 @@ Cake.prototype.create = function(name, template, options){
 
             // let has = !!component.root.querySelector('FORM');
             const form = ()=>{
-
                 if(component.root.length){
                     let root = component.root[0];
 
                     let sel = `${(component.formSelector || 'FORM')}:not(.cake-template)`;
                     return root.querySelector(sel);
                 } else {
-                    let form = component.html.querySelector(component.formSelector || 'FORM');
+                    let form = component.html.querySelectorIncluded(component.formSelector || 'FORM');
+
+
                     return form;
                 };
                 return null;
@@ -490,6 +491,7 @@ Cake.prototype.create = function(name, template, options){
                                             }).then(r=>{
                                                 res(r);
                                             }).catch(err=>{
+                                                console.log(447,err);
                                                 console.log(448, component.name, event, payload);
                                                 console.trace();
                                                 console.error(err);
@@ -532,6 +534,8 @@ Cake.prototype.create = function(name, template, options){
         component.options.init && component.options.init.bind(component)();
 
     }).then(()=>{
+
+
 
         if (component.type == 'model'){
             Cake.Models[name] = component;

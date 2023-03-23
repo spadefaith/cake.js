@@ -24,10 +24,53 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
         
 
 
-    let condition = component == 'static_form' && prop == "controlsPeriod";
+    let condition = component == 'kyc_view' && prop == 'actions';
 
     let sts = this.storage.get(component);
     let templating = new Templating(Plugin('templating'));
+
+    // let filteredSts = {};
+    // filteredSts.for = sts.for;
+
+    // for(let key in sts){
+    //     if(sts.hasOwnProperty(key)){
+    //         let item = sts[key];
+    //         let has = false;
+    //         for (let i = 0; i < item.length; i++){
+    //             let conf = item[i];
+
+    //             let bind = conf.bind;
+    //             if(key == 'evt'){
+    //                 bind = conf.cb;
+    //             };
+                
+    //             if(bind && bind.includes(templating.tag[0])){
+    //                 bind = bind.split("{{").join("").split("}}").join("");
+    //             };
+
+    //             if(Utils.isArray(newValue)){
+    //                 has = newValue.some(item=>{
+    //                     if(Utils.isObject(item)){
+    //                         return item[bind] != undefined;
+    //                     } else {
+    //                         return true;
+    //                     };
+    //                 });
+                
+    //             } else if(Utils.isObject(newValue)){
+    //                 has = newValue[bind] != undefined;
+    //             } else {
+    //                 has = true;
+    //             };
+    //         };
+    //         if(has){
+    //             filteredSts[key] = item;
+    //         };
+    //     };
+    // };
+
+    // // sts = filteredSts;
+
     return new Promise((res, rej)=>{
         try {
             let configs = getConfig(this.storage.get(component,'for'), prop, newValue, prevValue, component);
@@ -93,12 +136,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                 let hasReplaced = [];
                 //update other
                 ;(()=>{
+                    let stat = {};
                     let increment = 0;
                     Object.keys(sts).forEach((key,index)=>{
 
                         if(!['for','evt','animate','switch'].includes(key)){
-                            let conf = sts[key];
+                            let conf = JSON.parse(JSON.stringify(sts[key]));
 
+     
                             conf.forEach(temp=>{
                                 let bind = temp && temp.bind || undefined;
 
@@ -106,9 +151,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 if(bind && bind.match(new RegExp(templating.lefttag),'g')){
                                     
                                     data.forEach((item, index)=>{
-
-                                        // Utils.log.if(condition)(101,item);
-                                        
                                         let o = {};
                                         o.bind =  templating.replaceString(item, bind);
                                         // o.sel = `${temp.sel}-${increment}-${new Date().getTime()}-${Math.ceil(Math.random()*10)}`;
@@ -116,7 +158,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                         o.rawsel = temp.sel;
                                         increment += 1;
 
-                                        // Utils.log.if(condition)(102,item);
                                         
                                         //data binding to the element selector;
 
@@ -134,19 +175,21 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                                 };
                                             };
                                         };
-    
                                         conf.push(o);
-        
+                                        
                                     });
                                     hasReplaced.push(key);
                                     
+                                    stat[`${component}-${key}`] = (stat[`${component}-${key}`] || 0) + 1; 
                                 };
-                            })
-   
+                            });
 
-     
+                            sts[key] = conf;
+                            
+                            
                         };
                     });
+                    // console.log(stat);
 
                 })();
 
@@ -226,7 +269,6 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 if(hasReplaced.includes(key)){
                                     let conf = sts[key];
 
-                                    // Utils.log.if(condition)(231, item.__sel, conf);
 
                                     item.__sel && item.__sel.forEach && item.__sel.forEach(i=>{
 
@@ -237,6 +279,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                             let rawsel = cf.rawsel;
                                             if(rawsel){
                                                 let get = create.querySelector(`[data-${key}=${rawsel}]`);
+
+                                                if(!get && create && create.dataset[key] == rawsel){
+                                                    get = create;
+                                                };
+
+                                                // Utils.log.if(condition)(231, item.__sel, cf, get,`[data-${key}=${rawsel}]`,create.outerHTML,create);
+
+
                                                 get && (get.dataset[key] = cf.sel);
                                             };
                                         }
@@ -328,13 +378,29 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                                 if(!isFor){
                                     continue;
                                 };
-                                const routeElement = create.querySelector(`[data-route=${sel}]`);
+                                let routeElement = create.querySelector(`[data-route=${sel}]`);
+
+                                if(!routeElement && create && create.dataset.route == sel){
+                                    routeElement = create;
+                                };
+
+
                                 if(routeElement){
+                                    let state = null;
+                                    if(bind.includes("?")){
+                                        let split = bind.split("?");
+                                        bind = split[0];
+                                        state = split[1];
+                                    };
                                     const routes = RouterStorage.get(bind);
 
                                     if(routes){
                                         let href = routes.path;
-                                        routeElement.href = `#!${href}`;
+                                        if(state){
+                                            routeElement.href = `#!${href}?${state}`;
+                                        } else {
+                                            routeElement.href = `#!${href}`;
+                                        };
                                     };
                                 } else {
                                     continue;
@@ -353,6 +419,12 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                         const select = target.closest('SELECT') ||  target.closest('DATALIST');
                         select && (select.selectedIndex = 0);
                     };
+                })();
+
+                //requery the data-container after loop;
+                (async ()=>{
+                    let _component = ComponentStorage.get(component);
+                    _component && _component.findContainer()
                 })();
 
                 if(islast){

@@ -17,6 +17,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
     configs = extendConfig(configs);
 
 
+
     for (let c = 0; c < configs.length; c++){
         let config = configs[c], data;
         // let {attr, bind, sel, incrementedSel,incrementId, incrementedSels} = config;
@@ -41,12 +42,14 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
             data = newValue;
         };
         let attrHyphen = attr.toHyphen();
+
+
         if (prop == bind){
             let els = html.querySelectorAll(`[data-bind=${incrementedSel || sel}]`);
-            // console.log(incrementedSel, els);
 
             for (let p = 0; p < els.length; p++){
                 let el = els[p];
+
 
                 
                 if (attr == 'class' || attr == 'className'){
@@ -72,6 +75,7 @@ module.exports = (async function(prop, newValue, prevValue, component, html){
                     //     console.log(263, config.incrementedSel, newValue.incrementedSel);
                     //     console.log(264, newValue, data);
                     // };
+
 
                     if(data != undefined || data != null){
                         

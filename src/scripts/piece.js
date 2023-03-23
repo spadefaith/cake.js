@@ -1,3 +1,4 @@
+const UTILS = require('./utils');
 function Piece(el){
     this.el = Piece.toArray(el);
 };
@@ -116,6 +117,48 @@ Piece.prototype.getAllElements = function(){
         } break;
     };
     return r;
+};
+
+Piece.prototype.css = function(obj){
+    for (let key in obj){
+        if(obj.hasOwnProperty(key)){
+            let hasSelector = UTILS.isObject(obj[key]);
+            if(hasSelector){
+                let selector = key;
+                let css = obj[key];
+                for(let key in css){
+                    if(css.hasOwnProperty(key)){
+                        let val = css[key];
+                        this.el.forEach(el=>{
+                            let target = el.querySelectorIncluded(selector);
+                            target.style[key] = val;
+                        });
+                    };
+                }
+            } else {
+                let val = obj[key];
+                this.el.forEach(el=>{
+                    el.style[key] = val;
+                });
+            }
+        };
+    };
+
+    if(arguments.length == 1){
+        let val = arguments[0];
+        let isObject = UTILS.isObject(val);
+        if(isObject){
+            this.el.forEach(el=>{
+                for(let key in val){
+                    if(val.hasOwnProperty(key)){
+                        el.style[key] = val[key];
+                    };
+                };
+            });
+        }
+    } else if (arguments.length == 2){
+
+    };
 };
 
 Piece.prototype.appendTo = function(roots, cleaned){

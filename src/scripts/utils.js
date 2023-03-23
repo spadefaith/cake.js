@@ -199,6 +199,7 @@ const OTHERS = {
         // return string.replace(reg, (match)=>{
         //     return map[match] || match;
         // });
+        // return decodeURIComponent(string.replace(/[^a-z0-9áéíóúñü \.,_-]/gim,""));
         return decodeURIComponent(string.replace(/<.*>/, ""));
     },
     toFormData:function(form, options={}){
@@ -332,10 +333,8 @@ const OTHERS = {
     splitBySpace:function(string, fn){
         if(string){
             string = string.split(" ");
-            if(TYPES.isArray(string)){
-                for (let i = 0; i < string.length; i++){
-                    fn(string[i]);
-                };
+            for (let i = 0; i < string.length; i++){
+                fn(string[i]);
             };
         }
     },

@@ -13,9 +13,14 @@ module.exports = function(models, component){
     return class {
         constructor(routes, options){
             this.options = options;
-            this.unauthRoute = null;
+            this.unauthRoute = ()=>null;
             this.componentConf = null;
             this.authValidRoute = null;
+            this.loaderOptions = options.loader;
+
+            // console.log(21,this.options.auth['401'].constructor.name);
+
+            // throw new Error('pause');
     
             this.authConfig = (function(){
                 if(!this.options){return;};
@@ -29,8 +34,10 @@ module.exports = function(models, component){
                     const verify = confAuth.verify;
                     this.verifyComponent = verify[0];
                     this.verifyComponentHandler = verify[1];
-                    this.unauthRoute = confAuth['401'];
+                    this.unauthRoute = confAuth['401'] && confAuth['401'].constructor.name == 'Function' ? confAuth['401']: ()=>confAuth['401'];
                     // return confAuth;
+
+
                 };
                 
                 if(confAuth && confAuth.valid){
@@ -89,10 +96,11 @@ module.exports = function(models, component){
         async authenticate(name,isauth){
             let authUser = Utils.isArray(isauth) && isauth.length && isauth || null; 
 
+            // console.log(name, isauth, authUser, this.unauthRoute);
+
             if(!(isauth == true || authUser)){
                 return;
             };
-            
             /*
                 happens when the current page is in the unAuthRoute
                 usually the login page,
@@ -105,13 +113,11 @@ module.exports = function(models, component){
 
                 // console.log(103, this.unauthRoute , name);
 
-            const initialize = (this.unauthRoute == name);
+            const initialize = (this.unauthRoute() == name);
             // const initialize = this.unauthRoute[name];
 
 
-
-
-            if(this.unauthRoute){//has 401;
+            if(this.unauthRoute()){//has 401;
                 try {
 
 
@@ -119,13 +125,19 @@ module.exports = function(models, component){
                     const role = config.role;
                     const token = config.token;
 
-                    // console.log(113,config,authUser);
 
                     if(authUser){
                         if(!authUser.includes(config.role)){
                             // this.redirect401(null);
-                            this.goTo(this.unauthRoute,{replace:true});
-                            location.reload();
+
+                            let result = this.goTo(this.unauthRoute(),{replace:true});
+
+                            if(result && result.isredirected){
+
+                            } else {
+                                location.reload();
+                            };
+                            return;
                         };
                     };
 
@@ -135,6 +147,7 @@ module.exports = function(models, component){
                     
                     if(isverified.status == 0){
                         this.logout();
+                        location.reload();
                     };
 
                     if(config){
@@ -163,7 +176,7 @@ module.exports = function(models, component){
                         }
                     };
                 } catch(err){
-                    alert(JSON.stringify(err.message));
+                    alert(JSON.stringify(err.message || err));
  
                     if(initialize){
                     } else {
@@ -212,16 +225,27 @@ module.exports = function(models, component){
             };
             return auth;
         }
-        logout(){
+        logout(isredirect){
             try {
                 RouterStore.remove('role');
             } catch(err){};
-            this.goTo(this.unauthRoute,{replace:true});
+
+            // alert(this.unauthRoute);
+            if(isredirect){
+
+            } else {
+                setTimeout(()=>{
+                    this.goTo(this.unauthRoute(),{replace:true});
+                },200);
+            }
             // sessionStorage.createOrUpdate('history',[]);
         }
         goTo(routeName,config={}){
             try {
                 let routes = this.route;
+
+                // console.log(242,routes);
+
                 // let {params={}, replace:isreplace} = config || {};
 
                 let params = config.params || {};
@@ -230,8 +254,6 @@ module.exports = function(models, component){
 
                 let hash = null;
                 const raw = Object.entries(routes);
-
-
 
                 if(!routeName){
                     const auth = RouterStore.get('role', true);
@@ -261,6 +283,14 @@ module.exports = function(models, component){
                     };
                 };
                 if(!hash){
+
+                    // console.log(279,routeName);
+
+                    if(routeName && routeName.includes('://')){
+                        location.href =  routeName;
+                        return {isredirected:true};
+                    };
+
                     throw new Error(`${routeName} is not found in routes`);
                 };
 
@@ -521,6 +551,8 @@ module.exports = function(models, component){
             for (let i = 0; i < keys.length; i++){
                 const route = this.route[keys[i]];
 
+                // console.log(522, route);
+
                 const regex = route.regex;
                 const components = route.components;
                 const params = route.params;
@@ -531,6 +563,9 @@ module.exports = function(models, component){
                 const display = route.display;
                 const onrender = route.onrender;
                 const controller = route.controller;
+
+
+
 
                 if (params){
                     let _path = String(path);
@@ -545,33 +580,35 @@ module.exports = function(models, component){
                         };
                     });
                 };
+
+                
                 const test = regex.test(path);
 
-                // console.log(545,test,name,auth,entry);
                 // alert(1);
                 if (test){
                     routeName = name;
                     
                     this.authenticate(routeName,auth);
-                    if(!auth){
+                    if(auth){
                         // console.log('check if still logged in');
-                        const config = RouterStore.get('role', true) || {};
-                        const role = config.role;
-                        const token = config.token;
+                        // const config = RouterStore.get('role', true) || {};
+                        // const role = config.role;
+                        // const token = config.token;
 
-                        if(token){
-                            this.verifyAuth(token).then(res=>{
-                                if(res && res.status){
-                                    // console.log(563, token, config);
-                                    this.goTo();
-                                    window.location.reload && window.location.reload();
-                                } else {
-                                    this.logout();
-                                };
-                            });
-                        } else {
 
-                        };
+                        // if(token){
+                        //     this.verifyAuth(token).then(res=>{
+                        //         if(res && res.status){
+                        //             // console.log(563, token, config);
+                        //             this.goTo();
+                        //             window.location.reload && window.location.reload();
+                        //         } else {
+                        //             this.logout();
+                        //         };
+                        //     });
+                        // } else {
+
+                        // };
 
 
                     };
@@ -624,12 +661,12 @@ module.exports = function(models, component){
                 // return await this.log(routeName);
             }
         }
-        navigate(ispersist){
+        async navigate(ispersist){
             // console.log('here', this.prev);
             if (this.prev){
                 // const {components, state, path, name, overlay, onrender={}} = this.prev;
 
-                const components = this.prev.components;
+                const components = [...this.prev.components];
                 const state = this.prev.state;
                 const path = this.prev.path;
                 const name = this.prev.name;
@@ -640,6 +677,19 @@ module.exports = function(models, component){
                 // if(overlay){
                 //     storage.create(name);
                 // };
+
+                //TODO - insert before and after the Loader and the LoaderOut
+                //TODO - exception can be found in loader:{except:[]}
+                if(this.loaderOptions && this.loaderOptions.except){
+                    if(!this.loaderOptions.except.includes(name)){
+                        let loaderin = this.loaderOptions.in;
+                        let loaderout = this.loaderOptions.out;
+                        if(typeof loaderin == 'string' && typeof loaderout == 'string'){
+                            components.unshift(loaderin);
+                            components.push(loaderout);
+                        };
+                    };
+                };
 
 
                 // console.log(425, 'components to render',components);
@@ -669,46 +719,74 @@ module.exports = function(models, component){
                                         
                                         let isunload = this.getComponent(component,path);
                                         
-                                        component = this.components.get(component);
-
-                                        if(!component){
-                                            component = models[componentName];
-                                        };
 
 
-                                        
 
-                                        if(component){
-                                            // console.log(638,component);
-                                            if(component.isConnected && !isunload){
-                                                if(component.fire.softReload){
-                                                    component.fire.softReload();
-                                                    component.await.softReload && component.await.softReload.then(()=>{
-                                                        recur();
-                                                    });
-                                                } else {
-                                                    recur();
-                                                };
-                                            } else if(component.type == 'model'){
-                                                component.initialize().then(()=>{
-                                                    recur();
-                                                }).catch(err=>{
-                                                    throw err;
-                                                });
+                                        new Promise((res=>{
+                                            let _component = this.components.get(component);
+
+
+                                            if(_component && _component.isConnected != undefined){
+                                                res(_component);
                                             } else {
-                                                component.render({emit:{route:this.prev},...(onrender[componentName] || {})}).then(()=>{
-                                                    if(component.await.isConnected){
-                                                        component.await.isConnected && component.await.isConnected.then(()=>{
+                                                setTimeout(()=>{
+                                                    res(this.components.get(component));
+                                                }, 50);
+                                            };
+                                        })).then((component)=>{
+    
+                                            //TODO - look to model?
+                                            if(!component){
+                                                component = models[componentName];
+                                            };
+    
+    
+                                            
+    
+                                            if(component){
+                                                // console.log(638,component);
+                                                if(component.isConnected && !isunload){
+                                                    if(component.fire.softReload){
+                                                        component.fire.softReload();
+                                                        component.await.softReload && component.await.softReload.then(()=>{
                                                             recur();
                                                         });
                                                     } else {
                                                         recur();
-                                                    }
-                                                }).catch(err=>{
-                                                    throw err;
-                                                });
-                                            };
-                                        }
+                                                    };
+                                                } else if(component.type == 'model'){
+                                                    component.initialize().then(()=>{
+                                                        recur();
+                                                    }).catch(err=>{
+                                                        throw err;
+                                                    });
+                                                } else {
+                                                    let fromRouter = onrender[componentName] || {};
+                                                    let fromComponent = component.onRenderConfig || {};
+    
+                                                    if(!Utils.isObject(fromComponent)){
+                                                        fromComponent = {};
+                                                    };
+                                                    if(!Utils.isObject(fromRouter)){
+                                                        fromRouter = {};
+                                                    };
+    
+                                                    component.render({emit:{route:this.prev},...fromRouter, ...fromComponent}).then(()=>{
+                                                        if(component.await.isConnected){
+                                                            component.await.isConnected && component.await.isConnected.then(()=>{
+                                                                recur();
+                                                            });
+                                                        } else {
+                                                            recur();
+                                                        }
+                                                    }).catch(err=>{
+                                                        throw err;
+                                                    });
+                                                };
+                                            }
+                                            
+                                        })
+
                                         
 
 

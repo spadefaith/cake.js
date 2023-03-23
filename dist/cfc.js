@@ -711,11 +711,8 @@
         splitBySpace: function(string, fn2) {
           if (string) {
             string = string.split(" ");
-            if (TYPES.isArray(string)) {
-              for (let i = 0; i < string.length; i++) {
-                fn2(string[i]);
-              }
-              ;
+            for (let i = 0; i < string.length; i++) {
+              fn2(string[i]);
             }
             ;
           }
@@ -1481,6 +1478,7 @@
   // src/scripts/piece.js
   var require_piece = __commonJS({
     "src/scripts/piece.js"(exports, module) {
+      var UTILS = require_utils();
       function Piece(el) {
         this.el = Piece.toArray(el);
       }
@@ -1613,6 +1611,51 @@
         }
         ;
         return r;
+      };
+      Piece.prototype.css = function(obj) {
+        for (let key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            let hasSelector = UTILS.isObject(obj[key]);
+            if (hasSelector) {
+              let selector2 = key;
+              let css = obj[key];
+              for (let key2 in css) {
+                if (css.hasOwnProperty(key2)) {
+                  let val = css[key2];
+                  this.el.forEach((el) => {
+                    let target = el.querySelectorIncluded(selector2);
+                    target.style[key2] = val;
+                  });
+                }
+                ;
+              }
+            } else {
+              let val = obj[key];
+              this.el.forEach((el) => {
+                el.style[key] = val;
+              });
+            }
+          }
+          ;
+        }
+        ;
+        if (arguments.length == 1) {
+          let val = arguments[0];
+          let isObject = UTILS.isObject(val);
+          if (isObject) {
+            this.el.forEach((el) => {
+              for (let key in val) {
+                if (val.hasOwnProperty(key)) {
+                  el.style[key] = val[key];
+                }
+                ;
+              }
+              ;
+            });
+          }
+        } else if (arguments.length == 2) {
+        }
+        ;
       };
       Piece.prototype.appendTo = function(roots, cleaned) {
         if (roots.nodeType == 1) {
@@ -2030,7 +2073,7 @@
         parents: {}
       };
       module.exports = async function(prop, newValue, prevValue, component2, html) {
-        let condition = component2 == "static_form" && prop == "controlsPeriod";
+        let condition = component2 == "kyc_view" && prop == "actions";
         let sts = this.storage.get(component2);
         let templating = new Templating(Plugin("templating"));
         return new Promise((res, rej) => {
@@ -2078,10 +2121,11 @@
               let hasReplaced = [];
               ;
               (() => {
+                let stat = {};
                 let increment = 0;
                 Object.keys(sts).forEach((key, index) => {
                   if (!["for", "evt", "animate", "switch"].includes(key)) {
-                    let conf = sts[key];
+                    let conf = JSON.parse(JSON.stringify(sts[key]));
                     conf.forEach((temp) => {
                       let bind3 = temp && temp.bind || void 0;
                       if (bind3 && bind3.match(new RegExp(templating.lefttag), "g")) {
@@ -2109,9 +2153,11 @@
                           conf.push(o2);
                         });
                         hasReplaced.push(key);
+                        stat[`${component3}-${key}`] = (stat[`${component3}-${key}`] || 0) + 1;
                       }
                       ;
                     });
+                    sts[key] = conf;
                   }
                   ;
                 });
@@ -2192,6 +2238,10 @@
                             let rawsel = cf.rawsel;
                             if (rawsel) {
                               let get = create.querySelector(`[data-${key}=${rawsel}]`);
+                              if (!get && create && create.dataset[key] == rawsel) {
+                                get = create;
+                              }
+                              ;
                               get && (get.dataset[key] = cf.sel);
                             }
                             ;
@@ -2270,12 +2320,28 @@
                         continue;
                       }
                       ;
-                      const routeElement = create.querySelector(`[data-route=${sel2}]`);
+                      let routeElement = create.querySelector(`[data-route=${sel2}]`);
+                      if (!routeElement && create && create.dataset.route == sel2) {
+                        routeElement = create;
+                      }
+                      ;
                       if (routeElement) {
+                        let state = null;
+                        if (bind3.includes("?")) {
+                          let split = bind3.split("?");
+                          bind3 = split[0];
+                          state = split[1];
+                        }
+                        ;
                         const routes = RouterStorage.get(bind3);
                         if (routes) {
                           let href = routes.path;
-                          routeElement.href = `#!${href}`;
+                          if (state) {
+                            routeElement.href = `#!${href}?${state}`;
+                          } else {
+                            routeElement.href = `#!${href}`;
+                          }
+                          ;
                         }
                         ;
                       } else {
@@ -2296,6 +2362,10 @@
                   select && (select.selectedIndex = 0);
                 }
                 ;
+              })();
+              (async () => {
+                let _component = ComponentStorage.get(component3);
+                _component && _component.findContainer();
               })();
               if (islast) {
                 target.remove();
@@ -2961,7 +3031,7 @@
               let cb2 = _sp1[1];
               event = event.trim();
               cb2 = cb2 ? cb2.trim() : cb2;
-              this._register(component2, "evt", { event, sel: id2, cb: cb2 });
+              this._register(component2, "evt", { event, sel: id2, bind: cb2, cb: cb2 });
               el.dataset.event = id2;
               this.uiid++;
             }
@@ -3122,7 +3192,7 @@
                 var bind2 = _sp1[1];
               } else {
                 var bind2 = val;
-                var attr = el.value == void 0 ? "textContent" : "value";
+                var attr = el.value != void 0 && el.tagName != "BUTTON" ? "value" : "textContent";
               }
               ;
               this._register(component2, "bind", { attr, bind: bind2, sel: id2 });
@@ -4419,9 +4489,10 @@
         throw new Error("initialize handler is for type model.");
       };
       Component.prototype.render = function(options = {}) {
+        let multiple = this.options.multiple;
         if (options.hasqued) {
         } else {
-          if (this.isConnected) {
+          if (this.isConnected && !multiple) {
             console.error(`${this.name} is already rendered and connected to the DOM`);
           }
           ;
@@ -4431,25 +4502,24 @@
           this.await.destroy = Promise.resolve();
         }
         ;
-        if (this.isConnected) {
+        if (this.isConnected && !multiple) {
           return Promise.resolve();
         }
         ;
-        let root = options.root;
+        let root = options.root || this.root;
         let cleaned = options.cleaned;
         let emit = options.emit || {};
         let DATA = options.data || {};
+        let CSS = options.css;
         if (typeof root == "string") {
           let sel = `${root}:not(.cake-template)`;
           root = [document.querySelector(sel)];
         }
         ;
-        let multiple = this.options.multiple;
         let state = this.state || {};
         let payload = { emit };
         this.isConnected = true;
         return new Promise((res, rej) => {
-          !!root && (this.root = root);
           if (!this.isReady) {
             this.createElement().then(() => {
               return !this.template && this.fire.isConnected && this.fire.isConnected(payload, true);
@@ -4465,13 +4535,23 @@
           return this.await.destroy.then(() => {
             return this.await.animateRemove;
           }).then(() => {
-            return new Promise((res, rej) => {
-              let attrItems = this.$attrib.getWatchItems(this.name);
-              Promise.all(attrItems.map((item) => {
+            return new Promise(async (res, rej) => {
+              if (this.options.onRender && this.options.onRender.constructor && ["Function", "AsyncFunction"].includes(this.options.onRender.constructor.name)) {
+                this.onRenderConfig = await this.options.onRender.bind(this)(this);
+                let data2 = this.onRenderConfig.data;
+                if (data2) {
+                  DATA = Object.assign(DATA, data2);
+                }
+                ;
+              }
+              ;
+              let attrItems = await this.$attrib.getWatchItems(this.name);
+              await Promise.all(attrItems.map((item) => {
                 if (DATA[item]) {
                   return this.$attrib.notifier(item, DATA[item], null, this.name);
                 }
               })).then(() => {
+                CSS && this.html.css(CSS);
                 res(this.html);
               });
             }).then((element) => {
@@ -4501,7 +4581,7 @@
                 return prom.then(() => {
                   return this._animatecss("render");
                 }).then(() => {
-                  element.appendTo(this.root, cleaned);
+                  element.appendTo(root, cleaned);
                   return true;
                 });
               }
@@ -4989,6 +5069,9 @@
         if (this.role == "form" && this.options.watch === true) {
           const validator = this.options.validate;
           const form = this.$form();
+          if (!form) {
+            return;
+          }
           if (form && form._reactive) {
             return;
           }
@@ -5099,9 +5182,10 @@
         return class {
           constructor(routes, options) {
             this.options = options;
-            this.unauthRoute = null;
+            this.unauthRoute = () => null;
             this.componentConf = null;
             this.authValidRoute = null;
+            this.loaderOptions = options.loader;
             this.authConfig = function() {
               if (!this.options) {
                 return;
@@ -5117,7 +5201,7 @@
                 const verify = confAuth.verify;
                 this.verifyComponent = verify[0];
                 this.verifyComponentHandler = verify[1];
-                this.unauthRoute = confAuth["401"];
+                this.unauthRoute = confAuth["401"] && confAuth["401"].constructor.name == "Function" ? confAuth["401"] : () => confAuth["401"];
               }
               ;
               if (confAuth && confAuth.valid) {
@@ -5174,16 +5258,21 @@
               return;
             }
             ;
-            const initialize = this.unauthRoute == name2;
-            if (this.unauthRoute) {
+            const initialize = this.unauthRoute() == name2;
+            if (this.unauthRoute()) {
               try {
                 const config = RouterStore.get("role", true) || {};
                 const role = config.role;
                 const token = config.token;
                 if (authUser) {
                   if (!authUser.includes(config.role)) {
-                    this.goTo(this.unauthRoute, { replace: true });
-                    location.reload();
+                    let result = this.goTo(this.unauthRoute(), { replace: true });
+                    if (result && result.isredirected) {
+                    } else {
+                      location.reload();
+                    }
+                    ;
+                    return;
                   }
                   ;
                 }
@@ -5191,6 +5280,7 @@
                 const isverified = await this.verifyAuth(token);
                 if (isverified.status == 0) {
                   this.logout();
+                  location.reload();
                 }
                 ;
                 if (config) {
@@ -5213,7 +5303,7 @@
                 }
                 ;
               } catch (err) {
-                alert(JSON.stringify(err.message));
+                alert(JSON.stringify(err.message || err));
                 if (initialize) {
                 } else {
                   this.logout();
@@ -5259,13 +5349,18 @@
             ;
             return auth;
           }
-          logout() {
+          logout(isredirect) {
             try {
               RouterStore.remove("role");
             } catch (err) {
             }
             ;
-            this.goTo(this.unauthRoute, { replace: true });
+            if (isredirect) {
+            } else {
+              setTimeout(() => {
+                this.goTo(this.unauthRoute(), { replace: true });
+              }, 200);
+            }
           }
           goTo(routeName, config = {}) {
             try {
@@ -5300,6 +5395,11 @@
               }
               ;
               if (!hash) {
+                if (routeName && routeName.includes("://")) {
+                  location.href = routeName;
+                  return { isredirected: true };
+                }
+                ;
                 throw new Error(`${routeName} is not found in routes`);
               }
               ;
@@ -5542,23 +5642,7 @@
               if (test) {
                 routeName = name2;
                 this.authenticate(routeName, auth);
-                if (!auth) {
-                  const config = RouterStore.get("role", true) || {};
-                  const role = config.role;
-                  const token = config.token;
-                  if (token) {
-                    this.verifyAuth(token).then((res) => {
-                      if (res && res.status) {
-                        this.goTo();
-                        window.location.reload && window.location.reload();
-                      } else {
-                        this.logout();
-                      }
-                      ;
-                    });
-                  } else {
-                  }
-                  ;
+                if (auth) {
                 }
                 ;
                 this.prev = { components: components2, params: PARAMS, state, path, name: name2, prev: this.prev, overlay, display, onrender, controller };
@@ -5606,14 +5690,27 @@
             } else {
             }
           }
-          navigate(ispersist) {
+          async navigate(ispersist) {
             if (this.prev) {
-              const components2 = this.prev.components;
+              const components2 = [...this.prev.components];
               const state = this.prev.state;
               const path = this.prev.path;
               const name2 = this.prev.name;
               const overlay = this.prev.overlay;
               const onrender = this.prev.onrender || {};
+              if (this.loaderOptions && this.loaderOptions.except) {
+                if (!this.loaderOptions.except.includes(name2)) {
+                  let loaderin = this.loaderOptions.in;
+                  let loaderout = this.loaderOptions.out;
+                  if (typeof loaderin == "string" && typeof loaderout == "string") {
+                    components2.unshift(loaderin);
+                    components2.push(loaderout);
+                  }
+                  ;
+                }
+                ;
+              }
+              ;
               try {
                 if (components2.length) {
                   return new Promise((res, rej) => {
@@ -5626,43 +5723,64 @@
                           i += 1;
                           let componentName = component3;
                           let isunload = this.getComponent(component3, path);
-                          component3 = this.components.get(component3);
-                          if (!component3) {
-                            component3 = models[componentName];
-                          }
-                          ;
-                          if (component3) {
-                            if (component3.isConnected && !isunload) {
-                              if (component3.fire.softReload) {
-                                component3.fire.softReload();
-                                component3.await.softReload && component3.await.softReload.then(() => {
-                                  recur();
-                                });
-                              } else {
-                                recur();
-                              }
-                              ;
-                            } else if (component3.type == "model") {
-                              component3.initialize().then(() => {
-                                recur();
-                              }).catch((err) => {
-                                throw err;
-                              });
+                          new Promise((res2) => {
+                            let _component = this.components.get(component3);
+                            if (_component && _component.isConnected != void 0) {
+                              res2(_component);
                             } else {
-                              component3.render(__spreadValues({ emit: { route: this.prev } }, onrender[componentName] || {})).then(() => {
-                                if (component3.await.isConnected) {
-                                  component3.await.isConnected && component3.await.isConnected.then(() => {
+                              setTimeout(() => {
+                                res2(this.components.get(component3));
+                              }, 50);
+                            }
+                            ;
+                          }).then((component4) => {
+                            if (!component4) {
+                              component4 = models[componentName];
+                            }
+                            ;
+                            if (component4) {
+                              if (component4.isConnected && !isunload) {
+                                if (component4.fire.softReload) {
+                                  component4.fire.softReload();
+                                  component4.await.softReload && component4.await.softReload.then(() => {
                                     recur();
                                   });
                                 } else {
                                   recur();
                                 }
-                              }).catch((err) => {
-                                throw err;
-                              });
+                                ;
+                              } else if (component4.type == "model") {
+                                component4.initialize().then(() => {
+                                  recur();
+                                }).catch((err) => {
+                                  throw err;
+                                });
+                              } else {
+                                let fromRouter = onrender[componentName] || {};
+                                let fromComponent = component4.onRenderConfig || {};
+                                if (!Utils.isObject(fromComponent)) {
+                                  fromComponent = {};
+                                }
+                                ;
+                                if (!Utils.isObject(fromRouter)) {
+                                  fromRouter = {};
+                                }
+                                ;
+                                component4.render(__spreadValues(__spreadValues({ emit: { route: this.prev } }, fromRouter), fromComponent)).then(() => {
+                                  if (component4.await.isConnected) {
+                                    component4.await.isConnected && component4.await.isConnected.then(() => {
+                                      recur();
+                                    });
+                                  } else {
+                                    recur();
+                                  }
+                                }).catch((err) => {
+                                  throw err;
+                                });
+                              }
+                              ;
                             }
-                            ;
-                          }
+                          });
                         } else {
                           res();
                         }
@@ -6245,6 +6363,9 @@
             ;
           };
           query(container, "INPUT.input", function(el, value2) {
+            if (!el) {
+              return;
+            }
             if (value2 != void 0) {
               if (el.type == "date") {
                 value2 = new Date(value2) == "Invalid Date" ? "" : new Date(value2).toJSON().split("T")[0];
@@ -6255,8 +6376,20 @@
             }
             ;
           });
+          query(container, "TEXTAREA.input", function(el, value2) {
+            if (!el) {
+              return;
+            }
+            if (value2 != void 0) {
+              el.value = value2;
+            }
+            ;
+          });
           setTimeout(() => {
             query(container, "SELECT.input:not(.cake-template)", function(select, value2) {
+              if (!select) {
+                return;
+              }
               query(select, "OPTION:not(.cake-template)", function(option, _value, index) {
                 if (option) {
                   if (option.value == value2) {
@@ -6551,7 +6684,7 @@
                 let sel = `${component2.formSelector || "FORM"}:not(.cake-template)`;
                 return root2.querySelector(sel);
               } else {
-                let form2 = component2.html.querySelector(component2.formSelector || "FORM");
+                let form2 = component2.html.querySelectorIncluded(component2.formSelector || "FORM");
                 return form2;
               }
               ;
@@ -6656,6 +6789,7 @@
                             }).then((r) => {
                               res(r);
                             }).catch((err) => {
+                              console.log(447, err);
                               console.log(448, component2.name, event, payload);
                               console.trace();
                               console.error(err);

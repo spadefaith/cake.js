@@ -51,7 +51,7 @@ Attrib.prototype.notifyRoute = notifyRoute;
 Attrib.prototype.notifier = function(prop, newValue, prevValue, component){
     // console.time('attr');
 
-    // console.log(47, newValue);
+    // console.log(47, prop, newValue, prevValue, component);
 
     if(newValue == undefined){
         return Promise.resolve();
@@ -329,7 +329,7 @@ Attrib.prototype._compileEvents = function(events,component, isStatic){
                 let cb = _sp1[1];
                 event = event.trim();
                 cb = cb ? cb.trim(): cb;
-                this._register(component, 'evt', {event, sel:id, cb});
+                this._register(component, 'evt', {event, sel:id,bind:cb, cb});
                 el.dataset.event = id;
                 this.uiid++;
             }
@@ -492,7 +492,7 @@ Attrib.prototype._compileBind = function(elModels, component, isStatic){
                     var bind = _sp1[1];
                 } else {
                     var bind = val;
-                    var attr = el.value == undefined?'textContent':'value';
+                    var attr = el.value != undefined && el.tagName != 'BUTTON'?'value':'textContent';
                 };
                 this._register(component, 'bind', {attr, bind, sel:id});
             }

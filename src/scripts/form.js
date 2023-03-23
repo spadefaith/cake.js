@@ -180,6 +180,9 @@ module.exports =  function (component){
 
 
         query(container, 'INPUT.input', function(el, value){
+            if(!el){
+                return;
+            }
             if (value != undefined){
                 if (el.type == 'date'){
                     value = new Date(value) == 'Invalid Date'?"":new Date(value).toJSON().split('T')[0];
@@ -188,10 +191,22 @@ module.exports =  function (component){
                     el.value = value;
                 }
             };
-        })
+        });
+
+        query(container, 'TEXTAREA.input', function(el, value){
+            if(!el){
+                return;
+            }
+            if (value != undefined){
+                el.value = value;
+            };
+        });
 
         setTimeout(()=>{
             query(container, 'SELECT.input:not(.cake-template)', function(select, value){
+                if(!select){
+                    return;
+                }
                 // console.log(select);
                 query(select, 'OPTION:not(.cake-template)', function(option, _value, index){
                     // console.log(option)
