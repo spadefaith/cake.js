@@ -4,19 +4,11 @@ module.exports = function(dependency){
     const _hooks = {};
     class Scope {
         constructor(name){
-
             this.name = name;
-
-      
-
             this.reactiveData = {};
-
             this.notify = [];
-
             this.install(this.name);
-
             this.pKeys = {};
-
             this.sanitize = function(data) {
                 const map = {
                     '&': '&amp;',

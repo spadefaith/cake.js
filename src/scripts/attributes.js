@@ -321,6 +321,8 @@ Attrib.prototype._loopElements = function(attr, els, component, isStatic,cb){
 Attrib.prototype._compileEvents = function(events,component, isStatic){
     return new Promise((res)=>{
 
+        // component == "AdmissionRequest/AddSubject/FormAdd" && console.log(component, events);
+        
         this._loopElements('event',events, component, isStatic, (function(el, id, target, gr, index){
             let splitted = gr;
             for (let s = 0; s < splitted.length ; s++){

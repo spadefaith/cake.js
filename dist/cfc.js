@@ -4490,6 +4490,7 @@
       };
       Component.prototype.render = function(options = {}) {
         let multiple = this.options.multiple;
+        this.name == "letter_head" && console.log(428, "start rendering letter head");
         if (options.hasqued) {
         } else {
           if (this.isConnected && !multiple) {
@@ -4498,14 +4499,17 @@
           ;
         }
         ;
+        this.name == "letter_head" && console.log(429, "start rendering letter head");
         if (options.revokeque) {
           this.await.destroy = Promise.resolve();
         }
         ;
+        this.name == "letter_head" && console.log(430, "start rendering letter head");
         if (this.isConnected && !multiple) {
           return Promise.resolve();
         }
         ;
+        this.name == "letter_head" && console.log(440, "start rendering letter head");
         let root = options.root || this.root;
         let cleaned = options.cleaned;
         let emit = options.emit || {};
@@ -4520,6 +4524,7 @@
         let payload = { emit };
         this.isConnected = true;
         return new Promise((res, rej) => {
+          this.name == "letter_head" && console.log(441, "start rendering letter head");
           if (!this.isReady) {
             this.createElement().then(() => {
               return !this.template && this.fire.isConnected && this.fire.isConnected(payload, true);
@@ -4532,10 +4537,12 @@
           }
           ;
         }).then(() => {
+          this.name == "letter_head" && console.log(442, "start rendering letter head");
           return this.await.destroy.then(() => {
             return this.await.animateRemove;
           }).then(() => {
             return new Promise(async (res, rej) => {
+              this.name == "letter_head" && console.log(443, "start rendering letter head");
               if (this.options.onRender && this.options.onRender.constructor && ["Function", "AsyncFunction"].includes(this.options.onRender.constructor.name)) {
                 this.onRenderConfig = await this.options.onRender.bind(this)(this);
                 let data2 = this.onRenderConfig.data;
@@ -4545,6 +4552,7 @@
                 ;
               }
               ;
+              this.name == "letter_head" && console.log(444, "start rendering letter head");
               let attrItems = await this.$attrib.getWatchItems(this.name);
               await Promise.all(attrItems.map((item) => {
                 if (DATA[item]) {
@@ -4581,6 +4589,7 @@
                 return prom.then(() => {
                   return this._animatecss("render");
                 }).then(() => {
+                  this.name == "letter_head" && console.log(614, root, element);
                   element.appendTo(root, cleaned);
                   return true;
                 });

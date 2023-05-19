@@ -157,6 +157,10 @@
 
     
     HTMLElement.prototype.querySelectorAllIncluded = function(selector, attr, val){
+
+
+        // console.log(162,this.outerHTML, selector);
+
         let q;
         try {
             q = this.querySelectorAll(selector);

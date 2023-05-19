@@ -442,13 +442,12 @@ Component.prototype.render = function(options={}){
 
     
 
-
     if(this.isConnected && !multiple){
 
         return Promise.resolve();
     };
 
-
+    (this.name == "letter_head") && console.log(440,"start rendering letter head");
 
 
     // let {root, cleaned, emit={}, data={}} = options || {};
@@ -476,7 +475,7 @@ Component.prototype.render = function(options={}){
     this.isConnected = true;
     return new Promise((res, rej)=>{
 
-
+        (this.name == "letter_head") && console.log(441,"start rendering letter head");
     
         // (!!root) && (this.root = root);
         
@@ -498,12 +497,15 @@ Component.prototype.render = function(options={}){
             res();
         };
     }).then(()=>{
-
+        (this.name == "letter_head") && console.log(442,"start rendering letter head");
         return this.await.destroy.then(()=>{
 
             return this.await.animateRemove;
         }).then(()=>{
             return new Promise(async (res, rej)=>{
+
+                (this.name == "letter_head") && console.log(443,"start rendering letter head");
+
                 //html restructure base on data;
                 //by mutation;
     
@@ -527,6 +529,8 @@ Component.prototype.render = function(options={}){
                     };
                 };
 
+
+                (this.name == "letter_head") && console.log(444,"start rendering letter head");
 
                 let attrItems = await this.$attrib.getWatchItems(this.name);
 
@@ -565,6 +569,10 @@ Component.prototype.render = function(options={}){
                     };
                 });
             }).then((element)=>{
+
+                // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(569,element.el[0].outerHTML);
+
+
                 if (this.isStatic){
                     //static component, those already attached to DOM;
                 } else {
@@ -576,6 +584,10 @@ Component.prototype.render = function(options={}){
                             this.html = element = this.Node(el);
                             this.html.replaceDataSrc();
                             
+
+                            // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(570,this.html.el[0].outerHTML);
+
+
                             DATA = null;
                             res();
                         })
@@ -585,8 +597,16 @@ Component.prototype.render = function(options={}){
                     
 
                     return prom.then(()=>{
+
+
+                       
+
+
                         return this._animatecss('render');
                     }).then(()=>{
+
+                        (this.name == "letter_head") && console.log(614,root, element);
+
                         element.appendTo(root, cleaned);
                         
                         return true;
@@ -604,17 +624,19 @@ Component.prototype.render = function(options={}){
                 //     this.doSwitch(switchItems[i], getValue(switchItems[i]));
                 // };
             }).then(()=>{
-                
+                // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(571,this.html.el[0].outerHTML);
                 return this.findContainer();
                 
             }).then(()=>{
                 try {
+                    // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(572,this.html.el[0].outerHTML);
                     // console.log('setting attributes', this.name);
                     return  this.fire.isConnected && this.fire.isConnected(payload, true);
                 }catch(err){
                     console.log(440,err);
                 }
             }).then(()=>{
+                // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(573,this.html.el[0].outerHTML);
                 // console.log(532, this.name, this.html);
                 return this.findTarget();
             }).then(()=>{
@@ -849,9 +871,20 @@ Component.prototype.addEvent = function (static, multiple){
 Component.prototype.findTarget = function(){
     let q = this.$attrib.getEventTarget(this.name);
 
+    // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(850,q);
+
+    // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(851,this.html);
+    // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(851,this.html.el[0].outerHTML);
+
     return new Promise((res)=>{
         for (let item of q){
             let els = this.html.querySelectorAllIncluded(`[data-event=${item.sel}]`);
+
+            
+            // this.name == "AdmissionRequest/AddSubject/FormAdd" &&  console.log(852,els);
+
+            // this.name == "AdmissionRequest/AddSubject/FormAdd" && console.log(853, document.querySelectorAll(`[data-event=${item.sel}]`))
+
             for (let e = 0; e < els.length; e++){
                 if (!this.targets[item.event]){
                     this.targets[item.event] = [];

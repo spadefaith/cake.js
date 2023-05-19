@@ -96,11 +96,12 @@ module.exports = function(models, component){
         async authenticate(name,isauth){
             let authUser = Utils.isArray(isauth) && isauth.length && isauth || null; 
 
-            // console.log(name, isauth, authUser, this.unauthRoute);
+
 
             if(!(isauth == true || authUser)){
                 return;
             };
+
             /*
                 happens when the current page is in the unAuthRoute
                 usually the login page,

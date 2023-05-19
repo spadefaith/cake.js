@@ -1,46 +1,49 @@
 ;(function(){
     customElements.define('sub-template',
-  class extends HTMLElement {
-    constructor() {
-      super();
-  	}
-    connectedCallback(){
-        this.replace(this);
-    }
-    replace(subTemplate){
-        let ref = subTemplate.dataset.template;
-        let refEl = document.getElementsByName(ref);
-        
-        
-        if (refEl.length > 1){
-            console.error(`template with name ${ref} has more than one reference.`)
-            return ;
-        };
-        if (!refEl){
-            subTemplate.remove();
-            throw new Error(`${ref} is not found!`);
-
-        };
-        if (refEl[0]){
-            let temp = refEl[0];
-            if (temp.constructor.name == "HTMLTemplateElement"){
-                temp = temp.content.cloneNode(true).firstElementChild;
-                if (!temp) {return;};
-                let attrs = subTemplate.attributes;
-                for (let a = 0; a < attrs.length ;a++){
-                    let attr = attrs[a];
-                    if (attr.name != 'data-template'){
-                        temp.setAttribute(attr.name, attr.value);
-                    };
-                };
-                // console.log(temp);
-                subTemplate.replaceWith(temp);
-            } else {
-                throw new Error(`${ref} is not referred to a Template Element!`);
+    class extends HTMLElement {
+        constructor() {
+        super();
+        }
+        connectedCallback(){
+            this.replace(this);
+        }
+        replace(subTemplate){
+            let ref = subTemplate.dataset.template;
+            let refEl = document.getElementsByName(ref);
+            
+            
+            if (refEl.length > 1){
+                console.error(`template with name ${ref} has more than one reference.`)
+                return ;
             };
-        };
-    }
-});
+            if (!refEl){
+                subTemplate.remove();
+                throw new Error(`${ref} is not found!`);
+
+            };
+            if (refEl[0]){
+                let temp = refEl[0];
+                if (temp.constructor.name == "HTMLTemplateElement"){
+                    temp = temp.content.cloneNode(true).firstElementChild;
+                    if (!temp) {return;};
+                    let attrs = subTemplate.attributes;
+                    for (let a = 0; a < attrs.length ;a++){
+                        let attr = attrs[a];
+                        if (attr.name != 'data-template'){
+                            temp.setAttribute(attr.name, attr.value);
+                        };
+                    };
+                    // console.log(temp);
+                    subTemplate.replaceWith(temp);
+                } else {
+                    throw new Error(`${ref} is not referred to a Template Element!`);
+                };
+            };
+        }
+    });
+
+
+
 HTMLTemplateElement.prototype.replaceSubTemplate = function(el){
     let subTemplates = el.getElementsByTagName('sub-template');
     if (subTemplates){
